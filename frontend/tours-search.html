@@ -1,0 +1,1635 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Поиск туров - Bunyod-Tour (Обновлено)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- 🌐 ЦЕНТРАЛЬНАЯ СИСТЕМА ИНТЕРНАЦИОНАЛИЗАЦИИ -->
+    <script src="/public/js/i18n.js"></script>
+    <script src="/public/js/layout-loader.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f8f9fa;
+        }
+
+        /* Навигационное меню */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #2F2F2F;
+            min-width: 180px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.3);
+            z-index: 1000;
+            border-radius: 8px;
+            padding: 8px 0;
+            top: 100%;
+            left: 0;
+        }
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        .dropdown-content a {
+            color: white;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            transition: background-color 0.3s;
+        }
+        .dropdown-content a:hover {
+            background-color: #4A4A4A;
+        }
+        .dropdown-content .dropdown-submenu {
+            position: relative;
+        }
+        .dropdown-content .dropdown-submenu .dropdown-subcontent {
+            display: none !important;
+            position: absolute;
+            left: 100%;
+            top: 0;
+            background-color: #2F2F2F;
+            min-width: 180px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.3);
+            border-radius: 8px;
+            padding: 8px 0;
+            z-index: 1001;
+        }
+        .dropdown-content .dropdown-submenu:hover > .dropdown-subcontent {
+            display: block !important;
+        }
+        
+        /* Стили для языкового селектора */
+        .language-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .lang-selector-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            min-width: 80px;
+        }
+        
+        .lang-selector-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .lang-dropdown-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: #2F2F2F;
+            min-width: 160px;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            margin-top: 0.5rem;
+            padding: 0.5rem 0;
+        }
+        
+        .lang-dropdown-content.show {
+            display: block;
+        }
+        
+        .lang-option {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            text-decoration: none;
+            color: rgba(255, 255, 255, 0.8);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .lang-option:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+        }
+        
+        .lang-option.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+        }
+        
+        .lang-option .flag {
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+        
+        .lang-option .lang-name {
+            font-weight: 500;
+            flex: 1;
+        }
+
+        .selected-flag {
+            width: 24px;
+            height: 16px;
+            border-radius: 2px;
+            display: inline-block;
+            margin-right: 8px;
+            border: 1px solid rgba(255,255,255,0.4);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+        
+        .flag {
+            width: 20px;
+            height: 14px;
+            border-radius: 2px;
+            display: inline-block;
+            margin-right: 8px;
+            border: 1px solid rgba(255,255,255,0.3);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+        
+        /* Цвета флагов */
+        .flag-ru, .selected-flag.flag-ru {
+            background: linear-gradient(to bottom, 
+                #ffffff 0%, #ffffff 33.33%, 
+                #0039a6 33.33%, #0039a6 66.66%, 
+                #d52b1e 66.66%, #d52b1e 100%);
+        }
+        .flag-us, .selected-flag.flag-us {
+            background: linear-gradient(to bottom, 
+                #b22234 0%, #b22234 7.7%, #ffffff 7.7%, #ffffff 15.4%, 
+                #b22234 15.4%, #b22234 23.1%, #ffffff 23.1%, #ffffff 30.8%,
+                #b22234 30.8%, #b22234 38.5%, #ffffff 38.5%, #ffffff 46.2%,
+                #b22234 46.2%, #b22234 53.8%, #ffffff 53.8%, #ffffff 61.5%,
+                #b22234 61.5%, #b22234 69.2%, #ffffff 69.2%, #ffffff 76.9%,
+                #b22234 76.9%, #b22234 84.6%, #ffffff 84.6%, #ffffff 92.3%,
+                #b22234 92.3%, #b22234 100%);
+            position: relative;
+        }
+        .flag-us::before, .selected-flag.flag-us::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 40%;
+            height: 53.8%;
+            background: #3c3b6e;
+            border-radius: 2px 0 0 0;
+        }
+        .flag-tj, .selected-flag.flag-tj {
+            background: linear-gradient(to bottom, #d01920 33.33%, #ffffff 33.33%, #ffffff 66.66%, #00843d 66.66%);
+        }
+        .flag-ir, .selected-flag.flag-ir {
+            background: linear-gradient(to bottom, #23b848 33.33%, #ffffff 33.33%, #ffffff 66.66%, #da0000 66.66%);
+        }
+        .flag-de, .selected-flag.flag-de {
+            background: linear-gradient(to bottom, #000000 33.33%, #dd0000 33.33%, #dd0000 66.66%, #ffce00 66.66%);
+        }
+        .flag-cn, .selected-flag.flag-cn {
+            background: #de2910;
+        }
+        
+        .search-hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 60px 0 40px;
+            color: white;
+        }
+        
+        .search-box {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            margin-top: -40px;
+        }
+        
+        .search-input-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .search-field {
+            flex: 1;
+            min-width: 200px;
+            position: relative;
+        }
+        
+        .search-field input, .search-field select {
+            width: 100%;
+            padding: 12px 16px 12px 40px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.2s;
+        }
+        
+        .search-field input:focus, .search-field select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+        }
+        
+        .search-field i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+        }
+        
+        .filter-sidebar {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+        
+        .filter-section {
+            padding: 20px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .filter-section:last-child {
+            border-bottom: none;
+        }
+        
+        .filter-title {
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #111827;
+        }
+        
+        .filter-option {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        
+        .filter-option:hover {
+            color: #667eea;
+        }
+        
+        .filter-option input[type="checkbox"] {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .filter-option label {
+            cursor: pointer;
+            flex: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .filter-count {
+            background: #f3f4f6;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            color: #6b7280;
+        }
+        
+        .tour-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+            cursor: pointer;
+            display: flex;
+            margin-bottom: 20px;
+        }
+        
+        .tour-card:hover {
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            transform: translateY(-2px);
+        }
+        
+        .tour-image {
+            width: 280px;
+            height: 200px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+        
+        .tour-content {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .tour-badges {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .badge-popular {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .badge-new {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .tour-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 8px;
+        }
+        
+        .tour-location {
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+        
+        .tour-features {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 12px;
+            font-size: 14px;
+            color: #6b7280;
+        }
+        
+        .tour-rating {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .rating-stars {
+            color: #fbbf24;
+        }
+        
+        .rating-text {
+            font-weight: 600;
+            color: #111827;
+        }
+        
+        .rating-count {
+            color: #6b7280;
+            font-size: 14px;
+        }
+        
+        .tour-price-section {
+            margin-top: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .tour-price {
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+        }
+        
+        .price-label {
+            color: #6b7280;
+            font-size: 14px;
+        }
+        
+        .price-amount {
+            font-size: 24px;
+            font-weight: 700;
+            color: #111827;
+        }
+        
+        .btn-book {
+            background: #3b82f6;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .btn-book:hover {
+            background: #2563eb;
+        }
+
+        .btn-search-main {
+            background-color: #6B7280;
+            color: white;
+            padding: 12px 32px;
+            border-radius: 8px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-search-main:hover {
+            background-color: #4B5563;
+        }
+
+        .btn-booking {
+            background: #3E3E3E;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .btn-booking:hover {
+            background: #2a2a2a;
+        }
+        
+        .sort-bar {
+            background: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .view-toggle {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .view-btn {
+            padding: 8px 12px;
+            border: 1px solid #e5e7eb;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .view-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .calendar-widget {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+            max-width: 100%;
+            overflow: visible;
+        }
+        
+        .date-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            margin-top: 12px;
+        }
+        
+        .date-cell {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid #e5e7eb;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .date-cell:hover {
+            background: #f3f4f6;
+        }
+        
+        .date-cell.available {
+            background: #d1fae5;
+            border-color: #10b981;
+            color: #065f46;
+        }
+        
+        .date-cell.selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+
+        
+        .price-slider {
+            margin-top: 12px;
+        }
+        
+        .price-slider input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #e5e7eb;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .price-slider input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+        }
+        
+        .price-inputs {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+        }
+        
+        .price-inputs input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 14px;
+            max-width: calc(50% - 6px);
+        }
+        
+        .mobile-filter-btn {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #667eea;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 24px;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 100;
+            cursor: pointer;
+        }
+        
+        @media (max-width: 768px) {
+            .search-hero {
+                padding: 40px 0 30px;
+            }
+            
+            .filter-sidebar {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                z-index: 1000;
+                overflow-y: auto;
+                border-radius: 0;
+            }
+            
+            .filter-sidebar.active {
+                display: block;
+            }
+            
+            .mobile-filter-btn {
+                display: block;
+            }
+            
+            .tour-card {
+                flex-direction: column;
+            }
+            
+            .tour-image {
+                width: 100%;
+                height: 200px;
+            }
+        }
+        
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .loading-spinner.active {
+            display: block;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6b7280;
+        }
+        
+        .no-results i {
+            font-size: 48px;
+            color: #d1d5db;
+            margin-bottom: 16px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 🌐 ДИНАМИЧЕСКИЙ ХЕДЕР -->
+    <div id="header-container"></div>
+                            <a href="#">Заказ тура</a>
+                            <a href="#">Визовая поддержка</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Туристам (с выпадающим меню) -->
+                    <div class="dropdown">
+                        <a href="#" class="text-white hover:text-gray-300 transition-colors">Туристам</a>
+                        <div class="dropdown-content">
+                            <a href="#">Инструкция сайта</a>
+                            <a href="#">Специальные заметки</a>
+                            <a href="#">Договор оферта</a>
+                            <a href="#">Правила оплаты и возврата средств</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Акции (БЕЗ выпадающего меню) -->
+                    <a href="aktsii.html" class="text-white hover:text-gray-300 transition-colors">Акции</a>
+                    <a href="#" class="text-white hover:text-gray-300 transition-colors">Новости</a>
+                    
+                    <!-- Турагентам (с выпадающим меню) -->
+                    <div class="dropdown">
+                        <a href="#" class="text-white hover:text-gray-300 transition-colors">Турагентам</a>
+                        <div class="dropdown-content">
+                            <a href="#">Наши турагенты</a>
+                            <a href="#">Для турагентов</a>
+                        </div>
+                    </div>
+                </nav>
+                
+                <!-- Языковой и валютный селекторы -->
+                <div class="flex items-center space-x-4">
+                    <!-- Языковой селектор -->
+                    <div class="language-dropdown">
+                        <button class="lang-selector-btn" onclick="toggleLanguageDropdown()">
+                            <span class="selected-flag flag-ru"></span>
+                            <span class="selected-lang">Русский</span>
+                            <svg class="dropdown-arrow" width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+                        <div class="lang-dropdown-content" id="langDropdown">
+                            <a href="#" class="lang-option active" data-lang="ru" onclick="selectLanguage('ru', 'flag-ru', 'Русский')">
+                                <span class="flag flag-ru"></span>
+                                <span class="lang-name">Русский</span>
+                            </a>
+                            <a href="#" class="lang-option" data-lang="en" onclick="selectLanguage('en', 'flag-us', 'English')">
+                                <span class="flag flag-us"></span>
+                                <span class="lang-name">English</span>
+                            </a>
+                            <a href="#" class="lang-option" data-lang="tj" onclick="selectLanguage('tj', 'flag-tj', 'Тоҷикӣ')">
+                                <span class="flag flag-tj"></span>
+                                <span class="lang-name">Тоҷикӣ</span>
+                            </a>
+                            <a href="#" class="lang-option" data-lang="fa" onclick="selectLanguage('fa', 'flag-ir', 'فارسی')">
+                                <span class="flag flag-ir"></span>
+                                <span class="lang-name">فارسی</span>
+                            </a>
+                            <a href="#" class="lang-option" data-lang="de" onclick="selectLanguage('de', 'flag-de', 'Deutsch')">
+                                <span class="flag flag-de"></span>
+                                <span class="lang-name">Deutsch</span>
+                            </a>
+                            <a href="#" class="lang-option" data-lang="zh" onclick="selectLanguage('zh', 'flag-cn', '中文')">
+                                <span class="flag flag-cn"></span>
+                                <span class="lang-name">中文</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Валютный селектор -->
+                    <div class="language-dropdown">
+                        <button class="lang-selector-btn" onclick="toggleCurrencyDropdown()">
+                            <span class="selected-currency">USD</span>
+                            <span class="currency-symbol">$</span>
+                            <svg class="dropdown-arrow" width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+                        <div class="lang-dropdown-content" id="currencyDropdown">
+                            <a href="#" class="lang-option active" onclick="selectCurrency('USD', '$')">
+                                <span class="currency-flag">$</span>
+                                <span class="lang-name">USD</span>
+                            </a>
+                            <a href="#" class="lang-option" onclick="selectCurrency('EUR', '€')">
+                                <span class="currency-flag">€</span>
+                                <span class="lang-name">EUR</span>
+                            </a>
+                            <a href="#" class="lang-option" onclick="selectCurrency('RUB', '₽')">
+                                <span class="currency-flag">₽</span>
+                                <span class="lang-name">RUB</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Search Box -->
+    <div class="max-w-7xl mx-auto px-4" style="margin-top: 80px;">
+        <div class="search-box">
+            <div class="search-input-group">
+                <div class="search-field" style="flex: 2;">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Куда вы хотите поехать?">
+                </div>
+                
+                <div class="search-field">
+                    <i class="fas fa-calendar"></i>
+                    <input type="text" id="dateInput" placeholder="Выберите дату">
+                </div>
+                
+                <div class="search-field">
+                    <i class="fas fa-users"></i>
+                    <select id="guestsInput">
+                        <option value="1">1 человек</option>
+                        <option value="2">2 человека</option>
+                        <option value="3">3 человека</option>
+                        <option value="4">4 человека</option>
+                        <option value="5+">5+ человек</option>
+                    </select>
+                </div>
+                
+                <button class="btn-search-main" onclick="searchTours()">
+                    <i class="fas fa-search mr-2"></i>
+                    Найти
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <!-- Filter Sidebar -->
+            <aside class="filter-sidebar" id="filterSidebar">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold">Фильтры</h3>
+                    <button class="text-sm text-blue-600 hover:text-blue-800" onclick="resetFilters()">
+                        Сбросить все
+                    </button>
+                </div>
+
+                <!-- Calendar Widget -->
+                <div class="filter-section">
+                    <h4 class="filter-title">Календарь доступности</h4>
+                    <div class="calendar-widget">
+                        <div class="flex justify-between items-center mb-3">
+                            <button onclick="changeMonth(-1)">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <span id="currentMonth" class="font-semibold">Август 2025</span>
+                            <button onclick="changeMonth(1)">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                        <div class="date-grid" id="dateGrid">
+                            <!-- Calendar dates will be generated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Price Range -->
+                <div class="filter-section">
+                    <h4 class="filter-title">Цена</h4>
+                    <div class="price-slider">
+                        <input type="range" id="priceRange" min="0" max="5000" value="5000" oninput="updatePriceDisplay()">
+                    </div>
+                    <div class="price-inputs">
+                        <input type="number" id="minPrice" placeholder="От" value="0">
+                        <input type="number" id="maxPrice" placeholder="До" value="5000">
+                    </div>
+                </div>
+
+                <!-- Countries -->
+                <div class="filter-section">
+                    <h4 class="filter-title">Страны</h4>
+                    <div class="filter-option">
+                        <input type="checkbox" id="country1" checked>
+                        <label for="country1">
+                            Таджикистан
+                            <span class="filter-count">156</span>
+                        </label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="checkbox" id="country2">
+                        <label for="country2">
+                            Узбекистан
+                            <span class="filter-count">89</span>
+                        </label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="checkbox" id="country3">
+                        <label for="country3">
+                            Казахстан
+                            <span class="filter-count">67</span>
+                        </label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="checkbox" id="country4">
+                        <label for="country4">
+                            Кыргызстан
+                            <span class="filter-count">45</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Tour Types -->
+                <div class="filter-section">
+                    <h4 class="filter-title">Вид тура</h4>
+                    <div class="filter-option">
+                        <input type="checkbox" id="type1">
+                        <label for="type1">
+                            Персональный
+                            <span class="filter-count">89</span>
+                        </label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="checkbox" id="type2" checked>
+                        <label for="type2">
+                            Групповой
+                            <span class="filter-count">124</span>
+                        </label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="checkbox" id="type3">
+                        <label for="type3">
+                            VIP
+                            <span class="filter-count">23</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Categories -->
+                <div class="filter-section">
+                    <h4 class="filter-title">Категории</h4>
+                    <div class="filter-option">
+                        <input type="checkbox" id="cat1">
+                        <label for="cat1">
+                            Городские туры
+                            <span class="filter-count">45</span>
+                        </label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="checkbox" id="cat2">
+                        <label for="cat2">
+                            Природа/экологические
+                            <span class="filter-count">67</span>
+                        </label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="checkbox" id="cat3">
+                        <label for="cat3">
+                            Исторические
+                            <span class="filter-count">38</span>
+                        </label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="checkbox" id="cat4">
+                        <label for="cat4">
+                            Походы/трекинги
+                            <span class="filter-count">52</span>
+                        </label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="checkbox" id="cat5">
+                        <label for="cat5">
+                            Гастрономические
+                            <span class="filter-count">29</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Hotels Filter -->
+                <div class="filter-section">
+                    <h4 class="filter-title">Отели</h4>
+                    <div class="mb-3">
+                        <h5 class="text-sm font-semibold text-gray-700 mb-2">По звездности</h5>
+                        <div class="filter-option">
+                            <input type="checkbox" id="star5">
+                            <label for="star5">
+                                <span class="rating-stars">★★★★★</span>
+                                <span class="filter-count">12</span>
+                            </label>
+                        </div>
+                        <div class="filter-option">
+                            <input type="checkbox" id="star4">
+                            <label for="star4">
+                                <span class="rating-stars">★★★★☆</span>
+                                <span class="filter-count">28</span>
+                            </label>
+                        </div>
+                        <div class="filter-option">
+                            <input type="checkbox" id="star3">
+                            <label for="star3">
+                                <span class="rating-stars">★★★☆☆</span>
+                                <span class="filter-count">45</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <h5 class="text-sm font-semibold text-gray-700 mb-2">Люкс сегмент</h5>
+                        <div class="filter-option">
+                            <input type="checkbox" id="hotel-four-seasons">
+                            <label for="hotel-four-seasons">
+                                Four Seasons
+                                <span class="filter-count">3</span>
+                            </label>
+                        </div>
+                        <div class="filter-option">
+                            <input type="checkbox" id="hotel-ritz">
+                            <label for="hotel-ritz">
+                                Ritz-Carlton
+                                <span class="filter-count">2</span>
+                            </label>
+                        </div>
+                        <div class="filter-option">
+                            <input type="checkbox" id="hotel-conrad">
+                            <label for="hotel-conrad">
+                                Conrad
+                                <span class="filter-count">1</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <h5 class="text-sm font-semibold text-gray-700 mb-2">Премиум сегмент</h5>
+                        <div class="filter-option">
+                            <input type="checkbox" id="hotel-hilton">
+                            <label for="hotel-hilton">
+                                Hilton
+                                <span class="filter-count">8</span>
+                            </label>
+                        </div>
+                        <div class="filter-option">
+                            <input type="checkbox" id="hotel-marriott">
+                            <label for="hotel-marriott">
+                                Marriott
+                                <span class="filter-count">12</span>
+                            </label>
+                        </div>
+                        <div class="filter-option">
+                            <input type="checkbox" id="hotel-hyatt">
+                            <label for="hotel-hyatt">
+                                Hyatt
+                                <span class="filter-count">6</span>
+                            </label>
+                        </div>
+                        <div class="filter-option">
+                            <input type="checkbox" id="hotel-intercontinental">
+                            <label for="hotel-intercontinental">
+                                InterContinental
+                                <span class="filter-count">4</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div>
+                        <h5 class="text-sm font-semibold text-gray-700 mb-2">Средний сегмент</h5>
+                        <div class="filter-option">
+                            <input type="checkbox" id="hotel-holiday-inn">
+                            <label for="hotel-holiday-inn">
+                                Holiday Inn
+                                <span class="filter-count">15</span>
+                            </label>
+                        </div>
+                        <div class="filter-option">
+                            <input type="checkbox" id="hotel-courtyard">
+                            <label for="hotel-courtyard">
+                                Courtyard
+                                <span class="filter-count">9</span>
+                            </label>
+                        </div>
+                        <div class="filter-option">
+                            <input type="checkbox" id="hotel-radisson">
+                            <label for="hotel-radisson">
+                                Radisson
+                                <span class="filter-count">11</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Duration -->
+                <div class="filter-section">
+                    <h4 class="filter-title">Длительность</h4>
+                    <div class="filter-option">
+                        <input type="checkbox" id="dur1">
+                        <label for="dur1">
+                            1-3 дня
+                            <span class="filter-count">78</span>
+                        </label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="checkbox" id="dur2">
+                        <label for="dur2">
+                            4-7 дней
+                            <span class="filter-count">156</span>
+                        </label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="checkbox" id="dur3">
+                        <label for="dur3">
+                            8-14 дней
+                            <span class="filter-count">89</span>
+                        </label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="checkbox" id="dur4">
+                        <label for="dur4">
+                            15+ дней
+                            <span class="filter-count">34</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Rating -->
+                <div class="filter-section">
+                    <h4 class="filter-title">Рейтинг</h4>
+                    <div class="filter-option">
+                        <input type="checkbox" id="rating5">
+                        <label for="rating5">
+                            <span class="rating-stars">★★★★★</span>
+                            <span class="filter-count">234</span>
+                        </label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="checkbox" id="rating4">
+                        <label for="rating4">
+                            <span class="rating-stars">★★★★☆</span>
+                            <span class="filter-count">156</span>
+                        </label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="checkbox" id="rating3">
+                        <label for="rating3">
+                            <span class="rating-stars">★★★☆☆</span>
+                            <span class="filter-count">67</span>
+                        </label>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Tours List -->
+            <div class="lg:col-span-3">
+                <!-- Sort Bar -->
+                <div class="sort-bar">
+                    <div class="flex items-center gap-4">
+                        <span class="text-gray-600">Найдено: <strong id="resultsCount">156</strong> туров</span>
+                        <select class="px-3 py-2 border border-gray-300 rounded-lg" onchange="sortTours(this.value)">
+                            <option value="recommended">Рекомендуемые</option>
+                            <option value="price-low">Цена: по возрастанию</option>
+                            <option value="price-high">Цена: по убыванию</option>
+                            <option value="rating">По рейтингу</option>
+                            <option value="duration">По длительности</option>
+                        </select>
+                    </div>
+                    <div class="view-toggle">
+                        <button class="view-btn active" onclick="setView('list')">
+                            <i class="fas fa-list"></i>
+                        </button>
+                        <button class="view-btn" onclick="setView('grid')">
+                            <i class="fas fa-th"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Loading Spinner -->
+                <div class="loading-spinner" id="loadingSpinner">
+                    <i class="fas fa-spinner fa-spin text-4xl text-gray-400"></i>
+                    <p class="mt-4 text-gray-600">Загрузка туров...</p>
+                </div>
+
+                <!-- Tours Container -->
+                <div id="toursContainer">
+                    <!-- Tour cards will be loaded here -->
+                </div>
+
+                <!-- No Results -->
+                <div class="no-results" id="noResults" style="display: none;">
+                    <i class="fas fa-search"></i>
+                    <h3 class="text-xl font-semibold mt-4">Туры не найдены</h3>
+                    <p class="mt-2">Попробуйте изменить параметры поиска или фильтры</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Filter Button -->
+    <button class="mobile-filter-btn" onclick="toggleMobileFilters()">
+        <i class="fas fa-filter mr-2"></i>
+        Фильтры
+    </button>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        // Initialize date picker
+        flatpickr("#dateInput", {
+            mode: "single",
+            dateFormat: "d.m.Y",
+            minDate: "today",
+            locale: {
+                firstDayOfWeek: 1,
+                weekdays: {
+                    shorthand: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
+                    longhand: ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'],
+                },
+                months: {
+                    shorthand: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'],
+                    longhand: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
+                },
+            }
+        });
+
+        // Sample tours data
+        const sampleTours = [
+            {
+                id: 1,
+                title: "Памирский тракт - Крыша мира",
+                location: "Таджикистан, Хорог",
+                duration: "7 дней",
+                price: 1200,
+                rating: 4.8,
+                reviews: 234,
+                image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400",
+                badges: ["Популярный"],
+                features: ["Трансфер", "Гид", "Питание"],
+                description: "Незабываемое путешествие по высокогорному Памиру"
+            },
+            {
+                id: 2,
+                title: "Жемчужины Самарканда и Бухары",
+                location: "Узбекистан, Самарканд",
+                duration: "5 дней",
+                price: 890,
+                rating: 4.9,
+                reviews: 189,
+                image: "https://images.unsplash.com/photo-1553391264-31d20a22ad50?w=400",
+                badges: ["Новый"],
+                features: ["Авиа", "Отель 4*", "Завтраки"],
+                description: "Путешествие по древним городам Шелкового пути"
+            },
+            {
+                id: 3,
+                title: "Чарынский каньон и озеро Кольсай",
+                location: "Казахстан, Алматы",
+                duration: "3 дня",
+                price: 450,
+                rating: 4.7,
+                reviews: 156,
+                image: "https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=400",
+                badges: [],
+                features: ["Трансфер", "Кемпинг", "Гид"],
+                description: "Природные чудеса Казахстана"
+            },
+            {
+                id: 4,
+                title: "Иссык-Куль - жемчужина Тянь-Шаня",
+                location: "Кыргызстан, Чолпон-Ата",
+                duration: "4 дня",
+                price: 680,
+                rating: 4.6,
+                reviews: 98,
+                image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400",
+                badges: ["Популярный"],
+                features: ["Отель", "Пляж", "СПА"],
+                description: "Отдых на берегу горного озера"
+            },
+            {
+                id: 5,
+                title: "Фанские горы - треккинг к озерам",
+                location: "Таджикистан, Пенджикент",
+                duration: "10 дней",
+                price: 1450,
+                rating: 4.9,
+                reviews: 67,
+                image: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=400",
+                badges: ["Экстрим"],
+                features: ["Треккинг", "Палатки", "Питание"],
+                description: "Активный отдых в горах для опытных туристов"
+            },
+            {
+                id: 6,
+                title: "Древний Хива - музей под открытым небом",
+                location: "Узбекистан, Хива",
+                duration: "2 дня",
+                price: 320,
+                rating: 4.8,
+                reviews: 145,
+                image: "https://images.unsplash.com/photo-1545558014-8692077e9b5c?w=400",
+                badges: ["Культура"],
+                features: ["Экскурсии", "Отель", "Гид"],
+                description: "Погружение в атмосферу средневекового Востока"
+            }
+        ];
+
+        // Load tours on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTours();
+            generateCalendar();
+        });
+
+        // Load tours function
+        function loadTours() {
+            const container = document.getElementById('toursContainer');
+            const spinner = document.getElementById('loadingSpinner');
+            
+            // Show loading spinner
+            spinner.classList.add('active');
+            
+            // Get search query
+            const searchQuery = document.getElementById('searchInput').value;
+            
+            // Build API URL with search parameters
+            let apiUrl = `${window.location.origin}/api/tours`;
+            if (searchQuery) {
+                apiUrl += `/search?query=${encodeURIComponent(searchQuery)}`;
+            }
+            
+            fetch(apiUrl)
+                .then(res => res.json())
+                .then(data => {
+                    spinner.classList.remove('active');
+                    
+                    if (data.success && data.data && data.data.length > 0) {
+                        displayTours(data.data);
+                    } else if (!searchQuery) {
+                        // If no search query, show all tours
+                        displayTours(sampleTours);
+                    } else {
+                        // If search query but no results, show "nothing found"
+                        displayTours([]);
+                    }
+                })
+                .catch(err => {
+                    spinner.classList.remove('active');
+                    console.error('Error loading tours:', err);
+                    if (!searchQuery) {
+                        displayTours(sampleTours);
+                    } else {
+                        displayTours([]);
+                    }
+                });
+        }
+
+        // Display tours
+        function displayTours(tours) {
+            const container = document.getElementById('toursContainer');
+            const noResults = document.getElementById('noResults');
+            
+            if (tours.length === 0) {
+                container.innerHTML = '';
+                noResults.style.display = 'block';
+                document.getElementById('resultsCount').textContent = '0';
+                return;
+            }
+            
+            noResults.style.display = 'none';
+            document.getElementById('resultsCount').textContent = tours.length;
+            
+            container.innerHTML = tours.map(tour => {
+                const title = tour.title?.ru || tour.title?.en || tour.title || 'Tour';
+                const location = `${tour.country || 'Страна'}, ${tour.city || 'Город'}`;
+                const duration = tour.durationDays ? `${tour.durationDays} дней` : tour.duration || '1 день';
+                const price = tour.price || 0;
+                const rating = tour.rating || 4.5;
+                const reviews = tour.reviews || Math.floor(Math.random() * 200);
+                const image = tour.image || `https://source.unsplash.com/400x300/?travel,${tour.country || 'asia'}`;
+                const badges = tour.badges || [];
+                const features = tour.features || ['Трансфер', 'Гид'];
+                
+                return `
+                    <div class="tour-card" onclick="openTour(${tour.id})">
+                        <img src="${image}" alt="${title}" class="tour-image">
+                        <div class="tour-content">
+                            ${badges.length > 0 ? `
+                                <div class="tour-badges">
+                                    ${badges.map(badge => `
+                                        <span class="badge ${badge === 'Популярный' ? 'badge-popular' : 'badge-new'}">
+                                            ${badge}
+                                        </span>
+                                    `).join('')}
+                                </div>
+                            ` : ''}
+                            
+                            <h3 class="tour-title">${title}</h3>
+                            <p class="tour-location">
+                                <i class="fas fa-map-marker-alt mr-2"></i>
+                                ${location}
+                            </p>
+                            
+                            <div class="tour-features">
+                                <span><i class="fas fa-clock mr-1"></i> ${duration}</span>
+                                ${tour.category ? `<span><i class="fas fa-tag mr-1" style="color: #3E3E3E;"></i> ${tour.category.name ? (tour.category.name.ru || tour.category.name.en || 'Категория') : 'Категория'}</span>` : ''}
+                                ${features.slice(0, 1).map(f => `
+                                    <span><i class="fas fa-check text-green-500 mr-1"></i> ${f}</span>
+                                `).join('')}
+                            </div>
+                            
+                            <div class="tour-rating">
+                                <span class="rating-stars">${'★'.repeat(Math.floor(rating))}${'☆'.repeat(5-Math.floor(rating))}</span>
+                                <span class="rating-text">${rating}</span>
+                                <span class="rating-count">(${reviews} отзывов)</span>
+                            </div>
+                            
+                            <div class="tour-price-section">
+                                <div class="tour-price">
+                                    <span class="price-label">от</span>
+                                    <span class="price-amount">$${price}</span>
+                                    <span class="price-label">/ чел</span>
+                                </div>
+                                <button class="btn-booking" onclick="event.stopPropagation(); bookTour(${tour.id})">
+                                    Бронировать
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Generate calendar
+        function generateCalendar() {
+            const grid = document.getElementById('dateGrid');
+            const today = new Date();
+            const daysInMonth = 30;
+            
+            grid.innerHTML = '';
+            
+            // Day headers
+            const dayHeaders = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+            dayHeaders.forEach(day => {
+                const header = document.createElement('div');
+                header.className = 'text-xs font-semibold text-gray-500 text-center';
+                header.textContent = day;
+                grid.appendChild(header);
+            });
+            
+            // Empty cells for alignment
+            for (let i = 0; i < 2; i++) {
+                const empty = document.createElement('div');
+                grid.appendChild(empty);
+            }
+            
+            // Date cells
+            for (let day = 1; day <= daysInMonth; day++) {
+                const cell = document.createElement('div');
+                cell.className = 'date-cell';
+                
+                // Random availability
+                if (Math.random() > 0.3) {
+                    cell.classList.add('available');
+                    cell.innerHTML = `<span>${day}</span>`;
+                    cell.onclick = () => selectDate(day);
+                } else {
+                    cell.innerHTML = `<span>${day}</span>`;
+                    cell.style.opacity = '0.5';
+                    cell.style.cursor = 'not-allowed';
+                }
+                
+                grid.appendChild(cell);
+            }
+        }
+
+        // Calendar navigation
+        let currentMonthOffset = 0;
+        function changeMonth(direction) {
+            currentMonthOffset += direction;
+            const months = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 
+                          'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+            const now = new Date();
+            now.setMonth(now.getMonth() + currentMonthOffset);
+            document.getElementById('currentMonth').textContent = 
+                `${months[now.getMonth()]} ${now.getFullYear()}`;
+            generateCalendar();
+        }
+
+        // Select date
+        function selectDate(day) {
+            document.querySelectorAll('.date-cell').forEach(cell => {
+                cell.classList.remove('selected');
+            });
+            event.target.closest('.date-cell').classList.add('selected');
+            
+            // Update date input
+            const now = new Date();
+            now.setMonth(now.getMonth() + currentMonthOffset);
+            now.setDate(day);
+            document.getElementById('dateInput').value = 
+                `${day.toString().padStart(2, '0')}.${(now.getMonth() + 1).toString().padStart(2, '0')}.${now.getFullYear()}`;
+            
+            // Trigger search
+            searchTours();
+        }
+
+        // Update price display
+        function updatePriceDisplay() {
+            const value = document.getElementById('priceRange').value;
+            document.getElementById('maxPrice').value = value;
+            searchTours();
+        }
+
+        // Search tours
+        function searchTours() {
+            // Collect all filter values
+            const filters = {
+                search: document.getElementById('searchInput').value,
+                date: document.getElementById('dateInput').value,
+                guests: document.getElementById('guestsInput').value,
+                minPrice: document.getElementById('minPrice').value,
+                maxPrice: document.getElementById('maxPrice').value,
+                countries: [],
+                types: [],
+                categories: [],
+                durations: [],
+                ratings: []
+            };
+            
+            // Get checked filters
+            document.querySelectorAll('.filter-option input[type="checkbox"]:checked').forEach(checkbox => {
+                const id = checkbox.id;
+                if (id.startsWith('country')) filters.countries.push(checkbox.nextElementSibling.textContent.trim());
+                if (id.startsWith('type')) filters.types.push(checkbox.nextElementSibling.textContent.trim());
+                if (id.startsWith('cat')) filters.categories.push(checkbox.nextElementSibling.textContent.trim());
+                if (id.startsWith('dur')) filters.durations.push(checkbox.nextElementSibling.textContent.trim());
+                if (id.startsWith('rating')) filters.ratings.push(checkbox.nextElementSibling.textContent.trim());
+            });
+            
+            // Apply filters and reload tours
+            loadTours();
+        }
+
+        // Sort tours
+        function sortTours(sortBy) {
+            // Implement sorting logic
+            loadTours();
+        }
+
+        // Set view
+        function setView(view) {
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.closest('.view-btn').classList.add('active');
+            
+            // Implement grid/list view toggle
+            if (view === 'grid') {
+                document.getElementById('toursContainer').style.display = 'grid';
+                document.getElementById('toursContainer').style.gridTemplateColumns = 'repeat(auto-fill, minmax(300px, 1fr))';
+            } else {
+                document.getElementById('toursContainer').style.display = 'block';
+            }
+        }
+
+        // Reset filters
+        function resetFilters() {
+            document.querySelectorAll('.filter-option input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            document.getElementById('minPrice').value = 0;
+            document.getElementById('maxPrice').value = 5000;
+            document.getElementById('priceRange').value = 5000;
+            searchTours();
+        }
+
+        // Toggle mobile filters
+        function toggleMobileFilters() {
+            document.getElementById('filterSidebar').classList.toggle('active');
+        }
+
+        // Open tour
+        function openTour(tourId) {
+            window.location.href = `tour-template.html?tour=${tourId}`;
+        }
+
+        // Book tour
+        function bookTour(tourId) {
+            window.location.href = `tour-template.html?id=${tourId}`;
+        }
+
+        // Listen for filter changes
+        document.querySelectorAll('.filter-option input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', searchTours);
+        });
+        
+        document.getElementById('minPrice').addEventListener('input', searchTours);
+        document.getElementById('maxPrice').addEventListener('input', searchTours);
+
+        // Functions for language selector
+        function toggleLanguageDropdown() {
+            const dropdown = document.getElementById('langDropdown');
+            const arrow = document.querySelector('.dropdown-arrow');
+            dropdown.classList.toggle('show');
+            arrow.classList.toggle('open');
+        }
+        
+        function selectLanguage(lang, flagClass, name) {
+            // Update selector button
+            const selectedFlag = document.querySelector('.selected-flag');
+            selectedFlag.className = `selected-flag ${flagClass}`;
+            document.querySelector('.selected-lang').textContent = name;
+            
+            // Remove active class from all options
+            document.querySelectorAll('#langDropdown .lang-option').forEach(opt => opt.classList.remove('active'));
+            
+            // Add active class to selected option
+            document.querySelector(`[data-lang="${lang}"]`).classList.add('active');
+            
+            // Close dropdown
+            document.getElementById('langDropdown').classList.remove('show');
+            
+            console.log(`Language switched: ${lang}`);
+        }
+
+        // Functions for currency selector
+        function toggleCurrencyDropdown() {
+            const dropdown = document.getElementById('currencyDropdown');
+            dropdown.classList.toggle('show');
+        }
+        
+        function selectCurrency(currencyCode, symbol) {
+            // Update selector button
+            document.querySelector('.selected-currency').textContent = currencyCode;
+            document.querySelector('.currency-symbol').textContent = symbol;
+            
+            // Remove active class from all options
+            document.querySelectorAll('#currencyDropdown .lang-option').forEach(opt => opt.classList.remove('active'));
+            
+            // Add active class to selected option
+            event.target.closest('.lang-option').classList.add('active');
+            
+            // Close dropdown
+            document.getElementById('currencyDropdown').classList.remove('show');
+            
+            console.log(`Currency switched: ${currencyCode}`);
+        }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(event) {
+            const langDropdown = document.getElementById('langDropdown');
+            const currencyDropdown = document.getElementById('currencyDropdown');
+            const langButton = document.querySelector('.lang-selector-btn');
+            const currencyButtons = document.querySelectorAll('.lang-selector-btn');
+            
+            if (!Array.from(currencyButtons).some(btn => btn.contains(event.target)) && 
+                !langDropdown.contains(event.target) && !currencyDropdown.contains(event.target)) {
+                langDropdown.classList.remove('show');
+                currencyDropdown.classList.remove('show');
+            }
+        });
+    </script>
+
+    <!-- 🌐 ДИНАМИЧЕСКИЙ ФУТЕР -->
+    <div id="footer-container"></div>
+</body>
+</html>

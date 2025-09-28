@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест безопасности XSS исправлений</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-result { margin: 10px 0; padding: 10px; border-radius: 4px; }
+        .pass { background-color: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+        .fail { background-color: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+        .info { background-color: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; }
+        .test-input { background-color: #f8f9fa; padding: 5px; font-family: monospace; }
+        .test-output { background-color: #e9ecef; padding: 5px; font-family: monospace; }
+    </style>
+</head>
+<body>
+    <h1>🔒 Тест безопасности XSS исправлений</h1>
+    <p>Этот тест проверяет, что исправления XSS уязвимостей работают корректно.</p>
+
+    <!-- Загружаем i18n.js -->
+    <script src="/public/js/i18n.js"></script>
+
+    <div id="test-results"></div>
+
+    <script>
+        // Тестовые данные с потенциально опасным содержимым
+        const maliciousInputs = [
+            '<script>alert("XSS")</script>',
+            '<img src="x" onerror="alert(\'XSS\')">',
+            '"><script>alert("XSS")</script>',
+            '&lt;script&gt;alert("XSS")&lt;/script&gt;',
+            '<svg onload="alert(1)">',
+            'javascript:alert("XSS")',
+            '&amp;&lt;&gt;"\'',
+            '<div onclick="alert(1)">Click me</div>'
+        ];
+
+        const testResults = [];
+
+        function runTests() {
+            const resultsDiv = document.getElementById('test-results');
+            
+            // Тест 1: Проверка функции escapeHTML
+            testResults.push('<h2>📋 Тест 1: Функция escapeHTML</h2>');
+            
+            maliciousInputs.forEach((input, index) => {
+                try {
+                    const escaped = escapeHTML(input);
+                    const isSafe = !escaped.includes('<script') && 
+                                   !escaped.includes('onerror=') && 
+                                   !escaped.includes('onclick=') &&
+                                   !escaped.includes('onload=') &&
+                                   !escaped.includes('javascript:');
+                    
+                    testResults.push(`
+                        <div class="test-result ${isSafe ? 'pass' : 'fail'}">
+                            <strong>Тест 1.${index + 1}: ${isSafe ? '✅ ПРОЙДЕН' : '❌ НЕ ПРОЙДЕН'}</strong>
+                            <br>Вход: <span class="test-input">${input}</span>
+                            <br>Выход: <span class="test-output">${escaped}</span>
+                        </div>
+                    `);
+                } catch (error) {
+                    testResults.push(`
+                        <div class="test-result fail">
+                            <strong>Тест 1.${index + 1}: ❌ ОШИБКА</strong>
+                            <br>Вход: <span class="test-input">${input}</span>
+                            <br>Ошибка: ${error.message}
+                        </div>
+                    `);
+                }
+            });
+
+            // Тест 2: Проверка функции escapeDataAttribute
+            testResults.push('<h2>📋 Тест 2: Функция escapeDataAttribute</h2>');
+            
+            maliciousInputs.forEach((input, index) => {
+                try {
+                    const escaped = escapeDataAttribute(input);
+                    const isSafe = !escaped.includes('"') && 
+                                   !escaped.includes('<') && 
+                                   !escaped.includes('>') &&
+                                   escaped.includes('&quot;') === (input.includes('"'));
+                    
+                    testResults.push(`
+                        <div class="test-result ${isSafe ? 'pass' : 'fail'}">
+                            <strong>Тест 2.${index + 1}: ${isSafe ? '✅ ПРОЙДЕН' : '❌ НЕ ПРОЙДЕН'}</strong>
+                            <br>Вход: <span class="test-input">${input}</span>
+                            <br>Выход: <span class="test-output">${escaped}</span>
+                        </div>
+                    `);
+                } catch (error) {
+                    testResults.push(`
+                        <div class="test-result fail">
+                            <strong>Тест 2.${index + 1}: ❌ ОШИБКА</strong>
+                            <br>Вход: <span class="test-input">${input}</span>
+                            <br>Ошибка: ${error.message}
+                        </div>
+                    `);
+                }
+            });
+
+            // Тест 3: Проверка безопасных функций переводов
+            testResults.push('<h2>📋 Тест 3: Безопасные функции переводов</h2>');
+            
+            const maliciousTitle = {
+                ru: '<script>alert("XSS в заголовке")</script>',
+                en: '<img src="x" onerror="alert(\'XSS in title\')">'
+            };
+            
+            const maliciousDescription = {
+                ru: '<div onclick="alert(1)">Опасное описание</div>',
+                en: 'javascript:alert("XSS")'
+            };
+            
+            const maliciousCategory = {
+                ru: '<svg onload="alert(2)">Категория</svg>',
+                en: '"><script>alert("XSS")</script>'
+            };
+            
+            try {
+                const safeTitle = getTitleByLanguage(maliciousTitle, 'ru');
+                const safeDescription = getDescriptionByLanguage(maliciousDescription, 'ru');
+                const safeCategory = getCategoryNameByLanguage(maliciousCategory, 'ru');
+                
+                const titleSafe = !safeTitle.includes('<script') && safeTitle.includes('&lt;');
+                const descSafe = !safeDescription.includes('onclick=') && safeDescription.includes('&lt;');
+                const catSafe = !safeCategory.includes('<svg') && safeCategory.includes('&lt;');
+                
+                testResults.push(`
+                    <div class="test-result ${titleSafe ? 'pass' : 'fail'}">
+                        <strong>Тест 3.1: ${titleSafe ? '✅ ПРОЙДЕН' : '❌ НЕ ПРОЙДЕН'} - getTitleByLanguage</strong>
+                        <br>Вход: <span class="test-input">${JSON.stringify(maliciousTitle)}</span>
+                        <br>Выход: <span class="test-output">${safeTitle}</span>
+                    </div>
+                `);
+                
+                testResults.push(`
+                    <div class="test-result ${descSafe ? 'pass' : 'fail'}">
+                        <strong>Тест 3.2: ${descSafe ? '✅ ПРОЙДЕН' : '❌ НЕ ПРОЙДЕН'} - getDescriptionByLanguage</strong>
+                        <br>Вход: <span class="test-input">${JSON.stringify(maliciousDescription)}</span>
+                        <br>Выход: <span class="test-output">${safeDescription}</span>
+                    </div>
+                `);
+                
+                testResults.push(`
+                    <div class="test-result ${catSafe ? 'pass' : 'fail'}">
+                        <strong>Тест 3.3: ${catSafe ? '✅ ПРОЙДЕН' : '❌ НЕ ПРОЙДЕН'} - getCategoryNameByLanguage</strong>
+                        <br>Вход: <span class="test-input">${JSON.stringify(maliciousCategory)}</span>
+                        <br>Выход: <span class="test-output">${safeCategory}</span>
+                    </div>
+                `);
+                
+            } catch (error) {
+                testResults.push(`
+                    <div class="test-result fail">
+                        <strong>Тест 3: ❌ ОШИБКА</strong>
+                        <br>Ошибка: ${error.message}
+                    </div>
+                `);
+            }
+
+            // Тест 4: Проверка API экспорта
+            testResults.push('<h2>📋 Тест 4: API экспорт</h2>');
+            
+            try {
+                const hasI18nAPI = typeof window.i18n === 'object';
+                const hasCurrentLanguage = typeof window.i18n.currentLanguage === 'function';
+                const currentLang = hasCurrentLanguage ? window.i18n.currentLanguage() : null;
+                const hasEscapeFunctions = typeof window.escapeHTML === 'function' && typeof window.escapeDataAttribute === 'function';
+                
+                testResults.push(`
+                    <div class="test-result ${hasI18nAPI ? 'pass' : 'fail'}">
+                        <strong>Тест 4.1: ${hasI18nAPI ? '✅ ПРОЙДЕН' : '❌ НЕ ПРОЙДЕН'} - window.i18n существует</strong>
+                    </div>
+                `);
+                
+                testResults.push(`
+                    <div class="test-result ${hasCurrentLanguage ? 'pass' : 'fail'}">
+                        <strong>Тест 4.2: ${hasCurrentLanguage ? '✅ ПРОЙДЕН' : '❌ НЕ ПРОЙДЕН'} - currentLanguage() функция</strong>
+                        <br>Текущий язык: <span class="test-output">${currentLang}</span>
+                    </div>
+                `);
+                
+                testResults.push(`
+                    <div class="test-result ${hasEscapeFunctions ? 'pass' : 'fail'}">
+                        <strong>Тест 4.3: ${hasEscapeFunctions ? '✅ ПРОЙДЕН' : '❌ НЕ ПРОЙДЕН'} - Функции экранирования экспортированы</strong>
+                    </div>
+                `);
+                
+            } catch (error) {
+                testResults.push(`
+                    <div class="test-result fail">
+                        <strong>Тест 4: ❌ ОШИБКА</strong>
+                        <br>Ошибка: ${error.message}
+                    </div>
+                `);
+            }
+            
+            // Выводим результаты
+            resultsDiv.innerHTML = testResults.join('');
+            
+            // Подсчитываем результаты
+            const totalPassed = testResults.filter(r => r.includes('✅ ПРОЙДЕН')).length;
+            const totalFailed = testResults.filter(r => r.includes('❌ НЕ ПРОЙДЕН') || r.includes('❌ ОШИБКА')).length;
+            
+            resultsDiv.innerHTML += `
+                <div class="test-result info">
+                    <h2>📊 Итоги тестирования</h2>
+                    <strong>Пройдено: ${totalPassed} | Не пройдено: ${totalFailed}</strong>
+                    ${totalFailed === 0 ? '<br>🎉 Все тесты безопасности пройдены успешно!' : '<br>⚠️ Обнаружены проблемы безопасности!'}
+                </div>
+            `;
+        }
+
+        // Запускаем тесты после загрузки DOM
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', runTests);
+        } else {
+            runTests();
+        }
+    </script>
+</body>
+</html>

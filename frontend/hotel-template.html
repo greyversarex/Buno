@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">Отель - Bunyod-Tour</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- 🌐 ЦЕНТРАЛЬНАЯ СИСТЕМА ИНТЕРНАЦИОНАЛИЗАЦИИ -->
+    <script src="/public/js/i18n.js"></script>
+    <script src="/public/js/multilingual-utils.js"></script>
+    <script src="/public/js/layout-loader.js"></script>
+    <style>
+        /* Navigation dropdown styles */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #2F2F2F;
+            min-width: 200px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.3);
+            z-index: 1000;
+            border-radius: 8px;
+            top: 100%;
+            left: 0;
+            padding: 8px 0;
+        }
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        .dropdown-content a {
+            color: white;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            transition: background-color 0.3s;
+        }
+        .dropdown-content a:hover {
+            background-color: #4A4A4A;
+        }
+        .dropdown-content .dropdown-submenu {
+            position: relative;
+        }
+        .dropdown-content .dropdown-submenu .dropdown-subcontent {
+            display: none !important;
+            position: absolute;
+            left: 100%;
+            top: 0;
+            background-color: #2F2F2F;
+            min-width: 180px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.3);
+            border-radius: 8px;
+            padding: 8px 0;
+            z-index: 1001;
+        }
+        .dropdown-content .dropdown-submenu:hover > .dropdown-subcontent {
+            display: block !important;
+        }
+        
+        /* Language selector styles */
+        .language-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .lang-selector-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            min-width: 80px;
+        }
+        
+        .lang-selector-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .selected-flag {
+            width: 24px;
+            height: 16px;
+            border-radius: 2px;
+            display: inline-block;
+            margin-right: 8px;
+            border: 1px solid rgba(255,255,255,0.4);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+        
+        .flag {
+            width: 20px;
+            height: 14px;
+            border-radius: 2px;
+            display: inline-block;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        
+        /* Flag backgrounds */
+        .flag-ru, .selected-flag.flag-ru {
+            background: linear-gradient(to bottom, 
+                #ffffff 0%, #ffffff 33.33%, 
+                #0039a6 33.33%, #0039a6 66.66%, 
+                #d52b1e 66.66%, #d52b1e 100%);
+        }
+        .flag-us, .selected-flag.flag-us {
+            background: linear-gradient(to bottom, 
+                #b22234 0%, #b22234 7.7%, #ffffff 7.7%, #ffffff 15.4%, 
+                #b22234 15.4%, #b22234 23.1%, #ffffff 23.1%, #ffffff 30.8%,
+                #b22234 30.8%, #b22234 38.5%, #ffffff 38.5%, #ffffff 46.2%,
+                #b22234 46.2%, #b22234 53.8%, #ffffff 53.8%, #ffffff 61.5%,
+                #b22234 61.5%, #b22234 69.2%, #ffffff 69.2%, #ffffff 76.9%,
+                #b22234 76.9%, #b22234 84.6%, #ffffff 84.6%, #ffffff 92.3%,
+                #b22234 92.3%, #b22234 100%);
+            position: relative;
+        }
+        .flag-us::before, .selected-flag.flag-us::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 35%;
+            height: 47%;
+            background: #3c3b6e;
+            border-radius: 1px;
+        }
+        .flag-tj, .selected-flag.flag-tj {
+            background: linear-gradient(to bottom, 
+                #ce1126 0%, #ce1126 33.33%, 
+                #ffffff 33.33%, #ffffff 66.66%, 
+                #00945a 66.66%, #00945a 100%);
+        }
+        
+        .lang-dropdown-content {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            display: none;
+            background: rgba(47, 47, 47, 0.95);
+            backdrop-filter: blur(10px);
+            min-width: 160px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.75rem;
+            z-index: 1000;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+        
+        .lang-dropdown-content.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .lang-option {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .lang-option:last-child {
+            border-bottom: none;
+        }
+        
+        .lang-option:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        
+        .lang-option.active {
+            background: rgba(102, 126, 234, 0.8);
+            color: white;
+            font-weight: 600;
+        }
+        
+        .dropdown-arrow {
+            transition: transform 0.3s ease;
+            margin-left: auto;
+        }
+        
+        .dropdown-arrow.open {
+            transform: rotate(180deg);
+        }
+
+        /* Lightbox for gallery */
+        .lightbox {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .lightbox img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+        }
+        
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 40px;
+            color: white;
+            font-size: 40px;
+            cursor: pointer;
+        }
+        
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+            padding: 20px;
+        }
+        
+        .lightbox-prev { left: 20px; }
+        .lightbox-next { right: 20px; }
+
+        /* Stars styling */
+        .stars {
+            color: #ffd700;
+        }
+        
+        /* Hotel amenities icons */
+        .amenity-icon {
+            width: 20px;
+            height: 20px;
+            color: #059669;
+        }
+        
+        /* Booking section styling */
+        .booking-section {
+            position: sticky;
+            top: 100px;
+            height: fit-content;
+        }
+        
+        /* Star rating display */
+        .rating-stars {
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .rating-stars .star {
+            color: #ffd700;
+            font-size: 16px;
+        }
+        
+        .rating-stars .empty-star {
+            color: #e5e7eb;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- 🌐 ДИНАМИЧЕСКИЙ ХЕДЕР -->
+    <div id="header-container"></div>
+
+    <!-- Hotel Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="max-w-4xl mx-auto">
+            <!-- Hotel Info -->
+            <div class="space-y-6">
+                <!-- Hotel Header -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h1 id="hotel-name" class="text-3xl font-bold text-gray-900 mb-2">
+                                Загружается...
+                            </h1>
+                            <div class="flex items-center space-x-4 text-sm text-gray-600">
+                                <div class="flex items-center" id="hotel-stars">
+                                    <!-- Звезды отеля будут добавлены через JS -->
+                                </div>
+                                <div class="flex items-center" id="hotel-rating-display">
+                                    <!-- Рейтинг отеля будет добавлен через JS -->
+                                </div>
+                                <div id="hotel-category" class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">
+                                    <!-- Категория отеля -->
+                                </div>
+                            </div>
+                        </div>
+                        <div id="hotel-brand" class="text-right text-gray-600">
+                            <!-- Бренд отеля -->
+                        </div>
+                    </div>
+                    
+                    <!-- Location -->
+                    <div class="flex items-center text-gray-600 mb-6">
+                        <i class="fas fa-map-marker-alt mr-2"></i>
+                        <span id="hotel-location">Загружается...</span>
+                    </div>
+                    
+                    <!-- Hotel Gallery -->
+                    <div id="hotel-gallery" class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                        <!-- Фотографии будут добавлены через JS -->
+                        <div class="aspect-w-16 aspect-h-12 bg-gray-200 rounded-lg animate-pulse"></div>
+                        <div class="aspect-w-16 aspect-h-12 bg-gray-200 rounded-lg animate-pulse"></div>
+                        <div class="aspect-w-16 aspect-h-12 bg-gray-200 rounded-lg animate-pulse"></div>
+                        <div class="aspect-w-16 aspect-h-12 bg-gray-200 rounded-lg animate-pulse"></div>
+                    </div>
+                    
+                    <!-- Hotel Description -->
+                    <div class="border-t pt-6">
+                        <h3 class="text-xl font-semibold mb-3 text-gray-800">Описание отеля</h3>
+                        <div id="hotel-description" class="text-gray-700 leading-relaxed">
+                            <p>Загружается описание отеля...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hotel Info Strip -->
+                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-4 shadow-sm">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+                        <!-- Тип питания -->
+                        <div class="flex items-center space-x-3">
+                            <div class="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-utensils text-blue-600"></i>
+                            </div>
+                            <div>
+                                <div class="text-gray-500 text-xs uppercase tracking-wide">Питание</div>
+                                <span class="text-gray-900 font-medium" id="hotel-pension">Не включено</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Категория отеля -->
+                        <div class="flex items-center space-x-3">
+                            <div class="flex-shrink-0 w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-award text-yellow-600"></i>
+                            </div>
+                            <div>
+                                <div class="text-gray-500 text-xs uppercase tracking-wide">Категория</div>
+                                <span class="text-gray-900 font-medium" id="hotel-category-text">—</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                
+                <!-- Hotel Amenities -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-2xl font-semibold mb-4 text-gray-800">Удобства отеля</h2>
+                    <div id="hotel-amenities" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                        <!-- Удобства будут добавлены через JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lightbox for Gallery -->
+    <div id="lightbox" class="lightbox">
+        <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
+        <span class="lightbox-nav lightbox-prev" onclick="previousImage()">&#10094;</span>
+        <img id="lightbox-img" src="" alt="Hotel Image">
+        <span class="lightbox-nav lightbox-next" onclick="nextImage()">&#10095;</span>
+    </div>
+
+    <script>
+        // Global variables
+        let hotelData = {};
+        let currentImageIndex = 0;
+        let hotelImages = [];
+
+        // Get hotel ID from URL
+        function getHotelId() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('hotel');
+        }
+
+        // API configuration
+        function getApiUrl() {
+            const hostname = window.location.hostname;
+            const protocol = window.location.protocol;
+            if (hostname.includes('replit.dev') || hostname.includes('replit.app')) {
+                return `${protocol}//${hostname}/api`;
+            }
+            return '/api';
+        }
+
+        // Load hotel data
+        async function loadHotelData() {
+            const hotelId = getHotelId();
+            if (!hotelId) {
+                document.getElementById('hotel-name').textContent = 'Отель не найден';
+                return;
+            }
+
+            try {
+                const apiUrl = `${getApiUrl()}/hotels/${hotelId}`;
+                console.log('Loading hotel data from:', apiUrl);
+                
+                const response = await fetch(apiUrl);
+                console.log('Response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                console.log('API result:', result);
+                
+                if (result.success && result.data) {
+                    hotelData = result.data;
+                    console.log('Hotel data loaded:', hotelData);
+                    displayHotelData();
+                } else {
+                    throw new Error(result.message || 'Ошибка загрузки данных отеля');
+                }
+            } catch (error) {
+                console.error('Ошибка загрузки отеля:', error);
+                document.getElementById('hotel-name').textContent = 'Ошибка загрузки отеля';
+                document.getElementById('hotel-location').textContent = `Ошибка: ${error.message}`;
+                
+                // Show more detailed error info
+                const errorDetails = document.createElement('div');
+                errorDetails.className = 'mt-4 p-4 bg-red-50 border border-red-200 rounded-lg';
+                errorDetails.innerHTML = `
+                    <h3 class="text-red-800 font-semibold">Детали ошибки:</h3>
+                    <p class="text-red-600 text-sm mt-1">API URL: ${getApiUrl()}/hotels/${hotelId}</p>
+                    <p class="text-red-600 text-sm">Ошибка: ${error.message}</p>
+                `;
+                
+                const container = document.querySelector('.bg-white.rounded-lg.shadow-md.p-6');
+                if (container) {
+                    container.appendChild(errorDetails);
+                }
+            }
+        }
+
+        // Display hotel data
+        function displayHotelData() {
+            try {
+                console.log('Starting displayHotelData with:', hotelData);
+                
+                // Parse multilingual content
+                // 🌐 МНОГОЯЗЫЧНАЯ ОБРАБОТКА ДАННЫХ ОТЕЛЯ
+                const currentLang = getCurrentLanguage();
+                const nameData = safeJsonParse(hotelData.name, { ru: 'Отель', en: 'Hotel' });
+                const descData = safeJsonParse(hotelData.description, { ru: 'Описание отеля не указано', en: 'Hotel description not provided' });
+                
+                // Set page title and hotel name
+                const hotelName = getLocalizedText(nameData, currentLang) || (currentLang === 'en' ? 'Hotel' : 'Отель');
+                const pageTitleEl = document.getElementById('page-title');
+                const hotelNameEl = document.getElementById('hotel-name');
+                
+                if (pageTitleEl) pageTitleEl.textContent = `${hotelName} - Bunyod-Tour`;
+                if (hotelNameEl) hotelNameEl.textContent = hotelName;
+                
+                // Hotel description
+                const hotelDesc = getLocalizedText(descData, currentLang) || (currentLang === 'en' ? 'Hotel description not provided' : 'Описание отеля не указано');
+                const descEl = document.getElementById('hotel-description');
+                if (descEl) descEl.innerHTML = `<p>${hotelDesc}</p>`;
+                
+                // Location (country + city + address)
+                const locationParts = [];
+                if (hotelData.country) locationParts.push(hotelData.country);
+                if (hotelData.city) locationParts.push(hotelData.city);
+                if (hotelData.address) locationParts.push(hotelData.address);
+                
+                const locationEl = document.getElementById('hotel-location');
+                if (locationEl) locationEl.textContent = locationParts.join(', ') || 'Адрес не указан';
+                
+                // Hotel brand
+                const brandEl = document.getElementById('hotel-brand');
+                if (brandEl) brandEl.textContent = hotelData.brand || '';
+                
+                // Hotel stars
+                try {
+                    displayHotelStars();
+                } catch (e) {
+                    console.error('Error in displayHotelStars:', e);
+                }
+                
+                // Hotel rating
+                try {
+                    displayHotelRating();
+                } catch (e) {
+                    console.error('Error in displayHotelRating:', e);
+                }
+                
+                // Hotel category
+                try {
+                    displayHotelCategory();
+                } catch (e) {
+                    console.error('Error in displayHotelCategory:', e);
+                }
+                
+                // Hotel pension type
+                try {
+                    displayPensionType();
+                } catch (e) {
+                    console.error('Error in displayPensionType:', e);
+                }
+                
+                // Hotel amenities
+                try {
+                    displayHotelAmenities();
+                } catch (e) {
+                    console.error('Error in displayHotelAmenities:', e);
+                }
+                
+                // Hotel gallery
+                try {
+                    displayHotelGallery();
+                } catch (e) {
+                    console.error('Error in displayHotelGallery:', e);
+                }
+                
+                console.log('Hotel data display completed successfully');
+            } catch (error) {
+                console.error('Error in displayHotelData:', error);
+                throw error; // Re-throw to be caught by the outer try-catch
+            }
+        }
+
+        // Display hotel stars
+        function displayHotelStars() {
+            const starsContainer = document.getElementById('hotel-stars');
+            const starsTextContainer = document.getElementById('hotel-stars-text');
+            
+            if (starsContainer && hotelData.stars) {
+                let starsHTML = '';
+                for (let i = 1; i <= 5; i++) {
+                    if (i <= hotelData.stars) {
+                        starsHTML += '<i class="fas fa-star text-yellow-500"></i>';
+                    } else {
+                        starsHTML += '<i class="far fa-star text-gray-300"></i>';
+                    }
+                }
+                starsContainer.innerHTML = starsHTML;
+            } else if (starsContainer) {
+                starsContainer.innerHTML = '<span class="text-gray-500">Звезды не указаны</span>';
+            }
+            
+            // Don't show stars in text format anymore - only show category
+            if (starsTextContainer) {
+                starsTextContainer.textContent = 'Не указана';
+            }
+        }
+
+        // Display hotel rating - removed as per user request
+        function displayHotelRating() {
+            const ratingContainer = document.getElementById('hotel-rating-display');
+            ratingContainer.innerHTML = ''; // Remove rating display completely
+        }
+
+        // Generate rating stars HTML
+        function generateRatingStars(rating) {
+            let starsHTML = '';
+            for (let i = 1; i <= 5; i++) {
+                if (i <= rating) {
+                    starsHTML += '<i class="fas fa-star star"></i>';
+                } else if (i - 0.5 <= rating) {
+                    starsHTML += '<i class="fas fa-star-half-alt star"></i>';
+                } else {
+                    starsHTML += '<i class="far fa-star empty-star"></i>';
+                }
+            }
+            return starsHTML;
+        }
+
+        // Display hotel category
+        function displayHotelCategory() {
+            const categoryContainer = document.getElementById('hotel-category');
+            const categoryTextContainer = document.getElementById('hotel-category-text');
+            const categoryMap = {
+                'Budget': 'Бюджетный',
+                'Economy': 'Эконом',
+                'Standard': 'Стандарт',
+                'Premium': 'Премиум',
+                'Luxury': 'Люкс'
+            };
+            
+            if (hotelData.category) {
+                const categoryText = categoryMap[hotelData.category] || hotelData.category;
+                
+                // Update both containers
+                if (categoryContainer) {
+                    categoryContainer.textContent = categoryText;
+                    
+                    // Add appropriate styling based on category
+                    categoryContainer.className = 'px-2 py-1 rounded-full text-xs ';
+                    if (hotelData.category === 'Luxury') {
+                        categoryContainer.className += 'bg-purple-100 text-purple-800';
+                    } else if (hotelData.category === 'Premium') {
+                        categoryContainer.className += 'bg-blue-100 text-blue-800';
+                    } else {
+                        categoryContainer.className += 'bg-green-100 text-green-800';
+                    }
+                }
+                
+                if (categoryTextContainer) {
+                    categoryTextContainer.textContent = categoryText;
+                }
+            } else {
+                if (categoryContainer) categoryContainer.style.display = 'none';
+                if (categoryTextContainer) categoryTextContainer.textContent = '—';
+            }
+        }
+
+        // Display pension type
+        function displayPensionType() {
+            const pensionContainer = document.getElementById('hotel-pension');
+            const pensionMap = {
+                'none': 'Не включено',
+                'breakfast': 'Завтрак',
+                'half': 'Полупансион',
+                'full': 'Полный пансион',
+                'all': 'Все включено'
+            };
+            
+            pensionContainer.textContent = pensionMap[hotelData.pension] || 'Не указано';
+        }
+
+        // Display hotel amenities
+        function displayHotelAmenities() {
+            const amenitiesContainer = document.getElementById('hotel-amenities');
+            
+            if (!amenitiesContainer) {
+                console.error('Amenities container not found');
+                return;
+            }
+            
+            if (hotelData.amenities && hotelData.amenities.length > 0) {
+                try {
+                    const amenities = safeJsonParse(hotelData.amenities, []);
+                    const amenityIcons = {
+                        'WiFi': 'fas fa-wifi',
+                        'Завтрак': 'fas fa-coffee',
+                        'Парковка': 'fas fa-parking',
+                        'Ресторан': 'fas fa-utensils',
+                        'Бассейн': 'fas fa-swimming-pool',
+                        'Спа': 'fas fa-spa',
+                        'Фитнес-центр': 'fas fa-dumbbell',
+                        'Кондиционер': 'fas fa-snowflake'
+                    };
+                    
+                    let amenitiesHTML = '';
+                    amenities.forEach(amenity => {
+                        const icon = amenityIcons[amenity] || 'fas fa-check';
+                        amenitiesHTML += `
+                            <div class="flex items-center p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
+                                <div class="flex-shrink-0 w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                                    <i class="${icon} text-green-600"></i>
+                                </div>
+                                <span class="text-gray-800 font-medium">${amenity}</span>
+                            </div>
+                        `;
+                    });
+                    
+                    amenitiesContainer.innerHTML = amenitiesHTML;
+                } catch (e) {
+                    console.error('Error parsing amenities:', e);
+                    amenitiesContainer.innerHTML = '<p class="text-gray-500 text-center py-8">Ошибка загрузки удобств</p>';
+                }
+            } else {
+                amenitiesContainer.innerHTML = '<p class="text-gray-500 text-center py-8">Информация об удобствах не указана</p>';
+            }
+        }
+
+        // Display hotel gallery
+        function displayHotelGallery() {
+            const galleryContainer = document.getElementById('hotel-gallery');
+            
+            if (hotelData.images) {
+                try {
+                    hotelImages = safeJsonParse(hotelData.images, []);
+                    
+                    if (hotelImages.length > 0) {
+                        let galleryHTML = '';
+                        hotelImages.forEach((image, index) => {
+                            galleryHTML += `
+                                <div class="aspect-w-16 aspect-h-12 bg-gray-200 rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity" onclick="openLightbox(${index})">
+                                    <img src="${image}" alt="Hotel Image ${index + 1}" class="w-full h-full object-cover">
+                                </div>
+                            `;
+                        });
+                        galleryContainer.innerHTML = galleryHTML;
+                    } else {
+                        galleryContainer.innerHTML = '<p class="col-span-full text-gray-500 text-center">Фотографии не добавлены</p>';
+                    }
+                } catch (e) {
+                    galleryContainer.innerHTML = '<p class="col-span-full text-gray-500 text-center">Ошибка загрузки фотографий</p>';
+                }
+            } else {
+                galleryContainer.innerHTML = '<p class="col-span-full text-gray-500 text-center">Фотографии не добавлены</p>';
+            }
+        }
+
+        // Set minimum dates for booking - removed since booking section is removed
+        function setMinimumDates() {
+            // No longer needed - booking section removed
+        }
+
+        // Lightbox functions
+        function openLightbox(index) {
+            currentImageIndex = index;
+            document.getElementById('lightbox-img').src = hotelImages[index];
+            document.getElementById('lightbox').style.display = 'flex';
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox').style.display = 'none';
+        }
+
+        function nextImage() {
+            currentImageIndex = (currentImageIndex + 1) % hotelImages.length;
+            document.getElementById('lightbox-img').src = hotelImages[currentImageIndex];
+        }
+
+        function previousImage() {
+            currentImageIndex = (currentImageIndex - 1 + hotelImages.length) % hotelImages.length;
+            document.getElementById('lightbox-img').src = hotelImages[currentImageIndex];
+        }
+
+        // Booking functionality removed since booking section is removed
+
+        // Keyboard navigation for lightbox
+        document.addEventListener('keydown', function(e) {
+            if (document.getElementById('lightbox').style.display === 'flex') {
+                if (e.key === 'Escape') {
+                    closeLightbox();
+                } else if (e.key === 'ArrowLeft') {
+                    previousImage();
+                } else if (e.key === 'ArrowRight') {
+                    nextImage();
+                }
+            }
+        });
+
+        // Initialize page
+        // 🌐 ФУНКЦИЯ ПЕРЕКЛЮЧЕНИЯ ЯЗЫКОВ ДЛЯ СТРАНИЦЫ ОТЕЛЯ
+        function updateHotelPageLanguage(language) {
+            console.log(`🏨 Переключение языка страницы отеля на: ${language}`);
+            
+            // Перезагружаем данные отеля с новым языком
+            loadHotelData();
+            
+            console.log(`✅ Язык страницы отеля обновлен на: ${language}`);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadHotelData();
+            
+            // 🌐 СЛУШАЕМ СОБЫТИЯ ПЕРЕКЛЮЧЕНИЯ ЯЗЫКА
+            document.addEventListener('languageChanged', function(event) {
+                updateHotelPageLanguage(event.detail.language);
+            });
+        });
+
+        // Language and currency selector functions
+        function toggleLanguageDropdown() {
+            const dropdown = document.getElementById('langDropdown');
+            const arrow = document.querySelector('.dropdown-arrow');
+            dropdown.classList.toggle('show');
+            arrow.classList.toggle('open');
+        }
+        
+        function selectLanguage(lang, flagClass, name) {
+            // Обновляем кнопку селектора
+            const selectedFlag = document.querySelector('.selected-flag');
+            selectedFlag.className = `selected-flag ${flagClass}`;
+            document.querySelector('.selected-lang').textContent = name;
+            
+            // Убираем активный класс со всех опций
+            document.querySelectorAll('#langDropdown .lang-option').forEach(opt => opt.classList.remove('active'));
+            
+            // Добавляем активный класс к выбранной опции
+            document.querySelector(`[data-lang="${lang}"]`).classList.add('active');
+            
+            // Закрываем выпадающий список
+            document.getElementById('langDropdown').classList.remove('show');
+            
+            console.log(`Переключен язык: ${lang}`);
+        }
+
+        // Функции для валютного селектора
+        function toggleCurrencyDropdown() {
+            const dropdown = document.getElementById('currencyDropdown');
+            dropdown.classList.toggle('show');
+        }
+        
+        function selectCurrency(currencyCode, symbol) {
+            // Обновляем кнопку селектора
+            document.querySelector('.selected-currency').textContent = currencyCode;
+            document.querySelector('.currency-symbol').textContent = symbol;
+            
+            // Убираем активный класс со всех опций
+            document.querySelectorAll('#currencyDropdown .lang-option').forEach(opt => opt.classList.remove('active'));
+            
+            // Добавляем активный класс к выбранной опции
+            document.querySelector(`[data-currency="${currencyCode.toLowerCase()}"]`).classList.add('active');
+            
+            // Закрываем выпадающий список
+            document.getElementById('currencyDropdown').classList.remove('show');
+            
+            console.log(`Переключена валюта: ${currencyCode}`);
+            
+            // Предотвращаем переход по ссылке
+            event.preventDefault();
+        }
+        
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(event) {
+            const langDropdown = document.getElementById('langDropdown');
+            const currencyDropdown = document.getElementById('currencyDropdown');
+            const langSelector = event.target.closest('.language-dropdown');
+            
+            if (!langSelector) {
+                langDropdown.classList.remove('show');
+                currencyDropdown.classList.remove('show');
+            }
+        });
+
+        // ✅ АРХИТЕКТУРНАЯ ЧИСТОТА: Google Maps удалён - footer карта автономна!
+    </script>
+
+    <!-- 🌐 ДИНАМИЧЕСКИЙ ФУТЕР -->
+    <div id="footer-container"></div>
+
+    <!-- ✅ АРХИТЕКТУРНАЯ ЧИСТОТА: Google Maps не используется! -->
+</body>
+</html>

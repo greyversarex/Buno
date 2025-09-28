@@ -1,0 +1,20 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const tourController_1 = require("../controllers/tourController");
+const router = (0, express_1.Router)();
+router.get('/', tourController_1.TourController.getAllTours);
+router.get('/search', tourController_1.TourController.searchTours);
+router.get('/suggestions', tourController_1.TourController.getSearchSuggestions);
+router.get('/:id/main-image', tourController_1.TourController.getTourMainImage);
+router.get('/:id', tourController_1.TourController.getTourById);
+router.post('/', tourController_1.TourController.createTour);
+router.put('/:id', tourController_1.TourController.updateTour);
+router.delete('/:id', tourController_1.TourController.deleteTour);
+router.post('/booking-requests', tourController_1.BookingRequestController.createBookingRequest);
+router.get('/booking-requests', tourController_1.BookingRequestController.getAllBookingRequests);
+router.post('/reviews', tourController_1.ReviewController.createReview);
+router.get('/reviews', tourController_1.ReviewController.getAllReviews);
+router.put('/reviews/:id', tourController_1.ReviewController.updateReview);
+exports.default = router;
+//# sourceMappingURL=tourRoutes.js.map
