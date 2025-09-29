@@ -96,8 +96,11 @@ export const getAllDrivers = async (req: Request, res: Response): Promise<void> 
     });
 
     const formattedDrivers = drivers.map((driver: any) => {
+      // Деструктурируем для исключения чувствительных полей из публичного API
+      const { password, contact, documents, login, licenseNumber, licenseCategory, tourDrivers, ...publicFields } = driver;
+      
       const baseDriver = {
-        ...driver,
+        ...publicFields,
         vehicleTypes: safeJsonParse(driver.vehicleTypes, []),
         vehicleInfo: safeJsonParse(driver.vehicleInfo, []),
         assignedTours: driver.tourDrivers.map((td: any) => td.tour)
@@ -106,11 +109,14 @@ export const getAllDrivers = async (req: Request, res: Response): Promise<void> 
       return includeRaw ? {
         ...baseDriver,
         // Чувствительные данные только для админ панели
-        contact: safeJsonParse(driver.contact, {}),
-        documents: safeJsonParse(driver.documents, [])
+        contact: safeJsonParse(contact, {}),
+        documents: safeJsonParse(documents, []),
+        login: login,
+        licenseNumber: licenseNumber,
+        licenseCategory: licenseCategory
       } : {
-        ...baseDriver,
-        password: undefined // Исключаем пароль
+        ...baseDriver
+        // Публичная версия - чувствительные поля уже исключены деструктуризацией
       };
     });
 
@@ -167,8 +173,11 @@ export const getDriverById = async (req: Request, res: Response): Promise<void> 
       return;
     }
 
+    // Деструктурируем для исключения чувствительных полей из публичного API
+    const { password, contact, documents, login, licenseNumber, licenseCategory, tourDrivers, ...publicFields } = driver;
+    
     const baseDriver = {
-      ...driver,
+      ...publicFields,
       vehicleTypes: safeJsonParse(driver.vehicleTypes, []),
       vehicleInfo: safeJsonParse(driver.vehicleInfo, []),
       assignedTours: driver.tourDrivers.map((td: any) => td.tour)
@@ -177,12 +186,14 @@ export const getDriverById = async (req: Request, res: Response): Promise<void> 
     const formattedDriver = includeRaw ? {
       ...baseDriver,
       // Чувствительные данные только для админ панели
-      contact: safeJsonParse(driver.contact, {}),
-      documents: safeJsonParse(driver.documents, [])
+      contact: safeJsonParse(contact, {}),
+      documents: safeJsonParse(documents, []),
+      login: login,
+      licenseNumber: licenseNumber,
+      licenseCategory: licenseCategory
     } : {
-      ...baseDriver,
-      // Публичная версия без чувствительных данных
-      password: undefined // Исключаем пароль
+      ...baseDriver
+      // Публичная версия - чувствительные поля уже исключены деструктуризацией
     };
 
     res.json({
