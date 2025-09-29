@@ -289,8 +289,8 @@ export const createNews = async (req: Request, res: Response) => {
                 image,
                 images: images ? JSON.stringify(images) : null,
                 tags: tags ? JSON.stringify(tags) : null,
-                isPublished: isPublished || false,
-                isFeatured: isFeatured || false,
+                isPublished: isPublished === 'true' || isPublished === true,
+                isFeatured: isFeatured === 'true' || isFeatured === true,
                 slug: finalSlug,
                 readTime: readTime || null
             }
@@ -313,7 +313,16 @@ export const createNews = async (req: Request, res: Response) => {
 export const updateNews = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        const updateData = req.body;
+        const { isPublished, isFeatured, ...otherData } = req.body;
+        const updateData: any = { ...otherData };
+        
+        // Правильно обрабатываем boolean поля
+        if (isPublished !== undefined) {
+            updateData.isPublished = isPublished === 'true' || isPublished === true;
+        }
+        if (isFeatured !== undefined) {
+            updateData.isFeatured = isFeatured === 'true' || isFeatured === true;
+        }
 
         // Handle slug uniqueness if being updated
         if (updateData.slug) {
