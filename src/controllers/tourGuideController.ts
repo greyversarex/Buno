@@ -792,7 +792,7 @@ export const updateGuideProfile = async (req: Request, res: Response): Promise<v
     }
     if (languages) updateData.languages = languages;
     if (experience !== undefined) updateData.experience = parseInt(experience);
-    if (isActive !== undefined) updateData.isActive = isActive;
+    if (isActive !== undefined) updateData.isActive = isActive === 'true' || isActive === true;
     
     // Обновляем контакты
     if (email || phone) {
