@@ -92,7 +92,6 @@ model Tour {
   uniqueCode         String?                @unique
   bookingRequests    BookingRequest[]
   bookings           Booking[]
-  guideReviews       GuideReview[]
   orders             Order[]
   reviews            Review[]
   tourGuides         TourGuide[]
@@ -378,6 +377,7 @@ model Review {
   tourId       Int       @map("tour_id")
   reviewerName String    @map("reviewer_name")
   rating       Int
+  guideRating  Int?      @map("guide_rating")
   text         String
   photos       String?
   isModerated  Boolean   @default(false) @map("is_moderated")
@@ -653,23 +653,10 @@ model TourGuideProfile {
   isActive      Boolean       @default(true)
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
-  guideReviews  GuideReview[]
 
   @@map("tour_guide_profiles")
 }
 
-model GuideReview {
-  id        Int              @id @default(autoincrement())
-  tourId    Int              @map("tour_id")
-  guideId   Int              @map("guide_id")
-  content   String
-  createdAt DateTime         @default(now())
-  guide     TourGuideProfile @relation(fields: [guideId], references: [id], onDelete: Cascade)
-  tour      Tour             @relation(fields: [tourId], references: [id], onDelete: Cascade)
-
-  @@unique([tourId, guideId])
-  @@map("guide_reviews")
-}
 
 enum NewsCategory {
   tours

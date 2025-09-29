@@ -287,9 +287,6 @@ export const getTourDetails = async (req: Request, res: Response): Promise<void>
         reviews: {
           where: { isApproved: true }
         },
-        guideReviews: {
-          where: { guideId: guideId }
-        },
         tourGuides: {
           include: {
             guide: true
@@ -340,8 +337,7 @@ export const getTourDetails = async (req: Request, res: Response): Promise<void>
       totalTourists: tourists.length,
       category: tour.category,
       tourBlock: tour.tourBlockAssignments?.[0]?.tourBlock || null,
-      reviews: tour.reviews,
-      guideReview: tour.guideReviews[0] || null
+      reviews: tour.reviews
     };
 
     res.json({
@@ -539,82 +535,6 @@ export const collectReviews = async (req: Request, res: Response): Promise<void>
   }
 };
 
-// Оставить отзыв тургида о туре
-export const leaveGuideReview = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { id } = req.params;
-    const { content } = req.body;
-    const guideId = (req as any).user?.id;
-    const tourId = parseInt(id);
-
-    if (!content || content.trim().length === 0) {
-      res.status(400).json({ 
-        success: false, 
-        message: 'Текст отзыва обязателен' 
-      });
-      return;
-    }
-
-    const tour = await prisma.tour.findFirst({
-      where: { 
-        id: tourId,
-        assignedGuideId: guideId,
-        status: 'finished'
-      }
-    });
-
-    if (!tour) {
-      res.status(404).json({ 
-        success: false, 
-        message: 'Тур не найден или не завершён' 
-      });
-      return;
-    }
-
-    // Проверить, есть ли уже отзыв от этого тургида
-    const existingReview = await prisma.guideReview.findUnique({
-      where: {
-        tourId_guideId: {
-          tourId: tourId,
-          guideId: guideId
-        }
-      }
-    });
-
-    let review;
-    if (existingReview) {
-      // Обновить существующий отзыв
-      review = await prisma.guideReview.update({
-        where: { id: existingReview.id },
-        data: { content: content.trim() }
-      });
-    } else {
-      // Создать новый отзыв
-      review = await prisma.guideReview.create({
-        data: {
-          tourId: tourId,
-          guideId: guideId,
-          content: content.trim()
-        }
-      });
-    }
-
-    console.log(`💬 Guide review ${existingReview ? 'updated' : 'created'} for tour ${tourId}`);
-
-    res.json({
-      success: true,
-      data: review,
-      message: 'Отзыв сохранён'
-    });
-
-  } catch (error) {
-    console.error('❌ Error leaving guide review:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Ошибка сервера' 
-    });
-  }
-};
 
 // Создание нового тургида с аутентификацией (для админ панели)
 export const createTourGuideProfile = async (req: Request, res: Response): Promise<void> => {

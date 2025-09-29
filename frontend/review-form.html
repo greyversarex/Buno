@@ -1,23 +1,23 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-translate="review.page_title">Оставить отзыв - Bunyod Tour</title>
+    <title>Leave a Review - Bunyod Tour</title>
     <!-- 🌐 ЦЕНТРАЛЬНАЯ СИСТЕМА ИНТЕРНАЦИОНАЛИЗАЦИИ -->
     <script src="/public/js/i18n.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .star-rating {
+        .star-rating, .guide-star-rating {
             font-size: 2rem;
             color: #d1d5db;
             cursor: pointer;
         }
-        .star-rating.active {
+        .star-rating.active, .guide-star-rating.active {
             color: #fbbf24;
         }
-        .star-rating:hover {
+        .star-rating:hover, .guide-star-rating:hover {
             color: #fbbf24;
         }
         .preview-image {
@@ -42,7 +42,7 @@
                 </a>
                 <a href="/" class="text-blue-600 hover:text-blue-800">
                     <i class="fas fa-arrow-left mr-2"></i>
-                    <span data-translate="review.back_to_home">Вернуться на главную</span>
+                    <span>Back to Home</span>
                 </a>
             </div>
         </div>
@@ -53,9 +53,9 @@
         <div class="max-w-2xl mx-auto">
             <!-- Tour Info -->
             <div id="tour-info" class="bg-white rounded-lg shadow-md p-6 mb-8">
-                <h1 class="text-2xl font-bold text-gray-800 mb-4" data-translate="review.leave_review_title">Оставить отзыв о туре</h1>
+                <h1 class="text-2xl font-bold text-gray-800 mb-4">Leave a Review</h1>
                 <div id="tour-details" class="text-gray-600">
-                    <span data-translate="review.loading_tour_info">Загрузка информации о туре...</span>
+                    <span>Loading tour information...</span>
                 </div>
             </div>
 
@@ -64,20 +64,20 @@
                 <form id="review-form" class="space-y-6">
                     <!-- Name -->
                     <div>
-                        <label for="reviewerName" class="block text-sm font-medium text-gray-700 mb-2" data-translate="review.your_name">
-                            Ваше имя *
+                        <label for="reviewerName" class="block text-sm font-medium text-gray-700 mb-2">
+                            Your Name *
                         </label>
                         <input type="text" id="reviewerName" name="reviewerName" required
                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                               data-translate-placeholder="review.enter_name" placeholder="Введите ваше имя">
+                               placeholder="Enter your name">
                     </div>
 
-                    <!-- Rating -->
+                    <!-- Tour Rating -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2" data-translate="review.rating">
-                            Оценка *
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Tour Rating *
                         </label>
-                        <div class="flex space-x-1">
+                        <div class="flex space-x-1" id="tour-rating-stars">
                             <span class="star-rating" data-rating="1">★</span>
                             <span class="star-rating" data-rating="2">★</span>
                             <span class="star-rating" data-rating="3">★</span>
@@ -85,32 +85,48 @@
                             <span class="star-rating" data-rating="5">★</span>
                         </div>
                         <input type="hidden" id="rating" name="rating" required>
-                        <p class="text-sm text-gray-500 mt-1" data-translate="review.click_stars">Нажмите на звёзды для оценки</p>
+                        <p class="text-sm text-gray-500 mt-1">Click stars to rate the tour</p>
+                    </div>
+
+                    <!-- Guide Rating -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Guide Rating *
+                        </label>
+                        <div class="flex space-x-1" id="guide-rating-stars">
+                            <span class="guide-star-rating" data-rating="1">★</span>
+                            <span class="guide-star-rating" data-rating="2">★</span>
+                            <span class="guide-star-rating" data-rating="3">★</span>
+                            <span class="guide-star-rating" data-rating="4">★</span>
+                            <span class="guide-star-rating" data-rating="5">★</span>
+                        </div>
+                        <input type="hidden" id="guideRating" name="guideRating" required>
+                        <p class="text-sm text-gray-500 mt-1">Click stars to rate your guide</p>
                     </div>
 
                     <!-- Review Text -->
                     <div>
-                        <label for="text" class="block text-sm font-medium text-gray-700 mb-2" data-translate="review.your_review">
-                            Ваш отзыв *
+                        <label for="text" class="block text-sm font-medium text-gray-700 mb-2">
+                            Your Review *
                         </label>
                         <textarea id="text" name="text" rows="6" required
                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                  data-translate-placeholder="review.share_impressions" placeholder="Поделитесь впечатлениями о туре..."></textarea>
+                                  placeholder="Share your impressions about the tour..."></textarea>
                     </div>
 
                     <!-- Photo Upload -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2" data-translate="review.photos_optional">
-                            Фотографии (необязательно)
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Photos (optional)
                         </label>
                         <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
                             <input type="file" id="photos" multiple accept="image/*" class="hidden">
                             <button type="button" id="upload-btn" 
                                     class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
                                 <i class="fas fa-camera mr-2"></i>
-                                <span data-translate="review.choose_photos">Выбрать фотографии</span>
+                                <span>Choose Photos</span>
                             </button>
-                            <p class="text-sm text-gray-500 mt-2" data-translate="review.photo_limits">Максимум 5 фотографии, до 5MB каждая</p>
+                            <p class="text-sm text-gray-500 mt-2">Maximum 5 photos, up to 5MB each</p>
                         </div>
                         
                         <!-- Photo Preview -->
@@ -123,10 +139,10 @@
                         <button type="submit" id="submit-btn"
                                 class="w-full bg-green-600 text-white py-3 px-4 rounded-md hover:bg-green-700 font-medium">
                             <i class="fas fa-paper-plane mr-2"></i>
-                            <span data-translate="review.submit_review">Отправить отзыв</span>
+                            <span>Submit Review</span>
                         </button>
-                        <p class="text-sm text-gray-500 text-center mt-2" data-translate="review.moderation_notice">
-                            Отзыв будет опубликован после модерации
+                        <p class="text-sm text-gray-500 text-center mt-2">
+                            Your review will be published after moderation
                         </p>
                     </div>
                 </form>
@@ -141,13 +157,13 @@
                 <div class="text-green-500 text-5xl mb-4">
                     <i class="fas fa-check-circle"></i>
                 </div>
-                <h3 class="text-xl font-bold text-gray-800 mb-2" data-translate="review.thank_you">Спасибо за отзыв!</h3>
-                <p class="text-gray-600 mb-6" data-translate="review.success_message">
-                    Ваш отзыв успешно отправлен и будет опубликован после модерации.
+                <h3 class="text-xl font-bold text-gray-800 mb-2">Thank You for Your Review!</h3>
+                <p class="text-gray-600 mb-6">
+                    Your review has been successfully submitted and will be published after moderation.
                 </p>
                 <button onclick="window.location.href='/'" 
                         class="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600">
-                    <span data-translate="review.back_to_home">Вернуться на главную</span>
+                    <span>Back to Home</span>
                 </button>
             </div>
         </div>
@@ -155,6 +171,7 @@
 
     <script>
         let selectedRating = 0;
+        let selectedGuideRating = 0;
         let uploadedPhotos = [];
         let tourId = null;
 
@@ -164,7 +181,7 @@
 
         if (!tourId) {
             document.getElementById('tour-details').innerHTML = 
-                '<p class="text-red-600">Ошибка: не указан ID тура</p>';
+                '<p class="text-red-600">Error: Tour ID not specified</p>';
         } else {
             loadTourInfo();
         }
@@ -191,24 +208,39 @@
                     `;
                 } else {
                     document.getElementById('tour-details').innerHTML = 
-                        '<p class="text-red-600">Ошибка загрузки информации о туре</p>';
+                        '<p class="text-red-600">Error loading tour information</p>';
                 }
             } catch (error) {
-                console.error('Ошибка:', error);
+                console.error('Error:', error);
                 document.getElementById('tour-details').innerHTML = 
-                    '<p class="text-red-600">Ошибка загрузки информации о туре</p>';
+                    '<p class="text-red-600">Error loading tour information</p>';
             }
         }
 
-        // Обработка рейтинга
+        // Tour Rating
         document.querySelectorAll('.star-rating').forEach(star => {
             star.addEventListener('click', function() {
                 selectedRating = parseInt(this.dataset.rating);
                 document.getElementById('rating').value = selectedRating;
                 
-                // Обновляем визуальное отображение
                 document.querySelectorAll('.star-rating').forEach((s, index) => {
                     if (index < selectedRating) {
+                        s.classList.add('active');
+                    } else {
+                        s.classList.remove('active');
+                    }
+                });
+            });
+        });
+
+        // Guide Rating
+        document.querySelectorAll('.guide-star-rating').forEach(star => {
+            star.addEventListener('click', function() {
+                selectedGuideRating = parseInt(this.dataset.rating);
+                document.getElementById('guideRating').value = selectedGuideRating;
+                
+                document.querySelectorAll('.guide-star-rating').forEach((s, index) => {
+                    if (index < selectedGuideRating) {
                         s.classList.add('active');
                     } else {
                         s.classList.remove('active');
@@ -227,13 +259,13 @@
             if (files.length === 0) return;
 
             if (files.length > 5) {
-                alert('Максимум 5 фотографий');
+                alert('Maximum 5 photos');
                 return;
             }
 
-            // Показываем индикатор загрузки
+            // Show upload indicator
             const uploadBtn = document.getElementById('upload-btn');
-            uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Загрузка...';
+            uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Uploading...';
             uploadBtn.disabled = true;
 
             try {
@@ -253,13 +285,13 @@
                     uploadedPhotos = data.data.photos;
                     showPhotoPreview(files, uploadedPhotos);
                 } else {
-                    alert('Ошибка загрузки: ' + data.message);
+                    alert('Upload error: ' + data.message);
                 }
             } catch (error) {
-                console.error('Ошибка:', error);
-                alert('Ошибка загрузки фотографий');
+                console.error('Error:', error);
+                alert('Error uploading photos');
             } finally {
-                uploadBtn.innerHTML = '<i class="fas fa-camera mr-2"></i>Выбрать фотографии';
+                uploadBtn.innerHTML = '<i class="fas fa-camera mr-2"></i>Choose Photos';
                 uploadBtn.disabled = false;
             }
         });
@@ -311,17 +343,22 @@
             e.preventDefault();
 
             if (!tourId) {
-                alert('Ошибка: не указан ID тура');
+                alert('Error: Tour ID not specified');
                 return;
             }
 
             if (selectedRating === 0) {
-                alert('Пожалуйста, поставьте оценку');
+                alert('Please rate the tour');
+                return;
+            }
+
+            if (selectedGuideRating === 0) {
+                alert('Please rate your guide');
                 return;
             }
 
             const submitBtn = document.getElementById('submit-btn');
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Отправка...';
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Submitting...';
             submitBtn.disabled = true;
 
             try {
@@ -329,6 +366,7 @@
                     tourId: parseInt(tourId),
                     reviewerName: document.getElementById('reviewerName').value,
                     rating: selectedRating,
+                    guideRating: selectedGuideRating,
                     text: document.getElementById('text').value,
                     photos: uploadedPhotos
                 };
@@ -347,14 +385,14 @@
                     document.getElementById('success-modal').classList.remove('hidden');
                     document.getElementById('success-modal').classList.add('flex');
                 } else {
-                    alert('Ошибка: ' + data.message);
-                    submitBtn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i>Отправить отзыв';
+                    alert('Error: ' + data.message);
+                    submitBtn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i>Submit Review';
                     submitBtn.disabled = false;
                 }
             } catch (error) {
-                console.error('Ошибка:', error);
-                alert('Ошибка отправки отзыва');
-                submitBtn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i>Отправить отзыв';
+                console.error('Error:', error);
+                alert('Error submitting review');
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i>Submit Review';
                 submitBtn.disabled = false;
             }
         });

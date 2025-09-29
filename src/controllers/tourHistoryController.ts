@@ -104,16 +104,6 @@ export const getFinishedTours = async (req: Request, res: Response): Promise<voi
         },
         reviews: {
           where: { isApproved: true }
-        },
-        guideReviews: {
-          include: {
-            guide: {
-              select: {
-                id: true,
-                name: true
-              }
-            }
-          }
         }
       },
       orderBy: {
@@ -139,8 +129,7 @@ export const getFinishedTours = async (req: Request, res: Response): Promise<voi
         bookingsCount: tour.bookings.length,
         category: tour.category,
         tourBlock: tour.tourBlockAssignments?.[0]?.tourBlock || null,
-        customerReviews: tour.reviews,
-        guideReviews: tour.guideReviews
+        customerReviews: tour.reviews
       };
     });
 
@@ -211,16 +200,6 @@ export const getTourDetailsAdmin = async (req: Request, res: Response): Promise<
                 id: true,
                 fullName: true,
                 email: true
-              }
-            }
-          }
-        },
-        guideReviews: {
-          include: {
-            guide: {
-              select: {
-                id: true,
-                name: true
               }
             }
           }

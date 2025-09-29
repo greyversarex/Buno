@@ -7,7 +7,6 @@ import {
   startTour,
   finishTour,
   collectReviews,
-  leaveGuideReview,
   createTourGuideProfile,
   updateGuideProfile,
   uploadGuideAvatar,
@@ -33,7 +32,6 @@ router.get('/tours/:id', authenticateTourGuide, getTourDetails);
 router.post('/tours/:id/start', authenticateTourGuide, startTour);
 router.post('/tours/:id/finish', authenticateTourGuide, finishTour);
 router.post('/tours/:id/collect-reviews', authenticateTourGuide, collectReviews);
-router.post('/tours/:id/guide-review', authenticateTourGuide, leaveGuideReview);
 
 // Маршруты для управления профилем гида (админ панель) - с поддержкой загрузки файлов
 router.put('/profile/:id', upload.fields([

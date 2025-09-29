@@ -5,7 +5,7 @@ import { parseMultilingualField, getLanguageFromRequest } from '../utils/multili
 
 export const createReview = async (req: Request, res: Response) => {
   try {
-    const { customerId, tourId, rating, text, reviewerName, photos } = req.body;
+    const { customerId, tourId, rating, guideRating, text, reviewerName, photos } = req.body;
 
     // Validation
     if (!tourId || !rating || !text || !reviewerName) {
@@ -19,6 +19,13 @@ export const createReview = async (req: Request, res: Response) => {
       return res.status(400).json({
         success: false,
         message: 'Rating must be between 1 and 5',
+      });
+    }
+
+    if (guideRating && (guideRating < 1 || guideRating > 5)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Guide rating must be between 1 and 5',
       });
     }
 
@@ -64,6 +71,7 @@ export const createReview = async (req: Request, res: Response) => {
         tourId,
         reviewerName,
         rating,
+        guideRating: guideRating || null,
         text,
         photos: photos ? JSON.stringify(photos) : null,
       },
