@@ -433,6 +433,7 @@ export const getGuideById = async (req: Request, res: Response) => {
       passportSeries: guide.passportSeries,
       registration: guide.registration,
       residenceAddress: guide.residenceAddress,
+      contact: guide.contact, // ✅ Добавляем contact для админ режима
     } : baseGuide;
 
     return res.json({
