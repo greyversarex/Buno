@@ -167,7 +167,7 @@ export const updateTourBlock = async (req: Request, res: Response): Promise<Resp
         ...(title && { title: typeof title === 'string' ? title : JSON.stringify(title) }),
         ...(description !== undefined && { description: description ? (typeof description === 'string' ? description : JSON.stringify(description)) : null }),
         ...(slug && { slug }),
-        ...(isActive !== undefined && { isActive }),
+        ...(isActive !== undefined && { isActive: isActive === 'true' || isActive === true }),
         ...(sortOrder !== undefined && { sortOrder })
       }
     });
