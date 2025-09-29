@@ -412,7 +412,7 @@ export const updateDriverProfile = async (req: Request, res: Response): Promise<
     if (description) updateData.description = description;
     if (languages) updateData.languages = languages;
     if (experience !== undefined) updateData.experience = parseInt(experience);
-    if (isActive !== undefined) updateData.isActive = isActive;
+    if (isActive !== undefined) updateData.isActive = isActive === 'true' || isActive === true;
     if (licenseNumber) updateData.licenseNumber = licenseNumber;
     if (licenseCategory) updateData.licenseCategory = licenseCategory;
     if (workingAreas) updateData.workingAreas = workingAreas;
