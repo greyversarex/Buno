@@ -81,6 +81,7 @@ function safeJsonParse(jsonString: any, defaultValue: any = null) {
 // Получение всех водителей для админ-панели
 export const getAllDrivers = async (req: Request, res: Response): Promise<void> => {
   try {
+    const includeRaw = req.query.includeRaw === 'true';
     const drivers = await prisma.driver.findMany({
       orderBy: { createdAt: 'desc' },
       include: {
@@ -94,14 +95,24 @@ export const getAllDrivers = async (req: Request, res: Response): Promise<void> 
       }
     });
 
-    const formattedDrivers = drivers.map((driver: any) => ({
-      ...driver,
-      contact: safeJsonParse(driver.contact, {}),
-      documents: safeJsonParse(driver.documents, []),
-      vehicleTypes: safeJsonParse(driver.vehicleTypes, []),
-      vehicleInfo: safeJsonParse(driver.vehicleInfo, []),
-      assignedTours: driver.tourDrivers.map((td: any) => td.tour)
-    }));
+    const formattedDrivers = drivers.map((driver: any) => {
+      const baseDriver = {
+        ...driver,
+        vehicleTypes: safeJsonParse(driver.vehicleTypes, []),
+        vehicleInfo: safeJsonParse(driver.vehicleInfo, []),
+        assignedTours: driver.tourDrivers.map((td: any) => td.tour)
+      };
+      
+      return includeRaw ? {
+        ...baseDriver,
+        // Чувствительные данные только для админ панели
+        contact: safeJsonParse(driver.contact, {}),
+        documents: safeJsonParse(driver.documents, [])
+      } : {
+        ...baseDriver,
+        password: undefined // Исключаем пароль
+      };
+    });
 
     console.log(`📋 Found ${drivers.length} drivers`);
 
@@ -124,6 +135,7 @@ export const getAllDrivers = async (req: Request, res: Response): Promise<void> 
 export const getDriverById = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
+    const includeRaw = req.query.includeRaw === 'true';
     const driverId = parseInt(id);
 
     if (!driverId) {
@@ -155,13 +167,22 @@ export const getDriverById = async (req: Request, res: Response): Promise<void> 
       return;
     }
 
-    const formattedDriver = {
+    const baseDriver = {
       ...driver,
-      contact: safeJsonParse(driver.contact, {}),
-      documents: safeJsonParse(driver.documents, []),
       vehicleTypes: safeJsonParse(driver.vehicleTypes, []),
       vehicleInfo: safeJsonParse(driver.vehicleInfo, []),
       assignedTours: driver.tourDrivers.map((td: any) => td.tour)
+    };
+    
+    const formattedDriver = includeRaw ? {
+      ...baseDriver,
+      // Чувствительные данные только для админ панели
+      contact: safeJsonParse(driver.contact, {}),
+      documents: safeJsonParse(driver.documents, [])
+    } : {
+      ...baseDriver,
+      // Публичная версия без чувствительных данных
+      password: undefined // Исключаем пароль
     };
 
     res.json({
