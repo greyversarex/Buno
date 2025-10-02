@@ -14,7 +14,12 @@ Bunyod-Tour is a comprehensive tourism booking platform for Central Asia, offeri
   - Changed from purple gradient to gray theme (#6B7280)
   - Updated `.contact-btn` and `.experience-badge` classes to match platform standard
   - Consistent hover effects across all CTAs
-- **Design Consistency**: All primary CTA buttons now use unified gray color scheme matching search button (#6B7280)
+- **Tour Page Accordions Update**: Changed accordion headers on tour detail pages to gray theme
+  - "Что включено:" accordion now uses #6B7280 (was purple gradient)
+  - "Не включено в тур:" accordion now uses #6B7280 (was purple gradient)
+  - Hover transitions to #4B5563 matching platform standard
+  - Unified styling across tour-template.html
+- **Design Consistency**: All primary CTA buttons and interactive elements now use unified gray color scheme matching search button (#6B7280)
 
 **PREVIOUS: Guide Cards UI Enhancement - Reviews Section Removed (October 2, 2025)**
 - **Guide Cards Cleanup**: Removed reviews display from guide cards on tour-guides.html page
