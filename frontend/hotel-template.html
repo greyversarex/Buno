@@ -490,9 +490,19 @@
                 
                 // Location (country + city + address)
                 const locationParts = [];
-                if (hotelData.country) locationParts.push(hotelData.country);
-                if (hotelData.city) locationParts.push(hotelData.city);
-                if (hotelData.address) locationParts.push(hotelData.address);
+                if (hotelData.country) {
+                    const countryName = hotelData.country.nameRu || hotelData.country.nameEn || hotelData.country.name || '';
+                    if (countryName) locationParts.push(countryName);
+                }
+                if (hotelData.city) {
+                    const cityName = hotelData.city.nameRu || hotelData.city.nameEn || hotelData.city.name || '';
+                    if (cityName) locationParts.push(cityName);
+                }
+                if (hotelData.address) {
+                    const addressData = safeJsonParse(hotelData.address, { ru: '', en: '' });
+                    const addressText = getLocalizedText(addressData, currentLang) || hotelData.address || '';
+                    if (addressText) locationParts.push(addressText);
+                }
                 
                 const locationEl = document.getElementById('hotel-location');
                 if (locationEl) locationEl.textContent = locationParts.join(', ') || 'Адрес не указан';

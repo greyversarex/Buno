@@ -147,6 +147,22 @@ app.use('/uploads/guides', (req, res, next) => {
 const uploadRoutes = require('./src/routes/uploadRoutes.ts').default;
 app.use('/upload', uploadRoutes);
 
+// Tour template page - explicit route BEFORE static middleware
+app.get('/tour-template.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'frontend', 'tour-template.html'));
+});
+
+// Hotel template page - explicit route BEFORE static middleware
+app.get('/hotel-template.html', (req, res) => {
+  console.log('🏨 Serving hotel template page with query:', req.query);
+  res.sendFile(path.join(__dirname, 'frontend', 'hotel-template.html'));
+});
+
+// Hotels catalog page - explicit route BEFORE static middleware
+app.get('/hotels-catalog.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'frontend', 'hotels-catalog.html'));
+});
+
 // HTML files will be served by express.static
 
 // Обслуживать статические файлы из папки frontend
@@ -172,22 +188,7 @@ app.use('/attached_assets', (req, res, next) => {
 // app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // TODO: Implement authenticated document access via API endpoints
 
-// Tour template page - explicit route BEFORE static middleware
-app.get('/tour-template.html', (req, res) => {
-  res.sendFile(path.join(__dirname, 'frontend', 'tour-template.html'));
-});
-
-// Hotel template page - explicit route BEFORE static middleware
-app.get('/hotel-template.html', (req, res) => {
-  res.sendFile(path.join(__dirname, 'frontend', 'hotel-template.html'));
-});
-
-// Hotels catalog page - explicit route BEFORE static middleware
-app.get('/hotels-catalog.html', (req, res) => {
-  res.sendFile(path.join(__dirname, 'frontend', 'hotels-catalog.html'));
-});
-
-// Обработчик корневого пути перенесен выше (строка 81-85)
+// Обработчик корневого пути и template роутов перемещены выше (перед static middleware)
 
 // 404 handler for unmatched routes
 app.use((req, res) => {
