@@ -1512,34 +1512,20 @@
                 console.log("No images found in tour data");
                 // Set a default placeholder image
                 if (mainImage) {
-                    mainImage.src = "https://via.placeholder.com/800x600/cccccc/666666?text=No+Image";
+                    mainImage.src = getAbsoluteImageUrl(null);
                 }
                 return;
             }
             
-            // Ensure images are properly formatted URLs
-            tourData.images = tourData.images.map(img => {
-                if (img.startsWith('/objects/')) {
-                    // Object storage path - construct full URL
-                    return `${window.location.origin}${img}`;
-                } else if (img.startsWith('http')) {
-                    // Full URL - use as is
-                    return img;
-                } else {
-                    // Relative path - make it absolute
-                    return `${window.location.origin}/${img}`;
-                }
-            });
-            
-            // Set main image
-            mainImage.src = tourData.images[0];
+            // Set main image using our safe utility function
+            mainImage.src = getAbsoluteImageUrl(tourData.images[0]);
             currentImageIndex = 0;
             
             // Generate thumbnails
             thumbnailColumn.innerHTML = '';
             tourData.images.slice(0, 4).forEach((imageUrl, index) => {
                 const thumbnail = document.createElement('img');
-                thumbnail.src = imageUrl;
+                thumbnail.src = getAbsoluteImageUrl(imageUrl);
                 thumbnail.alt = `Tour image ${index + 1}`;
                 thumbnail.className = `w-full h-20 object-cover rounded-lg cursor-pointer thumbnail ${index === 0 ? 'thumbnail-active' : 'thumbnail-inactive'}`;
                 thumbnail.addEventListener('click', () => switchMainImage(index));
@@ -1736,30 +1722,13 @@
             return idFromUrl || tourData?.id;
         }
 
-        // Функция для нормализации путей к изображениям
-        function normalizeImagePath(imagePath) {
-            if (!imagePath) return '';
-            
-            if (imagePath.startsWith('/objects/')) {
-                // Object storage path - construct full URL
-                return `${window.location.origin}${imagePath}`;
-            } else if (imagePath.startsWith('/attached_assets/')) {
-                // Attached assets path - construct full URL
-                return `${window.location.origin}${imagePath}`;
-            } else if (imagePath.startsWith('http')) {
-                // Full URL - use as is
-                return imagePath;
-            } else {
-                // Relative path - make it absolute
-                return `${window.location.origin}/${imagePath}`;
-            }
-        }
+        // Note: Image path normalization is now handled by getAbsoluteImageUrl() from utils.js
 
         function switchMainImage(index) {
             if (!tourData.images || index >= tourData.images.length) return;
             
             currentImageIndex = index;
-            document.getElementById('main-image').src = tourData.images[index];
+            document.getElementById('main-image').src = getAbsoluteImageUrl(tourData.images[index]);
             
             // Update thumbnail states
             document.querySelectorAll('.thumbnail').forEach((thumb, i) => {
