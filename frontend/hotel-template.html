@@ -708,7 +708,7 @@
                         hotelImages.forEach((image, index) => {
                             galleryHTML += `
                                 <div class="aspect-w-16 aspect-h-12 bg-gray-200 rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity" onclick="openLightbox(${index})">
-                                    <img src="${image}" alt="Hotel Image ${index + 1}" class="w-full h-full object-cover">
+                                    <img src="${getAbsoluteImageUrl(image)}" alt="Hotel Image ${index + 1}" class="w-full h-full object-cover">
                                 </div>
                             `;
                         });
@@ -732,7 +732,7 @@
         // Lightbox functions
         function openLightbox(index) {
             currentImageIndex = index;
-            document.getElementById('lightbox-img').src = hotelImages[index];
+            document.getElementById('lightbox-img').src = getAbsoluteImageUrl(hotelImages[index]);
             document.getElementById('lightbox').style.display = 'flex';
         }
 
@@ -742,12 +742,12 @@
 
         function nextImage() {
             currentImageIndex = (currentImageIndex + 1) % hotelImages.length;
-            document.getElementById('lightbox-img').src = hotelImages[currentImageIndex];
+            document.getElementById('lightbox-img').src = getAbsoluteImageUrl(hotelImages[currentImageIndex]);
         }
 
         function previousImage() {
             currentImageIndex = (currentImageIndex - 1 + hotelImages.length) % hotelImages.length;
-            document.getElementById('lightbox-img').src = hotelImages[currentImageIndex];
+            document.getElementById('lightbox-img').src = getAbsoluteImageUrl(hotelImages[currentImageIndex]);
         }
 
         // Booking functionality removed since booking section is removed
