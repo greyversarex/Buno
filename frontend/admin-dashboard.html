@@ -10,7 +10,7 @@
     <script src="/public/js/i18n.js"></script>
     <script src="/public/js/utils.js"></script>
     <!-- 🔧 ПОДКЛЮЧЕНИЕ ADMIN HELPERS (Unified Standard) -->
-    <script src="/public/js/admin-helpers.js?v=5"></script>
+    <script src="/public/js/admin-helpers.js?v=6"></script>
     <style>
         * {
             margin: 0;
@@ -6676,22 +6676,25 @@
                 // Установить hotel-id
                 document.getElementById('hotel-id').value = hotel.id;
                 
-                // Многоязычные поля: name
-                if (hotel.name) {
-                    const name = typeof hotel.name === 'string' ? JSON.parse(hotel.name) : hotel.name;
+                // ИСПРАВЛЕНО: Используем _raw для многоязычных полей
+                const rawData = hotel._raw || {};
+                
+                // Многоязычные поля: name (из _raw)
+                if (rawData.name) {
+                    const name = typeof rawData.name === 'string' ? JSON.parse(rawData.name) : rawData.name;
                     document.getElementById('hotelNameRu').value = name.ru || '';
                     document.getElementById('hotelNameEn').value = name.en || '';
                 }
                 
-                // Многоязычные поля: description
-                if (hotel.description) {
-                    const desc = typeof hotel.description === 'string' ? JSON.parse(hotel.description) : hotel.description;
+                // Многоязычные поля: description (из _raw)
+                if (rawData.description) {
+                    const desc = typeof rawData.description === 'string' ? JSON.parse(rawData.description) : rawData.description;
                     document.getElementById('hotelDescRu').value = desc.ru || '';
                     document.getElementById('hotelDescEn').value = desc.en || '';
                 }
                 
-                // Простые поля
-                document.getElementById('hotelAddress').value = hotel.address || '';
+                // Простые поля (адрес тоже из _raw)
+                document.getElementById('hotelAddress').value = rawData.address || '';
                 document.getElementById('hotelStars').value = hotel.stars || '';
                 document.getElementById('hotelCategory').value = hotel.category || '';
                 document.getElementById('hotelActive').checked = hotel.isActive !== false;
@@ -7210,6 +7213,22 @@
                 });
             } else {
                 console.error('❌ Hotel form not found!');
+            }
+            
+            // Обработчик изменения страны для загрузки городов
+            const hotelCountry = document.getElementById('hotelCountry');
+            if (hotelCountry) {
+                hotelCountry.addEventListener('change', function() {
+                    const countryId = this.value;
+                    if (countryId) {
+                        loadCitiesForCountry(countryId, 'hotelCity');
+                    } else {
+                        const citySelect = document.getElementById('hotelCity');
+                        if (citySelect) {
+                            citySelect.innerHTML = '<option value="">Сначала выберите страну</option>';
+                        }
+                    }
+                });
             }
         });
         
@@ -13314,9 +13333,8 @@
                     data.data.forEach(country => {
                         if (country.isActive) {
                             const option = document.createElement('option');
-                            option.value = country.nameRu; // Используем русское название как значение
+                            option.value = country.id; // ИСПРАВЛЕНО: Используем ID как значение
                             option.textContent = country.nameRu;
-                            option.dataset.countryId = country.id;
                             select.appendChild(option);
                         }
                     });
@@ -13332,8 +13350,8 @@
             }
         }
         
-        // Загрузка городов для выбранной страны
-        async function loadCitiesForCountry(countryName, citySelectId) {
+        // Загрузка городов для выбранной страны (ИСПРАВЛЕНО: принимает countryId)
+        async function loadCitiesForCountry(countryId, citySelectId) {
             const citySelect = document.getElementById(citySelectId);
             
             if (!citySelect) return Promise.resolve();
@@ -13341,7 +13359,7 @@
             // Очищаем список городов
             citySelect.innerHTML = '<option value="">Загружаем города...</option>';
             
-            if (!countryName) {
+            if (!countryId) {
                 citySelect.innerHTML = '<option value="">Сначала выберите страну</option>';
                 return Promise.resolve();
             }
@@ -13358,9 +13376,9 @@
                 const data = await response.json();
                 
                 if (data.success && data.data) {
-                    // Фильтруем города по выбранной стране
+                    // ИСПРАВЛЕНО: Фильтруем города по countryId
                     const countryCities = data.data.filter(city => 
-                        city.isActive && city.country && city.country.nameRu === countryName
+                        city.isActive && city.countryId == countryId
                     );
                     
                     citySelect.innerHTML = '<option value="">Выберите город</option>';
@@ -13368,9 +13386,8 @@
                     if (countryCities.length > 0) {
                         countryCities.forEach(city => {
                             const option = document.createElement('option');
-                            option.value = city.nameRu;
+                            option.value = city.id; // ИСПРАВЛЕНО: Используем ID как значение
                             option.textContent = city.nameRu;
-                            option.dataset.cityId = city.id;
                             citySelect.appendChild(option);
                         });
                     } else {

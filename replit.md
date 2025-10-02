@@ -3,20 +3,27 @@
 ## Overview
 Bunyod-Tour is a comprehensive tourism booking platform for Central Asia, offering tour, hotel, and guide booking, secure payments, and administrative management. It aims to provide a seamless user experience and efficient tools for administrators, supporting multilingual content and diverse payment methods. The project targets significant market potential by modernizing and streamlining regional tourism services.
 
-## Recent Changes (September 28, 2025)
-**COMPLETED: Dynamic Currency Conversion System & Tour Blocks Translation Update**
+## Recent Changes (October 2, 2025)
+**COMPLETED: Hotels Module - Critical Data Loading Fixes**
+- **Multilingual Fields Fix**: Fixed empty fields during hotel editing
+  - Name (ru/en) now correctly loads from `hotel._raw.name` instead of direct `hotel.name`
+  - Description (ru/en) now correctly loads from `hotel._raw.description` 
+  - Address now correctly loads from `hotel._raw.address`
+- **Country/City Selection Fix**: Completely rewritten dropdown system
+  - `loadCountriesForSelect()` now uses `country.id` as option.value (was using nameRu)
+  - `loadCitiesForCountry()` now accepts `countryId` parameter and uses `city.id` as option.value
+  - Added automatic change handler for country selector to load cities dynamically
+  - Cascading selection works correctly: country → cities → saved values on edit
+  - `saveHotel()` now saves correct countryId and cityId (was saving null before)
+- **Hotels Module Architecture**: Fully procedural approach independent from admin-helpers.js
+  - Direct data collection with `saveHotel()` following `saveTourForm()` pattern
+  - Manual fetch-based `loadHotelData()` with proper `_raw` structure handling
+  - Production-ready with architect validation and regression testing recommended
+
+**PREVIOUS: Dynamic Currency Conversion System & Tour Blocks Translation Update (September 28, 2025)**
 - **Currency Conversion System**: Implemented complete real-time currency conversion for tour prices with TJS, USD, EUR, RUB, CNY support
-  - Exchange rate API integration with /api/exchange-rates/map endpoint and fallback rates for offline functionality
-  - Header currency selector properly connects to conversion system with localStorage persistence
-  - Tour cards display original TJS prices with converted prices shown when different currency selected
-  - Robust error handling with guards for missing functions and API failures
-  - Seamless integration: Header selector → layout-loader.js → window.updateCurrency() → price updates
 - **Tour Blocks Translation**: Updated "Рекомендованные туры по Центральной Азии" to "Комбинированные туры по Центральной Азии"
-  - English translation: "Combined Tours in Central Asia"
-  - Database and scripts updated with new slug "combined-central-asia"
-  - Translation keys synchronized across frontend components
 - **System Cleanup**: Removed duplicate currency functions and backup files for cleaner codebase
-- **Production Ready**: Both systems tested and confirmed working with proper initialization and error handling
 
 **PREVIOUS: Comprehensive Frontend-Backend Synchronization Audit for Tours, Hotels & Guides Sections**
 - **Tours Section**: Fixed 30+ critical field mismatches, resolved JSON multilingual serialization, corrected data types, cleaned duplicate database fields
