@@ -444,7 +444,7 @@
                         <!-- Hotel Images -->
                         <div class="md:col-span-1">
                             ${hotel.images && hotel.images.length > 0 ? `
-                                <img src="${hotel.images[0]}" alt="${hotel.name.ru || hotel.name.en}" class="w-full h-48 object-cover rounded-lg">
+                                <img src="${getAbsoluteImageUrl(hotel.images[0])}" alt="${hotel.name.ru || hotel.name.en}" class="w-full h-48 object-cover rounded-lg">
                             ` : `
                                 <div class="w-full h-48 bg-gray-200 rounded-lg flex items-center justify-center">
                                     <i class="fas fa-hotel text-4xl text-gray-400"></i>

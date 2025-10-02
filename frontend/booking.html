@@ -426,7 +426,7 @@
                     <!-- Image Carousel -->
                     <div class="hotel-carousel" data-hotel-id="${hotel.id}">
                         <div class="hotel-images" id="images-${hotel.id}">
-                            ${hotel.images.map(img => `<img src="${img}" alt="${hotel.name}" loading="lazy">`).join('')}
+                            ${hotel.images.map(img => `<img src="${getAbsoluteImageUrl(img)}" alt="${hotel.name}" loading="lazy">`).join('')}
                         </div>
                         
                         <!-- Navigation buttons -->
