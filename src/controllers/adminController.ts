@@ -14,6 +14,13 @@ export class AdminController {
   static async login(req: Request, res: Response, next: NextFunction) {
     try {
       const { username, password } = req.body;
+      
+      console.log('🔐 Login attempt:', { 
+        username, 
+        passwordLength: password?.length,
+        usernameType: typeof username,
+        passwordType: typeof password
+      });
 
       if (!username || !password) {
         return res.status(400).json({
@@ -24,8 +31,10 @@ export class AdminController {
 
       // Найти администратора по имени пользователя с retry logic
       const admin = await withRetry(() => prisma.admin.findUnique({
-        where: { username }
+        where: { username: username.trim() }
       }));
+      
+      console.log('👤 Admin found:', admin ? 'yes' : 'no', admin?.username);
 
       if (!admin || !admin.isActive) {
         return res.status(401).json({
@@ -35,7 +44,9 @@ export class AdminController {
       }
 
       // Проверить пароль
-      const isPasswordValid = await bcrypt.compare(password, admin.password);
+      const isPasswordValid = await bcrypt.compare(password.trim(), admin.password);
+      console.log('🔑 Password check:', isPasswordValid ? 'valid' : 'invalid');
+      
       if (!isPasswordValid) {
         return res.status(401).json({
           success: false,
