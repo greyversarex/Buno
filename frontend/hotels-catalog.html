@@ -243,8 +243,10 @@
                                     ${hotel.category ? `<span class="ml-2">${hotel.category}</span>` : ''}
                                 </div>
                                 <a href="/hotel-template.html?hotel=${hotel.id}" 
-                                   class="text-white px-4 py-2 rounded-lg text-sm font-medium transition-all hover:opacity-90" 
-                                   style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                   class="text-white px-4 py-2 rounded-lg text-sm font-medium transition-all" 
+                                   style="background: #6B7280; box-shadow: 0 2px 8px rgba(107, 114, 128, 0.3);"
+                                   onmouseover="this.style.background='#4B5563'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 15px rgba(107, 114, 128, 0.4)'"
+                                   onmouseout="this.style.background='#6B7280'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(107, 114, 128, 0.3)'">
                                     ${getTranslation('btn.more_details')}
                                 </a>
                             </div>

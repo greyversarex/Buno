@@ -4,16 +4,17 @@
 Bunyod-Tour is a comprehensive tourism booking platform for Central Asia, offering tour, hotel, and guide booking, secure payments, and administrative management. It aims to provide a seamless user experience and efficient tools for administrators, supporting multilingual content and diverse payment methods. The project targets significant market potential by modernizing and streamlining regional tourism services.
 
 ## Recent Changes (October 2, 2025)
-**LATEST: Platform-Wide Button Color Unification (October 2, 2025)**
-- **Hotel Cards Button Update**: Changed "Подробнее" buttons on hotel cards to unified gradient style
-  - Applied `linear-gradient(135deg, #667eea 0%, #764ba2 100%)` matching platform search button
-  - Replaced previous `bg-blue-600 hover:bg-blue-700` solid blue styling
-  - Added `hover:opacity-90` for smooth interaction feedback
-  - Consistent CTA styling across hotels-catalog.html
-- **Guide Cards Verification**: Confirmed guide "Нанять гида" buttons already use same gradient
-  - `.contact-btn` and `.experience-badge` classes maintain platform gradient standard
-  - Cross-page button styling now fully cohesive
-- **Design Consistency**: All primary CTA buttons now use unified gradient (#667eea → #764ba2)
+**LATEST: Platform-Wide Button Color Unification to Gray Theme (October 2, 2025)**
+- **Hotel Cards Button Update**: Changed "Подробнее" buttons on hotel cards to match search button style
+  - Applied `background: #6B7280` (gray-500) matching platform search button
+  - Hover state: `#4B5563` (gray-600) with translateY effect
+  - Replaced previous blue styling with consistent gray theme
+  - Added matching box-shadow effects for visual cohesion
+- **Guide Cards Button Update**: Updated "Нанять гида" buttons and "Профессиональный гид" badges
+  - Changed from purple gradient to gray theme (#6B7280)
+  - Updated `.contact-btn` and `.experience-badge` classes to match platform standard
+  - Consistent hover effects across all CTAs
+- **Design Consistency**: All primary CTA buttons now use unified gray color scheme matching search button (#6B7280)
 
 **PREVIOUS: Guide Cards UI Enhancement - Reviews Section Removed (October 2, 2025)**
 - **Guide Cards Cleanup**: Removed reviews display from guide cards on tour-guides.html page
