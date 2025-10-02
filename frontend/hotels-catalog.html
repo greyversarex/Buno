@@ -155,13 +155,13 @@
                 // 🌐 МНОГОЯЗЫЧНАЯ ОБРАБОТКА С ИСПОЛЬЗОВАНИЕМ ЦЕНТРАЛЬНОЙ СИСТЕМЫ
                 const currentLang = getCurrentLanguage(); // Получаем текущий язык
                 
-                // Используем утилиты для безопасного парсинга
+                // Безопасный парсинг имени (строка, JSON-строка или объект)
                 const nameData = safeJsonParse(hotel.name, { ru: '', en: '' });
-                const descData = safeJsonParse(hotel.description, { ru: '', en: '' });
+                const hotelName = getLocalizedText(nameData, currentLang) || nameData || '';
                 
-                // Получаем текст на текущем языке с fallback
-                const hotelName = getLocalizedText(nameData, currentLang) || getTranslation('hotel.default_name');
-                const hotelDesc = getLocalizedText(descData, currentLang) || getTranslation('hotel.no_description');
+                // Безопасный парсинг описания (строка, JSON-строка или объект)
+                const descData = safeJsonParse(hotel.description, { ru: '', en: '' });
+                const hotelDesc = getLocalizedText(descData, currentLang) || '';
                 
                 // Get first image
                 const firstImage = hotel.images && hotel.images.length > 0 ? hotel.images[0] : null;
@@ -178,6 +178,24 @@
                     `<span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">${amenity}</span>`
                 ).join('');
                 
+                // Получаем данные о стране и городе из связанных объектов
+                const countryName = hotel.country?.nameRu || hotel.country?.nameEn || '';
+                const cityName = hotel.city?.nameRu || hotel.city?.nameEn || '';
+                
+                // Формируем строку локации
+                let locationText = '';
+                if (cityName && countryName) {
+                    locationText = `${cityName}, ${countryName}`;
+                } else if (cityName) {
+                    locationText = cityName;
+                } else if (countryName) {
+                    locationText = countryName;
+                }
+                
+                // Безопасный парсинг адреса (строка, JSON-строка или объект)
+                const addressData = safeJsonParse(hotel.address, { ru: '', en: '' });
+                const hotelAddress = getLocalizedText(addressData, currentLang) || '';
+                
                 return `
                     <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
                         <div class="relative">
@@ -189,16 +207,31 @@
                             </div>
                         </div>
                         <div class="p-4">
-                            <h3 class="font-bold text-lg text-gray-900 mb-1 line-clamp-1" 
-                                data-hotel-name="${JSON.stringify(nameData).replace(/"/g, '&quot;')}">${hotelName}</h3>
-                            <p class="text-gray-600 text-sm mb-2">
-                                <i class="fas fa-map-marker-alt text-red-500 mr-1"></i>
-                                ${hotel.city || hotel.address || getTranslation('hotel.no_location')}
-                            </p>
+                            <h3 class="font-bold text-lg text-gray-900 mb-1 line-clamp-1">${hotelName}</h3>
                             
-                            <div class="text-gray-600 text-sm mb-3 line-clamp-2"
-                                 data-hotel-description="${JSON.stringify(descData).replace(/"/g, '&quot;')}">${hotelDesc}
-                            </div>
+                            ${locationText ? `
+                            <p class="text-blue-600 text-sm mb-2">
+                                <i class="fas fa-map-marker-alt mr-1"></i>
+                                ${locationText}
+                            </p>
+                            ` : ''}
+                            
+                            ${hotelAddress ? `
+                            <p class="text-gray-600 text-sm mb-2">
+                                <i class="fas fa-location-dot text-gray-400 mr-1"></i>
+                                <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(hotelAddress + (cityName ? ', ' + cityName : '') + (countryName ? ', ' + countryName : ''))}" 
+                                   target="_blank" 
+                                   rel="noopener noreferrer"
+                                   class="hover:text-blue-600 transition-colors">
+                                    ${hotelAddress}
+                                    <i class="fas fa-external-link-alt text-xs ml-1"></i>
+                                </a>
+                            </p>
+                            ` : ''}
+                            
+                            ${hotelDesc ? `
+                            <div class="text-gray-600 text-sm mb-3 line-clamp-2">${hotelDesc}</div>
+                            ` : ''}
                             
                             <div class="flex flex-wrap gap-1 mb-3">
                                 ${amenitiesHtml}

@@ -77,13 +77,15 @@ export const getHotels = async (req: Request, res: Response): Promise<Response> 
             }
           };
         } else {
-          // ДЛЯ ПУБЛИЧНОГО ИСПОЛЬЗОВАНИЯ: только локализованный контент
+          // ДЛЯ ПУБЛИЧНОГО ИСПОЛЬЗОВАНИЯ: только локализованный контент + связанные данные
           return {
             ...hotel,
             name: parseMultilingualField(hotel.name, language),
             description: parseMultilingualField(hotel.description, language),
             address: parseMultilingualField(hotel.address, language),
-            categoryTranslated: getHotelCategoryTranslation(hotel.category, language)
+            categoryTranslated: getHotelCategoryTranslation(hotel.category, language),
+            country: hotel.hotelCountry, // Добавляем связанную страну для публичного API
+            city: hotel.hotelCity // Добавляем связанный город для публичного API
           };
         }
       } catch (jsonError) {
@@ -166,12 +168,14 @@ export const getHotel = async (req: Request, res: Response): Promise<Response> =
           }
         };
       } else {
-        // ДЛЯ ПУБЛИЧНОГО ИСПОЛЬЗОВАНИЯ: только локализованный контент
+        // ДЛЯ ПУБЛИЧНОГО ИСПОЛЬЗОВАНИЯ: только локализованный контент + связанные данные
         localizedHotel = {
           ...hotel,
           name: parseMultilingualField(hotel.name, language),
           description: parseMultilingualField(hotel.description, language),
-          address: parseMultilingualField(hotel.address, language)
+          address: parseMultilingualField(hotel.address, language),
+          country: hotel.hotelCountry, // Добавляем связанную страну для публичного API
+          city: hotel.hotelCity // Добавляем связанный город для публичного API
         };
       }
     } catch (jsonError) {
