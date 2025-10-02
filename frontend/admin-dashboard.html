@@ -6830,7 +6830,7 @@
                                         let imagesHtml = '<div class="uploaded-images-preview mb-3"><h4 class="text-sm font-semibold mb-2">Загруженные изображения:</h4><div class="flex gap-2 flex-wrap">';
                                         images.forEach((img, index) => {
                                             imagesHtml += `<div class="image-preview-item relative">
-                                                <img data-image-placeholder="hotel-gallery" alt="Hotel image" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 2px solid #e5e7eb;">
+                                                <img src="${getAbsoluteImageUrl(img)}" data-image-placeholder="hotel-gallery" alt="Hotel image" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 2px solid #e5e7eb;">
                                                 <div class="text-xs text-gray-500 text-center mt-1">Изображение ${index + 1}</div>
                                             </div>`;
                                         });
