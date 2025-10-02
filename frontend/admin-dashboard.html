@@ -10,7 +10,7 @@
     <script src="/public/js/i18n.js"></script>
     <script src="/public/js/utils.js"></script>
     <!-- 🔧 ПОДКЛЮЧЕНИЕ ADMIN HELPERS (Unified Standard) -->
-    <script src="/public/js/admin-helpers.js"></script>
+    <script src="/public/js/admin-helpers.js?v=2"></script>
     <style>
         * {
             margin: 0;
@@ -3329,11 +3329,7 @@
             stars: {
                 type: 'number',
                 elementId: 'hotelStars',
-                required: true
-            },
-            address: {
-                type: 'multilingual',
-                elementId: ['hotelAddressRu', 'hotelAddressEn']
+                required: false
             },
             countryId: {
                 type: 'number',
@@ -3358,10 +3354,6 @@
                     prefix: 'meal',
                     types: ['RO', 'BB', 'HB', 'FB', 'AI']
                 }
-            },
-            amenities: {
-                type: 'multilingual',
-                elementId: ['hotelAmenitiesRu', 'hotelAmenitiesEn']
             },
             images: {
                 type: 'array',
@@ -7040,6 +7032,17 @@
                     data.category = document.getElementById('hotelCategory')?.value || null;
                     data.pension = 'none';
                     data.isActive = document.getElementById('hotelActive').checked;
+                    
+                    // Сбор amenities из чекбоксов
+                    const amenities = [];
+                    document.querySelectorAll('#hotelForm input[type="checkbox"]:checked').forEach(checkbox => {
+                        if (checkbox.id !== 'hotelActive' && 
+                            !checkbox.id.startsWith('room') && 
+                            !checkbox.id.startsWith('meal')) {
+                            amenities.push(checkbox.value);
+                        }
+                    });
+                    data.amenities = JSON.stringify(amenities);
                     
                     console.log('💾 Saving hotel data:', data);
                     return true;
