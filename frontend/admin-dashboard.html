@@ -6488,7 +6488,7 @@
                             <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
                                 ${mainImageUrl ? `
                                     <div class="h-48 overflow-hidden">
-                                        <img src="${mainImageUrl}" alt="${hotelName}" class="w-full h-full object-cover">
+                                        <img src="${getAbsoluteImageUrl(mainImageUrl)}" alt="${hotelName}" class="w-full h-full object-cover">
                                     </div>
                                 ` : ''}
                                 <div class="p-6">
