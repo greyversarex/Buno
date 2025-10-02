@@ -180,15 +180,55 @@ const hotelsByCountry = {
     ]
 };
 
+// Функция для обновления фильтра стран
+function populateCountryFilter() {
+    const countrySelect = document.getElementById('countryFilter');
+    if (!countrySelect) return;
+    
+    // Сохраняем текущий выбор
+    const currentValue = countrySelect.value;
+    
+    // Очищаем и заполняем фильтр стран
+    countrySelect.innerHTML = '';
+    
+    // Добавляем placeholder опцию через перевод
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = getTranslation('filter.country') || 'Страна';
+    countrySelect.appendChild(placeholder);
+    
+    // Добавляем страны из загруженных данных
+    countriesData.forEach(country => {
+        const option = document.createElement('option');
+        const countryName = getMultilingualValue(country, 'name');
+        option.value = countryName;
+        option.textContent = countryName;
+        countrySelect.appendChild(option);
+    });
+    
+    // Восстанавливаем выбор, если возможно
+    if (currentValue) {
+        countrySelect.value = currentValue;
+    }
+}
+
 // Функция для обновления списка городов
 function updateCities() {
     const countrySelect = document.getElementById('countryFilter');
     const citySelect = document.getElementById('cityFilter');
     
-    // Очищаем список городов
-    citySelect.innerHTML = '<option value="">Город</option>';
+    if (!citySelect) return;
     
-    const selectedCountry = countrySelect.value;
+    // Очищаем список городов
+    citySelect.innerHTML = '';
+    
+    // Добавляем placeholder через перевод
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = getTranslation('filter.city') || 'Город';
+    citySelect.appendChild(placeholder);
+    
+    const selectedCountry = countrySelect?.value;
     if (selectedCountry && citiesByCountry[selectedCountry]) {
         citiesByCountry[selectedCountry].forEach(city => {
             const option = document.createElement('option');
@@ -1879,6 +1919,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     
     // Сначала загружаем страны и города для фильтров
     await loadCountriesAndCities();
+    populateCountryFilter(); // Заполняем фильтр стран
+    updateCities(); // Заполняем фильтр городов
     
     // 🏷️ ДОБАВЛЕНО: Загружаем категории для фильтра
     await loadCategories();
@@ -1901,6 +1943,29 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Повторно восстанавливаем флаги через небольшую задержку (на случай если CSS загружается позже)
     setTimeout(forceEmojiFlags, 1000);
     setTimeout(forceEmojiFlags, 3000);
+    
+    // 🌐 СЛУШАЕМ СОБЫТИЯ ПЕРЕКЛЮЧЕНИЯ ЯЗЫКА
+    document.addEventListener('languageChanged', async function(event) {
+        console.log(`🔄 Главная страница: язык изменен на ${event.detail.language}`);
+        translateDynamicContent(event.detail.language);
+        
+        // Перезагружаем весь динамический контент с новым языком
+        await loadCountriesAndCities(); // Обновляем кеш стран/городов
+        populateCountryFilter(); // Обновляем DOM фильтра стран
+        updateCities(); // Обновляем DOM фильтра городов
+        
+        await loadCategories(); // Обновляем фильтр категорий
+        loadTourBlocks();
+        loadSlides();
+        
+        // Обновляем статические цены с учетом текущей валюты
+        setTimeout(() => {
+            updateStaticTourPrices();
+        }, 500);
+        
+        // Восстанавливаем флаги после обновления
+        forceEmojiFlags();
+    });
 });
 
 function formatImageUrl(imageUrl) {
