@@ -4,7 +4,14 @@
 Bunyod-Tour is a comprehensive tourism booking platform for Central Asia, offering tour, hotel, and guide booking, secure payments, and administrative management. It aims to provide a seamless user experience and efficient tools for administrators, supporting multilingual content and diverse payment methods. The project targets significant market potential by modernizing and streamlining regional tourism services.
 
 ## Recent Changes (October 2, 2025)
-**LATEST: Hotels Public Page - JSON Parsing Restoration (October 2, 2025)**
+**LATEST: Guide Cards UI Enhancement - Reviews Section Removed (October 2, 2025)**
+- **Guide Cards Cleanup**: Removed reviews display from guide cards on tour-guides.html page
+  - Changed statistics grid from 3 columns to 2 columns (removed third column with star ratings and "отзывы" text)
+  - Cards now show only: Experience (years) and Rating (numeric value)
+  - Cleaner, more focused card layout without redundant review stars
+  - Grid layout changed from `grid-cols-3` to `grid-cols-2` for better visual balance
+
+**PREVIOUS: Hotels Public Page - JSON Parsing Restoration (October 2, 2025)**
 - **Critical Fix**: Restored safe JSON parsing for public hotels catalog page (hotels-catalog.html)
   - All multilingual fields (name, description, address) now use `safeJsonParse()` utility
   - Ensures consistent handling of JSON strings, plain strings, and objects from API
