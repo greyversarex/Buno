@@ -56,6 +56,8 @@ export const getHotels = async (req: Request, res: Response): Promise<Response> 
             categoryTranslated: getHotelCategoryTranslation(hotel.category, language),
             countryId: hotel.countryId,
             cityId: hotel.cityId,
+            country: hotel.hotelCountry, // ДОБАВЛЕНО: связанная страна (правильное имя поля)
+            city: hotel.hotelCity, // ДОБАВЛЕНО: связанный город (правильное имя поля)
             pension: hotel.pension,
             roomTypes: hotel.roomTypes,
             mealTypes: hotel.mealTypes,

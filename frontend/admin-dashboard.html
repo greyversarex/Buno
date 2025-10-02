@@ -10,7 +10,7 @@
     <script src="/public/js/i18n.js"></script>
     <script src="/public/js/utils.js"></script>
     <!-- 🔧 ПОДКЛЮЧЕНИЕ ADMIN HELPERS (Unified Standard) -->
-    <script src="/public/js/admin-helpers.js?v=6"></script>
+    <script src="/public/js/admin-helpers.js?v=7"></script>
     <style>
         * {
             margin: 0;
@@ -6518,6 +6518,15 @@
                         const amenities = ensureArray(hotel.amenities);
                         const mainImageUrl = images.length > 0 ? validateImageUrl(images[0]) : '';
                         
+                        // Получение страны и города из связанных данных
+                        const countryName = hotel.country ? escapeHtml(hotel.country.nameRu || hotel.country.nameEn || '') : '';
+                        const cityName = hotel.city ? escapeHtml(hotel.city.nameRu || hotel.city.nameEn || '') : '';
+                        
+                        // Создание Google Maps ссылки для адреса
+                        const googleMapsUrl = hotelAddress !== 'Адрес не указан' 
+                            ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(hotelAddress + (cityName ? ', ' + cityName : '') + (countryName ? ', ' + countryName : ''))}`
+                            : '#';
+                        
                         return `
                             <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
                                 ${mainImageUrl ? `
@@ -6529,7 +6538,19 @@
                                     <div class="flex items-start justify-between mb-4">
                                         <div class="flex-1">
                                             <h3 class="font-semibold text-gray-900 text-lg mb-1">${hotelName}</h3>
-                                            <p class="text-sm text-gray-600 mb-2">${hotelAddress}</p>
+                                            ${cityName || countryName ? `
+                                                <p class="text-sm text-blue-600 mb-1">
+                                                    <i class="fas fa-map-marker-alt mr-1"></i>
+                                                    ${cityName}${cityName && countryName ? ', ' : ''}${countryName}
+                                                </p>
+                                            ` : ''}
+                                            ${hotelAddress !== 'Адрес не указан' ? `
+                                                <a href="${googleMapsUrl}" target="_blank" class="text-sm text-gray-600 hover:text-blue-600 mb-2 inline-flex items-center">
+                                                    <i class="fas fa-location-dot mr-1"></i>
+                                                    ${hotelAddress}
+                                                    <i class="fas fa-external-link-alt ml-1 text-xs"></i>
+                                                </a>
+                                            ` : ''}
                                             <div class="flex items-center mb-3">
                                                 <span class="text-yellow-400 mr-1">★</span>
                                                 <span class="text-sm font-medium">${hotel.stars || 0} звезд</span>
@@ -6542,7 +6563,9 @@
                                         </span>
                                     </div>
                                     
-                                    <p class="text-sm text-gray-700 mb-4 line-clamp-2">${hotelDesc}</p>
+                                    ${hotelDesc !== 'Без описания' ? `
+                                        <p class="text-sm text-gray-700 mb-4 line-clamp-2">${hotelDesc}</p>
+                                    ` : ''}
                                     
                                     ${amenities && amenities.length > 0 ? `
                                         <div class="mb-4">

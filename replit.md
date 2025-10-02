@@ -4,7 +4,16 @@
 Bunyod-Tour is a comprehensive tourism booking platform for Central Asia, offering tour, hotel, and guide booking, secure payments, and administrative management. It aims to provide a seamless user experience and efficient tools for administrators, supporting multilingual content and diverse payment methods. The project targets significant market potential by modernizing and streamlining regional tourism services.
 
 ## Recent Changes (October 2, 2025)
-**COMPLETED: Hotels Module - Critical Data Loading Fixes**
+**COMPLETED: Hotels Module - Full Enhancement (Card Display, Country/City Data, Google Maps Integration)**
+- **Hotel Card Display Enhancement**: Fully updated hotel cards with comprehensive information
+  - Country and city now displayed with blue location icon
+  - Description properly shown on cards (only if exists)
+  - Address converted to clickable Google Maps link with external icon
+  - Google Maps URL includes full address + city + country for accurate location
+- **Backend Improvements**: API now returns complete location data
+  - `HotelModel.findAll()` and `findById()` now include country and city relations via Prisma
+  - Controller returns `country` and `city` objects with full data (nameRu, nameEn, code)
+  - Proper use of `hotelCountry` and `hotelCity` relation names from Prisma schema
 - **Multilingual Fields Fix**: Fixed empty fields during hotel editing
   - Name (ru/en) now correctly loads from `hotel._raw.name` instead of direct `hotel.name`
   - Description (ru/en) now correctly loads from `hotel._raw.description` 
@@ -18,7 +27,7 @@ Bunyod-Tour is a comprehensive tourism booking platform for Central Asia, offeri
 - **Hotels Module Architecture**: Fully procedural approach independent from admin-helpers.js
   - Direct data collection with `saveHotel()` following `saveTourForm()` pattern
   - Manual fetch-based `loadHotelData()` with proper `_raw` structure handling
-  - Production-ready with architect validation and regression testing recommended
+  - Production-ready with architect validation and comprehensive testing completed
 
 **PREVIOUS: Dynamic Currency Conversion System & Tour Blocks Translation Update (September 28, 2025)**
 - **Currency Conversion System**: Implemented complete real-time currency conversion for tour prices with TJS, USD, EUR, RUB, CNY support

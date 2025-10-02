@@ -706,6 +706,10 @@ export class HotelModel {
   static async findAll() {
     const hotels = await prisma.hotel.findMany({
       where: { isActive: true },
+      include: {
+        hotelCountry: true,
+        hotelCity: true
+      },
       orderBy: { createdAt: 'desc' }
     });
 
@@ -751,6 +755,8 @@ export class HotelModel {
     const hotel = await prisma.hotel.findUnique({
       where: { id },
       include: {
+        hotelCountry: true,
+        hotelCity: true,
         tourHotels: {
           include: {
             tour: {
