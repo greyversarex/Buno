@@ -100,4 +100,4 @@ externalPort = 6000
 [deployment]
 deploymentTarget = "autoscale"
 run = ["node", "index.js"]
-build = ["npm", "run", "db:generate"]
+build = ["npx", "prisma", "generate"]
