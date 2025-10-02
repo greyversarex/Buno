@@ -1169,15 +1169,11 @@ function translateDynamicContent(lang) {
         const tourTitles = document.querySelectorAll('[data-tour-title]');
         tourTitles.forEach(element => {
             const titleData = element.dataset.tourTitle;
-            if (titleData) {
-                try {
-                    const parsed = JSON.parse(titleData.replace(/&quot;/g, '"'));
-                    const text = (lang === 'en' ? parsed.en : parsed.ru) || parsed.ru || parsed.en || 'Название не указано';
-                    element.textContent = text;
-                    updatedCount++;
-                } catch (e) {
-                    console.warn('Error parsing tour title:', e);
-                }
+            if (titleData && typeof safeJsonParse === 'function' && typeof getLocalizedText === 'function') {
+                const parsed = safeJsonParse(titleData);
+                const text = getLocalizedText(parsed, lang) || 'Название не указано';
+                element.textContent = text;
+                updatedCount++;
             }
         });
         
@@ -1185,15 +1181,11 @@ function translateDynamicContent(lang) {
         const categoryNames = document.querySelectorAll('[data-category-name]');
         categoryNames.forEach(element => {
             const categoryData = element.dataset.categoryName;
-            if (categoryData) {
-                try {
-                    const parsed = JSON.parse(categoryData.replace(/&quot;/g, '"'));
-                    const text = (lang === 'en' ? parsed.en : parsed.ru) || parsed.ru || parsed.en || 'Категория';
-                    element.textContent = text;
-                    updatedCount++;
-                } catch (e) {
-                    console.warn('Error parsing category name:', e);
-                }
+            if (categoryData && typeof safeJsonParse === 'function' && typeof getLocalizedText === 'function') {
+                const parsed = safeJsonParse(categoryData);
+                const text = getLocalizedText(parsed, lang) || 'Категория';
+                element.textContent = text;
+                updatedCount++;
             }
         });
         
@@ -1201,15 +1193,11 @@ function translateDynamicContent(lang) {
         const blockTitles = document.querySelectorAll('[data-tour-block-title]');
         blockTitles.forEach(element => {
             const titleData = element.dataset.tourBlockTitle;
-            if (titleData) {
-                try {
-                    const parsed = JSON.parse(titleData.replace(/&quot;/g, '"'));
-                    const text = (lang === 'en' ? parsed.en : parsed.ru) || parsed.ru || parsed.en || 'Блок туров';
-                    element.textContent = text;
-                    updatedCount++;
-                } catch (e) {
-                    console.warn('Error parsing block title:', e);
-                }
+            if (titleData && typeof safeJsonParse === 'function' && typeof getLocalizedText === 'function') {
+                const parsed = safeJsonParse(titleData);
+                const text = getLocalizedText(parsed, lang) || 'Блок туров';
+                element.textContent = text;
+                updatedCount++;
             }
         });
         
@@ -1220,7 +1208,12 @@ function translateDynamicContent(lang) {
 // 🎯 ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ДЛЯ ПОЛУЧЕНИЯ КОНТЕНТА ПО ЯЗЫКУ
 
 function getTitleByLanguage(titleObject, lang) {
-    // Поддерживаем как JSON строки, так и объекты
+    // Используем стандартизованный подход с safeJsonParse → getLocalizedText
+    if (typeof safeJsonParse === 'function' && typeof getLocalizedText === 'function') {
+        const parsed = safeJsonParse(titleObject);
+        return getLocalizedText(parsed, lang) || 'Название не указано';
+    }
+    // Fallback для обратной совместимости
     try {
         const title = typeof titleObject === 'string' ? JSON.parse(titleObject) : titleObject;
         return title[lang] || title.ru || title.en || 'Название не указано';
@@ -1230,6 +1223,12 @@ function getTitleByLanguage(titleObject, lang) {
 }
 
 function getDescriptionByLanguage(descriptionObject, lang) {
+    // Используем стандартизованный подход с safeJsonParse → getLocalizedText
+    if (typeof safeJsonParse === 'function' && typeof getLocalizedText === 'function') {
+        const parsed = safeJsonParse(descriptionObject);
+        return getLocalizedText(parsed, lang) || 'Описание не указано';
+    }
+    // Fallback для обратной совместимости
     try {
         const description = typeof descriptionObject === 'string' ? JSON.parse(descriptionObject) : descriptionObject;
         return description[lang] || description.ru || description.en || 'Описание не указано';
@@ -1239,6 +1238,12 @@ function getDescriptionByLanguage(descriptionObject, lang) {
 }
 
 function getCategoryNameByLanguage(categoryObject, lang) {
+    // Используем стандартизованный подход с safeJsonParse → getLocalizedText
+    if (typeof safeJsonParse === 'function' && typeof getLocalizedText === 'function') {
+        const parsed = safeJsonParse(categoryObject);
+        return getLocalizedText(parsed, lang) || 'Категория';
+    }
+    // Fallback для обратной совместимости
     try {
         const category = typeof categoryObject === 'string' ? JSON.parse(categoryObject) : categoryObject;
         return category[lang] || category.ru || category.en || 'Категория';

@@ -169,6 +169,18 @@ window.translations = window.translations || {
     'hotel.no_hotels_found': { ru: 'Отели не найдены', en: 'No hotels found' },
     'hotel.try_different_filters': { ru: 'Попробуйте изменить фильтры поиска', en: 'Try adjusting your search filters' },
     
+    // Фильтры отелей - специфичные для модуля отелей
+    'hotel.search_filters': { ru: 'Фильтры поиска', en: 'Search Filters' },
+    'hotel.country': { ru: 'Страна', en: 'Country' },
+    'hotel.all_countries': { ru: 'Все страны', en: 'All Countries' },
+    'hotel.category': { ru: 'Категория', en: 'Category' },
+    'hotel.all_categories': { ru: 'Все категории', en: 'All Categories' },
+    'hotel.stars': { ru: 'Звезды', en: 'Stars' },
+    'hotel.any_quantity': { ru: 'Любое количество', en: 'Any Rating' },
+    'hotel.search': { ru: 'Поиск', en: 'Search' },
+    'hotel.clear_filters': { ru: 'Очистить фильтры', en: 'Clear Filters' },
+    'hotel.showing_results': { ru: 'Показано отелей:', en: 'Showing hotels:' },
+    
     // Фильтры отелей
     'filters.country': { ru: 'Страна', en: 'Country' },
     'filters.all_countries': { ru: 'Все страны', en: 'All Countries' },

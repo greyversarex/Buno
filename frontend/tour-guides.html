@@ -608,24 +608,21 @@
             // Получаем текст на текущем языке с fallback
             const name = getLocalizedText(nameData, currentLang) || (currentLang === 'en' ? 'Guide' : 'Гид');
             const description = getLocalizedText(descData, currentLang) || (currentLang === 'en' ? 'Experienced guide with deep regional knowledge.' : 'Опытный гид с глубокими знаниями региона.');
-            // Парсим языки
+            // Парсим языки (используем безопасный подход)
             let languages = ['Русский', 'Английский']; // по умолчанию
-            try {
-                if (agent.languages) {
-                    if (Array.isArray(agent.languages)) {
-                        languages = agent.languages;
-                    } else if (typeof agent.languages === 'string') {
-                        // Проверяем, JSON ли это
-                        if (agent.languages.startsWith('[') || agent.languages.startsWith('{')) {
-                            languages = JSON.parse(agent.languages);
-                        } else {
-                            languages = agent.languages.split(',').map(lang => lang.trim());
-                        }
+            if (agent.languages) {
+                if (Array.isArray(agent.languages)) {
+                    languages = agent.languages;
+                } else if (typeof agent.languages === 'string') {
+                    // Используем safeJsonParse для безопасности
+                    const parsed = safeJsonParse(agent.languages, null);
+                    if (Array.isArray(parsed)) {
+                        languages = parsed;
+                    } else if (parsed === null) {
+                        // Если не JSON, разбиваем как CSV
+                        languages = agent.languages.split(',').map(lang => lang.trim());
                     }
                 }
-            } catch (e) {
-                console.warn('Error parsing agent languages:', e);
-                languages = ['Русский', 'Английский'];
             }
             
             // Определяем аватар

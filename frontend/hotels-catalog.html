@@ -273,10 +273,9 @@
                 // Stars filter
                 const matchesStars = !starsFilter || hotel.stars == parseInt(starsFilter);
                 
-                // Search filter
-                const hotelName = typeof hotel.name === 'string' ? 
-                    (hotel.name.includes('{') ? JSON.parse(hotel.name).ru || JSON.parse(hotel.name).en : hotel.name) 
-                    : (hotel.name?.ru || hotel.name?.en || '');
+                // Search filter (используем безопасный паттерн)
+                const parsed = safeJsonParse(hotel.name);
+                const hotelName = getLocalizedText(parsed, window.currentLanguage || 'ru');
                 
                 const matchesSearch = !searchTerm || hotelName.toLowerCase().includes(searchTerm) || 
                                      (hotel.city && hotel.city.toLowerCase().includes(searchTerm));
