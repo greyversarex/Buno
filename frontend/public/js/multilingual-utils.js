@@ -235,6 +235,17 @@ function updateLocationNames(language) {
   });
 }
 
+/**
+ * Обновляет заголовки блоков туров
+ * @param {string} language - Целевой язык
+ */
+function updateTourBlockTitles(language) {
+  document.querySelectorAll('[data-tour-block-title]').forEach(element => {
+    const titleData = element.dataset.tourBlockTitle;
+    updateMultilingualElement(element, titleData, language, 'textContent');
+  });
+}
+
 // === ГЛАВНАЯ ФУНКЦИЯ ПЕРЕВОДА ВСЕГО ДИНАМИЧЕСКОГО КОНТЕНТА ===
 
 /**
@@ -267,6 +278,9 @@ function translateAllDynamicContent(language) {
   
   updateLocationNames(language);
   updatedCount += document.querySelectorAll('[data-country-name], [data-city-name]').length;
+  
+  updateTourBlockTitles(language);
+  updatedCount += document.querySelectorAll('[data-tour-block-title]').length;
   
   console.log(`✅ Обновлено ${updatedCount} элементов динамического контента`);
   

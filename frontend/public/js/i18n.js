@@ -196,6 +196,7 @@ window.translations = window.translations || {
     'hotel.search': { ru: 'Поиск', en: 'Search' },
     'hotel.clear_filters': { ru: 'Очистить фильтры', en: 'Clear Filters' },
     'hotel.showing_results': { ru: 'Показано отелей:', en: 'Showing hotels:' },
+    'hotel.showing_results_template': { ru: 'Показано {count} из {total} отелей', en: 'Showing {count} of {total} hotels' },
     
     // Фильтры отелей
     'filters.country': { ru: 'Страна', en: 'Country' },

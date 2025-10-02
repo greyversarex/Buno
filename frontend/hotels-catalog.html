@@ -291,8 +291,9 @@
         function updateResultsCount() {
             const count = filteredHotels.length;
             const total = allHotels.length;
+            const resultsLabel = getTranslation('hotel.showing_results_template') || `Showing ${count} of ${total} hotels`;
             document.getElementById('resultsCount').textContent = 
-                `Показано ${count} из ${total} отелей`;
+                resultsLabel.replace('{count}', count).replace('{total}', total);
         }
 
         // Clear all filters
@@ -316,6 +317,9 @@
             
             // Перерисовываем список отелей с новым языком
             displayHotels();
+            
+            // Обновляем счётчик результатов с новым языком
+            updateResultsCount();
             
             console.log(`✅ Язык отелей обновлен на: ${language}`);
         }

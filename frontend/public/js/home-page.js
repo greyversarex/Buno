@@ -1525,9 +1525,12 @@ function renderTourBlock(block, tours) {
     }
     
     if (existingSection) {
+        // Создаем data-атрибут для перевода заголовка
+        const blockTitleJson = JSON.stringify(blockTitleData).replace(/"/g, '&quot;');
+        
         existingSection.innerHTML = `
             <div class="max-w-7xl mx-auto px-6">
-                <h2 class="text-3xl font-bold text-center mb-12 text-gray-900" ${createMultilingualDataAttribute(blockTitleData, 'tour-block-title')}>
+                <h2 class="text-3xl font-bold text-center mb-12 text-gray-900" data-tour-block-title="${blockTitleJson}">
                     ${blockTitleText}
                 </h2>
                 

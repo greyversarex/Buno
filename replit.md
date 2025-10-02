@@ -4,17 +4,21 @@
 Bunyod-Tour is a comprehensive tourism booking platform for Central Asia, offering tour, hotel, and guide booking, secure payments, and administrative management. It aims to provide a seamless user experience and efficient tools for administrators, supporting multilingual content and diverse payment methods. The project targets significant market potential by modernizing and streamlining regional tourism services.
 
 ## Recent Changes (October 2, 2025)
-**LATEST: Stage 1.5 - Enhanced Multilingual System (IN PROGRESS - October 2, 2025)**
-- **Status**: Partially completed - foundation established, template updates pending
+**LATEST: Stage 1.5 - Enhanced Multilingual System (COMPLETED - October 2, 2025)**
+- **Status**: ✅ Fully completed - all components implemented and language switching working
 - **Completed Components**:
-  - ✅ Extended i18n.js with 15+ new translation keys (tour blocks, guides, breadcrumbs, time labels)
-  - ✅ Created multilingual helper functions: `formatMultilingualField()`, `formatLocation()`, `getEntityName()`
-  - ✅ Updated tour card rendering with localized locations and buttons
-- **Pending Components**:
-  - ⏳ tour-template.html: breadcrumbs, time labels, languages, reviews section
-  - ⏳ tour-guides.html: guide cards with localized labels and buttons
-  - ⏳ hotels-catalog.html: location display and category tags
-  - ⏳ home-page.js: tour block headings translation
+  - ✅ Extended i18n.js with 15+ new translation keys (tour blocks, guides, breadcrumbs, time labels, hotel result template)
+  - ✅ Created multilingual helper functions in multilingual-utils.js: `formatMultilingualField()`, `formatLocation()`, `getEntityName()`
+  - ✅ Added `updateTourBlockTitles()` function to handle tour block title translations with data-tour-block-title attribute
+  - ✅ Updated home-page.js: tour block titles use proper data attributes, tour cards use formatLocation() for countries/cities, buttons use getTranslation()
+  - ✅ Updated tour-template.html: duration labels use getTranslation('time.days'), language labels use getTranslation('tour.languages_label')
+  - ✅ Updated tour-guides.html: guide cards use getTranslation() for all labels (years, rating, hire, more_details, languages)
+  - ✅ Updated hotels-catalog.html: results counter uses template with {count}/{total} placeholders, updateHotelsLanguage() now calls updateResultsCount()
+  - ✅ Fixed language switching: tour block titles, guide cards, and hotel results counter all update correctly on language toggle
+- **Technical Implementation**:
+  - Dynamic content now updates on language switch (3-9 elements per page vs 0 before)
+  - All hardcoded Russian text replaced with getTranslation() calls
+  - Event-driven architecture: languageChanged events trigger page-specific updates
 - **Architecture Decision**: Proceeding with Stage 1.5 (extended static translations) before Stage 2 (external JSON files) per architect recommendation
 
 **PREVIOUS: Platform-Wide Button Color Unification to Gray Theme (October 2, 2025)**

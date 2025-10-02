@@ -1060,16 +1060,17 @@
             const durationElement = document.getElementById('tour-duration');
             if (durationElement) {
                 let durationText = '';
+                const daysLabel = getTranslation('time.days');
                 if (tourData.durationDays && tourData.durationDays > 1) {
-                    durationText = `${tourData.durationDays} дней`;
+                    durationText = `${tourData.durationDays} ${daysLabel}`;
                 } else if (tourData.duration) {
-                    if (tourData.duration.includes('час') || tourData.duration.includes('дн')) {
+                    if (tourData.duration.includes('час') || tourData.duration.includes('дн') || tourData.duration.includes('hour') || tourData.duration.includes('day')) {
                         durationText = tourData.duration;
                     } else {
-                        durationText = `${tourData.duration} дней`;
+                        durationText = `${tourData.duration} ${daysLabel}`;
                     }
                 } else {
-                    durationText = 'Длительность уточняется';
+                    durationText = getTranslation('tour.duration_not_specified') || 'Duration to be confirmed';
                 }
                 durationElement.textContent = durationText;
             }
@@ -1280,10 +1281,11 @@
             // Обновляем языки тура
             const languagesElement = document.getElementById('tour-languages');
             if (languagesElement) {
+                const languagesLabel = getTranslation('tour.languages_label');
                 if (tourData.languages && tourData.languages.length > 0) {
-                    languagesElement.textContent = 'Языки: ' + tourData.languages.join(', ');
+                    languagesElement.innerHTML = `<span data-translate="tour.languages_label">${languagesLabel}</span> ${tourData.languages.join(', ')}`;
                 } else {
-                    languagesElement.textContent = 'Языки: Русский, Английский';
+                    languagesElement.innerHTML = `<span data-translate="tour.languages_label">${languagesLabel}</span> ${getTranslation('language.russian')}, ${getTranslation('language.english')}`;
                 }
             }
             
