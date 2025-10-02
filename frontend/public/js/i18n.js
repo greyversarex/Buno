@@ -48,6 +48,7 @@ window.translations = window.translations || {
     'btn.copy_link': { ru: 'Скопировать ссылку', en: 'Copy Link' },
     'btn.download_pdf': { ru: 'Скачать PDF', en: 'Download PDF' },
     'btn.book_now': { ru: 'Забронировать сейчас', en: 'Book Now' },
+    'btn.book': { ru: 'Бронировать', en: 'Book' },
     'btn.apply': { ru: 'Применить', en: 'Apply' },
     'btn.view_all': { ru: 'Смотреть все', en: 'View All' },
     'btn.send': { ru: 'Отправить', en: 'Send' },
@@ -58,6 +59,7 @@ window.translations = window.translations || {
     // Заголовки и подзаголовки
     'title.popular_tours': { ru: 'Популярные туры', en: 'Popular Tours' },
     'title.recommended_tours': { ru: 'Рекомендованные туры по Центральной Азии', en: 'Recommended Central Asia Tours' },
+    'title.combined_tours': { ru: 'Комбинированные туры по Центральной Азии', en: 'Combined Central Asia Tours' },
     'title.tajikistan_tours': { ru: 'Туры по Таджикистану', en: 'Tajikistan Tours' },
     'title.uzbekistan_tours': { ru: 'Туры по Узбекистану', en: 'Uzbekistan Tours' },
     'title.kyrgyzstan_tours': { ru: 'Туры по Киргизстану', en: 'Kyrgyzstan Tours' },
@@ -78,6 +80,12 @@ window.translations = window.translations || {
     'price.per_group': { ru: 'за группу', en: 'per group' },
     'price.days': { ru: 'дней', en: 'days' },
     'price.day': { ru: 'день', en: 'day' },
+    
+    // Временные метки
+    'time.days': { ru: 'дней', en: 'days' },
+    'time.day': { ru: 'день', en: 'day' },
+    'time.years': { ru: 'лет', en: 'years' },
+    'time.year': { ru: 'год', en: 'year' },
     
     // Формы и поля
     'form.name': { ru: 'Имя', en: 'Name' },
@@ -100,6 +108,14 @@ window.translations = window.translations || {
     'service.guides_title': { ru: 'ТУР-ГИДЫ', en: 'TOUR GUIDES' },
     'service.agency_title': { ru: 'АГЕНТСКИЙ СЕРВИС', en: 'AGENCY SERVICE' },
     'service.custom_tour_title': { ru: 'СОБСТВЕННЫЙ ТУР', en: 'CUSTOM TOUR' },
+    
+    // Гиды - карточки и метки
+    'guide.languages': { ru: 'языки', en: 'languages' },
+    'guide.years': { ru: 'лет', en: 'years' },
+    'guide.rating': { ru: 'рейтинг', en: 'rating' },
+    'guide.hire': { ru: 'Нанять гида', en: 'Hire Guide' },
+    'guide.more_details': { ru: 'Подробная информация', en: 'More Details' },
+    'guide.professional': { ru: 'Профессиональный гид', en: 'Professional Guide' },
     
     // Подвал сайта
     'footer.contact_info': { ru: 'Контактная информация', en: 'Contact Information' },
@@ -202,6 +218,11 @@ window.translations = window.translations || {
     'tour.duration_label': { ru: 'Длительность:', en: 'Duration:' },
     'tour.meals_not_included': { ru: 'Приём не включен', en: 'Meals Not Included' },
     'tour.languages_label': { ru: 'Языки:', en: 'Languages:' },
+    'tour.meeting_point': { ru: 'Место сбора:', en: 'Meeting point:' },
+    'tour.reviews': { ru: 'Отзывы', en: 'Reviews' },
+    'tour.loading_reviews': { ru: 'Загрузка отзывов...', en: 'Loading reviews...' },
+    'tour.price_per_person': { ru: 'за человека', en: 'per person' },
+    'tour.price_per_group': { ru: 'за группу', en: 'per group' },
     'tour.included': { ru: 'Что включено:', en: 'What\'s Included:' },
     'tour.not_included': { ru: 'Не включено в тур:', en: 'Not Included:' },
     'tour.tab.description': { ru: 'Описание тура', en: 'Tour Description' },
@@ -223,9 +244,12 @@ window.translations = window.translations || {
     'form.max_travelers_note': { ru: 'Вы можете выбрать до 15 туристов всего', en: 'You can select up to 15 travelers total' },
     
     // Навигация и breadcrumbs
+    'breadcrumb.home': { ru: 'Главная', en: 'Home' },
+    'breadcrumb.popular_tours': { ru: 'Популярные туры', en: 'Popular Tours' },
     'breadcrumb.central_asia': { ru: 'Туры по Центральной Азии', en: 'Central Asia Tours' },
     'breadcrumb.tajikistan': { ru: 'Туры по Таджикистану', en: 'Tajikistan Tours' },
     'breadcrumb.mountain_tours': { ru: 'Горные туры', en: 'Mountain Tours' },
+    'breadcrumb.historical_tours': { ru: 'Исторические туры', en: 'Historical Tours' },
     
     // Страны Центральной Азии
     'country.uzbekistan': { ru: 'Узбекистан', en: 'Uzbekistan' },

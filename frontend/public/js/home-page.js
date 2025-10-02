@@ -616,10 +616,29 @@ function displaySearchResults(tours) {
 
 // Функция для создания карточки тура
 function createTourCard(tour) {
+    const currentLang = getCurrentLanguage();
+    
+    // Форматируем локацию с поддержкой multilingual
+    let locationText = '';
+    if (tour.country && tour.city) {
+        // Если country и city - объекты с nameRu/nameEn
+        if (typeof tour.country === 'object' && typeof tour.city === 'object') {
+            locationText = formatLocation(tour.country, tour.city, currentLang);
+        } 
+        // Если это строки
+        else if (typeof tour.country === 'string' && typeof tour.city === 'string') {
+            locationText = `${tour.country} • ${tour.city}`;
+        }
+    } else if (tour.city) {
+        locationText = typeof tour.city === 'object' ? getEntityName(tour.city, currentLang) : tour.city;
+    } else if (tour.country) {
+        locationText = typeof tour.country === 'object' ? getEntityName(tour.country, currentLang) : tour.country;
+    }
+    
     return `
         <div class="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow flex flex-col">
             <div class="h-64 bg-gray-200 flex items-center justify-center">
-                <span class="text-white text-lg font-semibold">${tour.country}</span>
+                <span class="text-white text-lg font-semibold">${typeof tour.country === 'object' ? getEntityName(tour.country, currentLang) : (tour.country || '')}</span>
             </div>
             <div class="p-6 flex flex-col flex-grow">
                 <div class="flex justify-between items-start mb-4">
@@ -640,14 +659,14 @@ function createTourCard(tour) {
                     ${getDescriptionByLanguage(tour.description, window.i18n ? window.i18n.currentLanguage() : 'ru')}
                 </p>
                 <div class="flex justify-between items-center text-sm text-gray-500 mb-4">
-                    <span>📍 ${tour.city}</span>
+                    <span data-translate="tour-location">📍 ${locationText}</span>
                     <span>⏱️ ${tour.duration}</span>
                     <span>🎯 ${tour.theme}</span>
                 </div>
                 <div class="flex justify-between items-center mt-auto">
                     <span class="text-2xl font-bold tour-price" data-original-price="${tour.price}" style="color: black;">${formatPrice(tour.price, currentCurrency)}</span>
-                    <button class="text-white px-4 py-2 rounded-md hover:opacity-90 transition-colors" style="background-color: #3E3E3E;">
-                        Бронировать
+                    <button class="text-white px-4 py-2 rounded-md hover:opacity-90 transition-colors" style="background-color: #3E3E3E;" data-translate="btn.book">
+                        ${getTranslation('btn.book')}
                     </button>
                 </div>
             </div>

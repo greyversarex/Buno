@@ -4,7 +4,20 @@
 Bunyod-Tour is a comprehensive tourism booking platform for Central Asia, offering tour, hotel, and guide booking, secure payments, and administrative management. It aims to provide a seamless user experience and efficient tools for administrators, supporting multilingual content and diverse payment methods. The project targets significant market potential by modernizing and streamlining regional tourism services.
 
 ## Recent Changes (October 2, 2025)
-**LATEST: Platform-Wide Button Color Unification to Gray Theme (October 2, 2025)**
+**LATEST: Stage 1.5 - Enhanced Multilingual System (IN PROGRESS - October 2, 2025)**
+- **Status**: Partially completed - foundation established, template updates pending
+- **Completed Components**:
+  - ✅ Extended i18n.js with 15+ new translation keys (tour blocks, guides, breadcrumbs, time labels)
+  - ✅ Created multilingual helper functions: `formatMultilingualField()`, `formatLocation()`, `getEntityName()`
+  - ✅ Updated tour card rendering with localized locations and buttons
+- **Pending Components**:
+  - ⏳ tour-template.html: breadcrumbs, time labels, languages, reviews section
+  - ⏳ tour-guides.html: guide cards with localized labels and buttons
+  - ⏳ hotels-catalog.html: location display and category tags
+  - ⏳ home-page.js: tour block headings translation
+- **Architecture Decision**: Proceeding with Stage 1.5 (extended static translations) before Stage 2 (external JSON files) per architect recommendation
+
+**PREVIOUS: Platform-Wide Button Color Unification to Gray Theme (October 2, 2025)**
 - **Hotel Cards Button Update**: Changed "Подробнее" buttons on hotel cards to match search button style
   - Applied `background: #6B7280` (gray-500) matching platform search button
   - Hover state: `#4B5563` (gray-600) with translateY effect

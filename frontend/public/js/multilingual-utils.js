@@ -365,6 +365,86 @@ function getCategoryNameByLanguage(categoryObject, lang) {
     return parseMultilingualField(categoryObject, lang) || 'Категория';
 }
 
+// === ХЕЛПЕРЫ ДЛЯ РАБОТЫ С nameRu/nameEn ПОЛЯМИ (СТРАНЫ, ГОРОДА) ===
+
+/**
+ * Извлекает локализованное значение из объекта с полями nameRu/nameEn
+ * @param {object} entity - Объект с полями nameRu и nameEn
+ * @param {string} fieldBaseName - Базовое имя поля (например, 'name')
+ * @param {string} lang - Код языка ('ru' | 'en')
+ * @returns {string} Локализованное значение
+ */
+function formatMultilingualField(entity, fieldBaseName = 'name', lang = 'ru') {
+    if (!entity) return '';
+    
+    // Формируем имена полей: name → nameRu, nameEn
+    const ruField = fieldBaseName + 'Ru';
+    const enField = fieldBaseName + 'En';
+    
+    // Определяем приоритет в зависимости от языка
+    if (lang === 'en') {
+        return entity[enField] || entity[ruField] || '';
+    } else {
+        return entity[ruField] || entity[enField] || '';
+    }
+}
+
+/**
+ * Форматирует локацию (страна • город) на нужном языке
+ * @param {object} country - Объект страны с полями nameRu, nameEn
+ * @param {object} city - Объект города с полями nameRu, nameEn
+ * @param {string} lang - Код языка ('ru' | 'en')
+ * @param {string} separator - Разделитель (по умолчанию ' • ')
+ * @returns {string} Форматированная локация
+ */
+function formatLocation(country, city, lang = 'ru', separator = ' • ') {
+    const countryName = formatMultilingualField(country, 'name', lang);
+    const cityName = formatMultilingualField(city, 'name', lang);
+    
+    if (countryName && cityName) {
+        return `${countryName}${separator}${cityName}`;
+    } else if (countryName) {
+        return countryName;
+    } else if (cityName) {
+        return cityName;
+    }
+    
+    return '';
+}
+
+/**
+ * Извлекает локализованное имя из объекта (совместимость с разными форматами)
+ * Поддерживает как JSON {ru, en}, так и nameRu/nameEn поля
+ * @param {any} entity - Объект или строка с именем
+ * @param {string} lang - Код языка
+ * @returns {string} Локализованное имя
+ */
+function getEntityName(entity, lang = 'ru') {
+    if (!entity) return '';
+    
+    // Если это строка, возвращаем как есть
+    if (typeof entity === 'string') return entity;
+    
+    // Проверяем формат JSON {ru, en}
+    if (entity.ru || entity.en) {
+        return getLocalizedText(entity, lang);
+    }
+    
+    // Проверяем формат nameRu/nameEn
+    if (entity.nameRu || entity.nameEn) {
+        return formatMultilingualField(entity, 'name', lang);
+    }
+    
+    // Проверяем вложенное поле name
+    if (entity.name) {
+        // Если name - это JSON объект
+        const parsed = safeJsonParse(entity.name);
+        return getLocalizedText(parsed, lang);
+    }
+    
+    return '';
+}
+
 // === ЭКСПОРТ ФУНКЦИЙ В ГЛОБАЛЬНУЮ ОБЛАСТЬ ===
 
 // Основные функции
@@ -394,6 +474,11 @@ window.getTitleByLanguage = getTitleByLanguage;
 window.getDescriptionByLanguage = getDescriptionByLanguage;
 window.getCategoryNameByLanguage = getCategoryNameByLanguage;
 
+// Хелперы для nameRu/nameEn полей
+window.formatMultilingualField = formatMultilingualField;
+window.formatLocation = formatLocation;
+window.getEntityName = getEntityName;
+
 // Создаем объект с утилитами для удобного доступа
 window.MultilingualUtils = {
   safeJsonParse,
@@ -412,7 +497,10 @@ window.MultilingualUtils = {
   switchToLanguage,
   getTitleByLanguage,
   getDescriptionByLanguage,
-  getCategoryNameByLanguage
+  getCategoryNameByLanguage,
+  formatMultilingualField,
+  formatLocation,
+  getEntityName
 };
 
 console.log('🌐 Система многоязычных утилит загружена успешно');
