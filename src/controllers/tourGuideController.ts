@@ -187,11 +187,7 @@ export const getGuideTours = async (req: Request, res: Response): Promise<void> 
     const tours = await prisma.tour.findMany({
       where: { 
         isActive: true,
-        tourGuides: {
-          some: {
-            guideId: guideId
-          }
-        }
+        assignedGuideId: guideId
       },
       include: {
         bookings: {
@@ -264,11 +260,7 @@ export const getTourDetails = async (req: Request, res: Response): Promise<void>
       where: { 
         id: tourId,
         isActive: true,
-        tourGuides: {
-          some: {
-            guideId: guideId
-          }
-        }
+        assignedGuideId: guideId
       },
       include: {
         bookings: {
