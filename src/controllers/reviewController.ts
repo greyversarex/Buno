@@ -373,6 +373,9 @@ export const approveReview = async (req: Request, res: Response) => {
     // Check if review exists
     const existingReview = await prisma.review.findUnique({
       where: { id: reviewId },
+      include: {
+        tour: true,
+      },
     });
 
     if (!existingReview) {
@@ -439,6 +442,9 @@ export const rejectReview = async (req: Request, res: Response) => {
     // Check if review exists
     const existingReview = await prisma.review.findUnique({
       where: { id: reviewId },
+      include: {
+        tour: true,
+      },
     });
 
     if (!existingReview) {
