@@ -172,16 +172,14 @@
     <!-- Breadcrumb -->
     <nav class="bg-white border-b px-6 py-3">
         <div class="max-w-7xl mx-auto">
-            <div class="flex items-center text-sm text-gray-600 space-x-2">
+            <div class="flex items-center text-sm text-gray-600 space-x-2" id="breadcrumb-container">
                 <a href="index.html" class="hover:text-blue-600" data-translate="nav.home">Главная</a>
                 <span>›</span>
-                <a href="#" class="hover:text-blue-600" data-translate="breadcrumb.central_asia">Туры по Центральной Азии</a>
-                <span>›</span>
-                <a href="#" class="hover:text-blue-600" data-translate="breadcrumb.tajikistan">Туры по Таджикистану</a>
-                <span>›</span>
-                <a href="#" class="hover:text-blue-600" data-translate="breadcrumb.mountain_tours">Горные туры</a>
-                <span>›</span>
-                <span class="text-gray-900" id="breadcrumb-final"><!-- Название загружается из API --></span>
+                <span id="breadcrumb-block"></span>
+                <span id="breadcrumb-block-separator" class="hidden">›</span>
+                <span id="breadcrumb-category"></span>
+                <span id="breadcrumb-category-separator" class="hidden">›</span>
+                <span class="text-gray-900" id="breadcrumb-title"><!-- Название загружается из API --></span>
             </div>
         </div>
     </nav>
@@ -347,32 +345,46 @@
                                 <p>Этот тур предлагает уникальную возможность испытать дух приключений и насладиться одними из самых впечатляющих пейзажей в мире.</p>
                             </div>
 
-                            <!-- Two column layout for included/excluded services -->
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-6">
-                                <!-- Left Column: What's Included -->
-                                <div>
-                                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                                        <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            <!-- Accordion layout for included/excluded services -->
+                            <div class="space-y-4 mt-6">
+                                <!-- What's Included Accordion -->
+                                <div class="border border-gray-200 rounded-lg overflow-hidden">
+                                    <button onclick="toggleAccordion('included')" class="w-full px-6 py-4 flex items-center justify-between text-white font-semibold text-lg transition-all hover:opacity-90" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                        <span class="flex items-center">
+                                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                            </svg>
+                                            <span data-translate="tour.included">ВКЛЮЧЕНО</span>
+                                        </span>
+                                        <svg id="arrow-included" class="w-6 h-6 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                                         </svg>
-                                        <span data-translate="tour.included">Что включено:</span>
-                                    </h3>
-                                    <ul class="space-y-2" id="tour-includes">
-                                        <!-- Данные загружаются динамически из админ панели -->
-                                    </ul>
+                                    </button>
+                                    <div id="content-included" class="hidden px-6 py-4 bg-white">
+                                        <ul class="space-y-2 text-gray-700" id="tour-includes">
+                                            <!-- Данные загружаются динамически из админ панели -->
+                                        </ul>
+                                    </div>
                                 </div>
                                 
-                                <!-- Right Column: What's Not Included -->
-                                <div id="tour-excludes-section">
-                                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                                        <svg class="w-5 h-5 text-red-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                <!-- What's Not Included Accordion -->
+                                <div id="tour-excludes-section" class="border border-gray-200 rounded-lg overflow-hidden">
+                                    <button onclick="toggleAccordion('excluded')" class="w-full px-6 py-4 flex items-center justify-between text-white font-semibold text-lg transition-all hover:opacity-90" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                        <span class="flex items-center">
+                                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                            </svg>
+                                            <span data-translate="tour.not_included">НЕ ВКЛЮЧЕНО</span>
+                                        </span>
+                                        <svg id="arrow-excluded" class="w-6 h-6 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                                         </svg>
-                                        <span data-translate="tour.not_included">Не включено в тур:</span>
-                                    </h3>
-                                    <ul class="space-y-2" id="tour-excludes">
-                                        <!-- Данные загружаются динамически из админ панели -->
-                                    </ul>
+                                    </button>
+                                    <div id="content-excluded" class="hidden px-6 py-4 bg-white">
+                                        <ul class="space-y-2 text-gray-700" id="tour-excludes">
+                                            <!-- Данные загружаются динамически из админ панели -->
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -846,6 +858,20 @@
             }
         }
 
+        // Accordion toggle functionality
+        function toggleAccordion(type) {
+            const content = document.getElementById(`content-${type}`);
+            const arrow = document.getElementById(`arrow-${type}`);
+            
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                arrow.style.transform = 'rotate(180deg)';
+            } else {
+                content.classList.add('hidden');
+                arrow.style.transform = 'rotate(0deg)';
+            }
+        }
+
         // Переключение дней программы тура (для туристов)
         function switchTourDay(day) {
             // Скрываем все дни программы
@@ -870,6 +896,46 @@
             if (dayTab) {
                 dayTab.classList.remove('border-transparent', 'text-gray-500');
                 dayTab.classList.add('border-blue-500', 'text-blue-600');
+            }
+        }
+
+        // Функция для обновления breadcrumb навигации
+        function updateBreadcrumb() {
+            const currentLang = getCurrentLanguage();
+            const breadcrumbTitle = document.getElementById('breadcrumb-title');
+            const breadcrumbBlock = document.getElementById('breadcrumb-block');
+            const breadcrumbBlockSep = document.getElementById('breadcrumb-block-separator');
+            const breadcrumbCategory = document.getElementById('breadcrumb-category');
+            const breadcrumbCategorySep = document.getElementById('breadcrumb-category-separator');
+            
+            // Название тура (всегда показываем)
+            if (breadcrumbTitle) {
+                breadcrumbTitle.textContent = tourData.title;
+            }
+            
+            // Блок тура (если есть)
+            if (tourData.tourBlockAssignments && tourData.tourBlockAssignments.length > 0) {
+                const primaryBlock = tourData.tourBlockAssignments.find(tba => tba.isPrimary) || tourData.tourBlockAssignments[0];
+                if (primaryBlock && primaryBlock.tourBlock) {
+                    const blockTitle = safeJsonParse(primaryBlock.tourBlock.title, { ru: '', en: '' });
+                    const blockName = getLocalizedText(blockTitle, currentLang);
+                    if (breadcrumbBlock && blockName) {
+                        breadcrumbBlock.textContent = blockName;
+                        breadcrumbBlock.classList.add('hover:text-blue-600', 'cursor-pointer');
+                        if (breadcrumbBlockSep) breadcrumbBlockSep.classList.remove('hidden');
+                    }
+                }
+            }
+            
+            // Категория тура (если есть)
+            if (tourData.category) {
+                const categoryName = safeJsonParse(tourData.category.name, { ru: '', en: '' });
+                const catName = getLocalizedText(categoryName, currentLang);
+                if (breadcrumbCategory && catName) {
+                    breadcrumbCategory.textContent = catName;
+                    breadcrumbCategory.classList.add('hover:text-blue-600', 'cursor-pointer');
+                    if (breadcrumbCategorySep) breadcrumbCategorySep.classList.remove('hidden');
+                }
             }
         }
 
@@ -957,6 +1023,9 @@
                         // Календарные ограничения
                         availableMonths: apiTour.availableMonths ? (typeof apiTour.availableMonths === 'string' ? JSON.parse(apiTour.availableMonths) : apiTour.availableMonths) : [],
                         availableDays: apiTour.availableDays ? (typeof apiTour.availableDays === 'string' ? JSON.parse(apiTour.availableDays) : apiTour.availableDays) : [],
+                        // ✅ Данные для breadcrumb
+                        category: apiTour.category,
+                        tourBlockAssignments: apiTour.tourBlockAssignments || [],
                         reviews: [],
                         related_tours: []
                     };
@@ -1227,11 +1296,8 @@
                 ratingElement.innerHTML = '★'.repeat(Math.floor(tourData.rating || 4.8)) + ((tourData.rating || 4.8) % 1 ? '☆' : '');
             }
             
-            // Update breadcrumb
-            const breadcrumbElement = document.getElementById('breadcrumb-final');
-            if (breadcrumbElement) {
-                breadcrumbElement.textContent = tourData.title.split(':')[1]?.trim() || tourData.title;
-            }
+            // ✅ ОБНОВЛЯЕМ BREADCRUMB с правильными данными
+            updateBreadcrumb();
             
             // ✅ ИЗОБРАЖЕНИЯ - используем mainImage из формы или первое изображение из галереи
             if (tourData.mainImage || (tourData.images && tourData.images.length > 0)) {
