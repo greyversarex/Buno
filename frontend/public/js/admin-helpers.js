@@ -90,6 +90,45 @@ async function apiRequest(config) {
 // ==================== СЕКЦИЯ 2: FORM DATA COLLECTION ====================
 
 /**
+ * Безопасное получение значения из элемента формы
+ * @param {string} elementId - ID элемента
+ * @param {*} defaultValue - Значение по умолчанию
+ * @param {string|null} type - Тип значения ('checkbox', 'float', 'int', null)
+ * @returns {*} - Значение элемента или defaultValue
+ */
+function safeGetValue(elementId, defaultValue = null, type = null) {
+    const element = document.getElementById(elementId);
+    if (!element) {
+        return defaultValue;
+    }
+
+    switch (type) {
+        case 'checkbox':
+            return element.checked;
+        case 'float': {
+            const raw = (element.value ?? '').trim().replace(',', '.');
+            if (raw === '') {
+                return defaultValue ?? null;
+            }
+            const num = parseFloat(raw);
+            return Number.isFinite(num) ? num : (defaultValue ?? null);
+        }
+        case 'int': {
+            const raw = (element.value ?? '').trim();
+            if (raw === '') {
+                return defaultValue ?? null;
+            }
+            const num = parseInt(raw, 10);
+            return Number.isFinite(num) ? num : (defaultValue ?? null);
+        }
+        default: {
+            const value = (element.value ?? '').trim();
+            return value !== '' ? value : defaultValue;
+        }
+    }
+}
+
+/**
  * Сбор данных из формы
  * @param {Object} config - Конфигурация полей
  * @param {Object} config.fields - Описание полей для сбора
