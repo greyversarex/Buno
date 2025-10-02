@@ -10,7 +10,7 @@
     <script src="/public/js/i18n.js"></script>
     <script src="/public/js/utils.js"></script>
     <!-- 🔧 ПОДКЛЮЧЕНИЕ ADMIN HELPERS (Unified Standard) -->
-    <script src="/public/js/admin-helpers.js?v=3"></script>
+    <script src="/public/js/admin-helpers.js?v=5"></script>
     <style>
         * {
             margin: 0;
@@ -3314,81 +3314,11 @@
         // CONFIGURATIONS FOR ADMIN HELPERS
         // ==============================================
 
-        // Hotels configuration (ПОЛНАЯ СИНХРОНИЗАЦИЯ С HTML)
-        const hotelFieldsConfig = {
-            name: {
-                type: 'multilingual',
-                elementId: ['hotelNameRu', 'hotelNameEn'],
-                required: true
-            },
-            description: {
-                type: 'multilingual',
-                elementId: ['hotelDescRu', 'hotelDescEn'],
-                required: true
-            },
-            address: {
-                type: 'text',
-                elementId: 'hotelAddress',
-                required: false
-            },
-            stars: {
-                type: 'number',
-                elementId: 'hotelStars',
-                required: false
-            },
-            category: {
-                type: 'text',
-                elementId: 'hotelCategory',
-                required: false
-            },
-            countryId: {
-                type: 'number',
-                elementId: 'hotelCountry',
-                required: true
-            },
-            cityId: {
-                type: 'number',
-                elementId: 'hotelCity',
-                required: true
-            },
-            roomTypes: {
-                type: 'checkboxGroupWithPrices',
-                elementId: {
-                    prefix: 'room',
-                    types: ['SGL', 'TWL', 'DBL']
-                }
-            },
-            mealTypes: {
-                type: 'checkboxGroupWithPrices',
-                elementId: {
-                    prefix: 'meal',
-                    types: ['RO', 'BB', 'HB', 'FB', 'AI']
-                }
-            },
-            images: {
-                type: 'array',
-                elementId: 'hotelImageURLs'
-            },
-            amenities: {
-                type: 'checkboxGroup',
-                elementId: 'hotelAmenities',
-                required: false
-            },
-            isActive: {
-                type: 'checkbox',
-                elementId: 'hotelActive',
-                defaultValue: true
-            }
-        };
-
-        const hotelValidationRules = {
-            stars: {
-                required: true,
-                label: 'Звёзды отеля',
-                min: 1,
-                max: 5
-            }
-        };
+        /* 
+        // ОТКЛЮЧЕНО: Hotels больше не использует admin-helpers.js
+        const hotelFieldsConfig = { ... };
+        const hotelValidationRules = { ... };
+        */
 
         // Tours configuration (будет использоваться в Фазе 3)
         const tourFieldsConfig = {
@@ -6713,115 +6643,172 @@
         }
         
         
-        // Hotel data loading (REFACTORED)
-        async function loadHotelData(hotelId) {
-            try {
-                await loadEntityData({
-                    entityType: 'hotels',
-                    entityId: hotelId,
-                    fields: hotelFieldsConfig,
-                    beforeFill: (hotel) => {
-                        // Очистка предыдущих данных
-                        clearFormFields('hotelForm', ['hotelImageURLs']);
-                        clearRoomTypeFields();
-                    },
-                    onLoaded: (hotel) => {
-                        console.log('🏨 Hotel data loaded:', hotel);
-                        
-                        // Установить hotel-id
-                        document.getElementById('hotel-id').value = hotel.id;
-                        
-                        // Дополнительные поля не из стандартной конфигурации
-                        const addressField = document.getElementById('hotelAddress');
-                        if (addressField) addressField.value = hotel.address || '';
-                        
-                        // Установка бренда
-                        const brandSelect = document.getElementById('hotelBrand');
-                        const brandCustom = document.getElementById('hotelBrandCustom');
-                        if (hotel.brand && brandSelect && brandCustom) {
-                            const brandOption = Array.from(brandSelect.options).find(opt => opt.value === hotel.brand);
-                            if (brandOption) {
-                                brandSelect.value = hotel.brand;
-                                brandCustom.style.display = 'none';
-                            } else {
-                                brandSelect.value = 'custom';
-                                brandCustom.value = hotel.brand;
-                                brandCustom.style.display = 'block';
+        // Hotel data loading (ПРОЦЕДУРНЫЙ ПОДХОД - прямой fetch без admin-helpers)
+        function loadHotelData(hotelId) {
+            if (!hotelId) return;
+            
+            console.log('📥 Loading hotel data:', hotelId);
+            
+            // Очистка формы перед загрузкой
+            clearRoomTypeFields();
+            
+            const apiUrl = getApiUrl();
+            fetch(`${apiUrl}/hotels/${hotelId}?includeRaw=true`, {
+                method: 'GET',
+                headers: getAuthHeaders()
+            })
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error(`HTTP error! status: ${res.status}`);
+                }
+                return res.json();
+            })
+            .then(response => {
+                console.log('📬 Hotel response:', response);
+                
+                if (!response.success || !response.data) {
+                    throw new Error(response.message || 'Failed to load hotel');
+                }
+                
+                const hotel = response.data;
+                console.log('🏨 Hotel data loaded:', hotel);
+                
+                // Установить hotel-id
+                document.getElementById('hotel-id').value = hotel.id;
+                
+                // Многоязычные поля: name
+                if (hotel.name) {
+                    const name = typeof hotel.name === 'string' ? JSON.parse(hotel.name) : hotel.name;
+                    document.getElementById('hotelNameRu').value = name.ru || '';
+                    document.getElementById('hotelNameEn').value = name.en || '';
+                }
+                
+                // Многоязычные поля: description
+                if (hotel.description) {
+                    const desc = typeof hotel.description === 'string' ? JSON.parse(hotel.description) : hotel.description;
+                    document.getElementById('hotelDescRu').value = desc.ru || '';
+                    document.getElementById('hotelDescEn').value = desc.en || '';
+                }
+                
+                // Простые поля
+                document.getElementById('hotelAddress').value = hotel.address || '';
+                document.getElementById('hotelStars').value = hotel.stars || '';
+                document.getElementById('hotelCategory').value = hotel.category || '';
+                document.getElementById('hotelActive').checked = hotel.isActive !== false;
+                
+                // Бренд (включая кастомный)
+                const brandSelect = document.getElementById('hotelBrand');
+                const brandCustom = document.getElementById('hotelBrandCustom');
+                if (hotel.brand) {
+                    const brandOption = Array.from(brandSelect.options).find(opt => opt.value === hotel.brand);
+                    if (brandOption) {
+                        brandSelect.value = hotel.brand;
+                        brandCustom.style.display = 'none';
+                        brandCustom.value = '';
+                    } else {
+                        brandSelect.value = 'custom';
+                        brandCustom.value = hotel.brand;
+                        brandCustom.style.display = 'block';
+                    }
+                }
+                
+                // RoomTypes с ценами
+                if (hotel.roomTypes) {
+                    try {
+                        const roomTypes = typeof hotel.roomTypes === 'string' ? JSON.parse(hotel.roomTypes) : hotel.roomTypes;
+                        Object.keys(roomTypes).forEach(type => {
+                            const checkbox = document.getElementById(`room${type}`);
+                            const priceField = document.getElementById(`price${type}`);
+                            if (checkbox && priceField && roomTypes[type]) {
+                                checkbox.checked = true;
+                                priceField.value = roomTypes[type].price || '';
+                                priceField.disabled = false;
                             }
-                        }
-                        
-                        // Категория отеля
-                        const categoryField = document.getElementById('hotelCategory');
-                        if (categoryField) categoryField.value = hotel.category || '';
-                        
-                        // Pension (legacy)
-                        const pensionField = document.getElementById('hotelPension');
-                        if (pensionField) pensionField.value = hotel.pension || 'none';
-                        
-                        // isActive checkbox
-                        const activeField = document.getElementById('hotelActive');
-                        if (activeField) activeField.checked = hotel.isActive;
-                        
-                        // Amenities - обработка отдельно
-                        if (hotel.amenities) {
-                            try {
-                                const amenities = typeof hotel.amenities === 'string' ? JSON.parse(hotel.amenities) : hotel.amenities;
-                                if (Array.isArray(amenities)) {
-                                    document.querySelectorAll('#hotelForm input[type="checkbox"]').forEach(cb => {
-                                        if (cb.id !== 'hotelActive' && !cb.id.startsWith('room') && !cb.id.startsWith('meal')) {
-                                            cb.checked = amenities.includes(cb.value);
-                                        }
-                                    });
-                                }
-                            } catch (e) {
-                                console.warn('Failed to parse amenities:', e);
+                        });
+                    } catch (e) {
+                        console.warn('Failed to parse roomTypes:', e);
+                    }
+                }
+                
+                // MealTypes с ценами
+                if (hotel.mealTypes) {
+                    try {
+                        const mealTypes = typeof hotel.mealTypes === 'string' ? JSON.parse(hotel.mealTypes) : hotel.mealTypes;
+                        Object.keys(mealTypes).forEach(type => {
+                            const checkbox = document.getElementById(`meal${type}`);
+                            const priceField = document.getElementById(`priceMeal${type}`);
+                            if (checkbox && priceField && mealTypes[type]) {
+                                checkbox.checked = true;
+                                priceField.value = mealTypes[type].price || '';
+                                priceField.disabled = false;
                             }
-                        }
-                        
-                        // Каскадная загрузка городов
-                        if (hotel.countryId) {
-                            setupCountryCityDropdowns({
-                                countryFieldId: 'hotelCountry',
-                                cityFieldId: 'hotelCity',
-                                selectedCountryId: hotel.countryId,
-                                selectedCityId: hotel.cityId
+                        });
+                    } catch (e) {
+                        console.warn('Failed to parse mealTypes:', e);
+                    }
+                }
+                
+                // Amenities (чекбоксы)
+                if (hotel.amenities) {
+                    try {
+                        const amenities = typeof hotel.amenities === 'string' ? JSON.parse(hotel.amenities) : hotel.amenities;
+                        if (Array.isArray(amenities)) {
+                            document.querySelectorAll('input[name="hotelAmenities"]').forEach(cb => {
+                                cb.checked = amenities.includes(cb.value);
                             });
                         }
-                        
-                        // Загрузка изображений
-                        if (hotel.images) {
-                            try {
-                                const images = typeof hotel.images === 'string' ? JSON.parse(hotel.images) : hotel.images;
-                                if (Array.isArray(images) && images.length > 0) {
-                                    window.hotelImageURLs = [...images];
-                                    document.getElementById('hotelImages').value = JSON.stringify(images);
-                                    updateHotelImagesList();
-                                    
-                                    // Показываем preview изображений
-                                    setTimeout(() => {
-                                        const uploaderContainer = document.getElementById('hotel-uploader-container');
-                                        if (uploaderContainer) {
-                                            let imagesHtml = '<div class="uploaded-images-preview mb-3"><h4 class="text-sm font-semibold mb-2">Загруженные изображения:</h4><div class="flex gap-2 flex-wrap">';
-                                            images.forEach((img, index) => {
-                                                imagesHtml += `<div class="image-preview-item relative">
-                                                    <img src="${getAbsoluteImageUrl(img)}" alt="Hotel image" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 2px solid #e5e7eb;">
-                                                    <div class="text-xs text-gray-500 text-center mt-1">Изображение ${index + 1}</div>
-                                                </div>`;
-                                            });
-                                            imagesHtml += '</div></div>';
-                                            uploaderContainer.insertAdjacentHTML('afterbegin', imagesHtml);
-                                        }
-                                    }, 500);
-                                }
-                            } catch (e) {
-                                console.error('Error parsing hotel images:', e);
-                            }
-                        }
+                    } catch (e) {
+                        console.warn('Failed to parse amenities:', e);
                     }
-                });
-            } catch (error) {
-                alert('❌ Ошибка загрузки данных отеля');
-            }
+                }
+                
+                // Страна и город (с каскадной загрузкой)
+                if (hotel.countryId) {
+                    const countryField = document.getElementById('hotelCountry');
+                    countryField.value = hotel.countryId;
+                    
+                    // Загрузка городов для выбранной страны
+                    loadCitiesForCountry(hotel.countryId, 'hotelCity').then(() => {
+                        if (hotel.cityId) {
+                            document.getElementById('hotelCity').value = hotel.cityId;
+                        }
+                    });
+                }
+                
+                // Изображения
+                if (hotel.images) {
+                    try {
+                        const images = typeof hotel.images === 'string' ? JSON.parse(hotel.images) : hotel.images;
+                        if (Array.isArray(images) && images.length > 0) {
+                            window.hotelImageURLs = [...images];
+                            document.getElementById('hotelImages').value = JSON.stringify(images);
+                            updateHotelImagesList();
+                            
+                            // Показываем preview изображений
+                            setTimeout(() => {
+                                const uploaderContainer = document.getElementById('hotel-uploader-container');
+                                if (uploaderContainer) {
+                                    let imagesHtml = '<div class="uploaded-images-preview mb-3"><h4 class="text-sm font-semibold mb-2">Загруженные изображения:</h4><div class="flex gap-2 flex-wrap">';
+                                    images.forEach((img, index) => {
+                                        imagesHtml += `<div class="image-preview-item relative">
+                                            <img src="${getAbsoluteImageUrl(img)}" alt="Hotel image" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 2px solid #e5e7eb;">
+                                            <div class="text-xs text-gray-500 text-center mt-1">Изображение ${index + 1}</div>
+                                        </div>`;
+                                    });
+                                    imagesHtml += '</div></div>';
+                                    uploaderContainer.insertAdjacentHTML('afterbegin', imagesHtml);
+                                }
+                            }, 500);
+                        }
+                    } catch (e) {
+                        console.error('Error parsing hotel images:', e);
+                    }
+                }
+            })
+            .catch(err => {
+                console.error('❌ Error loading hotel data:', err);
+                alert('❌ Ошибка загрузки данных отеля: ' + err.message);
+            });
         }
         
         // Edit hotel (REFACTORED)
@@ -7034,32 +7021,196 @@
         });
         
         // ==============================================
-        // MODULE: HOTELS - Refactored with admin-helpers.js
+        // MODULE: HOTELS - DIRECT PROCEDURAL APPROACH (like Tours module)
         // ==============================================
         
-        // Hotel form initialization (REFACTORED - Clean standard implementation)
-        document.addEventListener('DOMContentLoaded', function() {
-            initEntityForm({
-                formId: 'hotelForm',
-                entityType: 'hotels',
-                entityIdFieldId: 'hotel-id',
-                fields: hotelFieldsConfig,
-                validationRules: hotelValidationRules,
-                onBeforeSave: (data, isEditing) => {
-                    // Только специальные поля, требующие кастомной логики
-                    data.brand = getSelectedBrand() || null;
-                    data.pension = 'none';
-                    
-                    console.log('💾 Saving hotel data:', data);
-                    return true;
-                },
-                onAfterSave: (response, isEditing) => {
-                    const action = isEditing ? 'обновлён' : 'создан';
-                    alert(`✅ Отель успешно ${action}!`);
-                    closeHotelModal();
-                    loadHotels();
+        // Функция сохранения отеля (ПРОЦЕДУРНЫЙ ПОДХОД - копия паттерна saveTourForm)
+        function saveHotel() {
+            // Получаем ID отеля из скрытого поля
+            const hotelId = document.getElementById('hotel-id').value;
+            const isEditing = hotelId && hotelId.trim() !== '';
+            
+            console.log('💾 Saving hotel:', { hotelId, isEditing });
+            
+            // Валидация обязательных полей
+            const nameRu = document.getElementById('hotelNameRu').value;
+            const nameEn = document.getElementById('hotelNameEn').value;
+            const descRu = document.getElementById('hotelDescRu').value;
+            const descEn = document.getElementById('hotelDescEn').value;
+            const countryId = document.getElementById('hotelCountry').value;
+            const cityId = document.getElementById('hotelCity').value;
+            
+            if (!nameRu || nameRu.trim() === '') {
+                alert('Пожалуйста, введите название отеля на русском языке');
+                return;
+            }
+            
+            if (!countryId || countryId === '') {
+                alert('Пожалуйста, выберите страну');
+                return;
+            }
+            
+            if (!cityId || cityId === '') {
+                alert('Пожалуйста, выберите город');
+                return;
+            }
+            
+            // Сбор данных из полей формы вручную
+            const address = document.getElementById('hotelAddress').value || '';
+            const stars = document.getElementById('hotelStars').value || null;
+            const category = document.getElementById('hotelCategory').value || null;
+            const isActive = document.getElementById('hotelActive').checked;
+            
+            // Обработка бренда (включая кастомный)
+            const brandSelect = document.getElementById('hotelBrand');
+            const brandCustom = document.getElementById('hotelBrandCustom');
+            let brand = null;
+            if (brandSelect.value === 'custom') {
+                brand = brandCustom.value || null;
+            } else {
+                brand = brandSelect.value || null;
+            }
+            
+            // Сбор roomTypes с ценами (вручную)
+            const roomTypes = {};
+            const roomTypesData = [
+                { type: 'SGL', name: 'Одноместный' },
+                { type: 'TWL', name: 'Двухместный' },
+                { type: 'DBL', name: 'Двухспальный' }
+            ];
+            
+            roomTypesData.forEach(room => {
+                const checkbox = document.getElementById(`room${room.type}`);
+                const priceField = document.getElementById(`price${room.type}`);
+                if (checkbox && checkbox.checked && priceField && priceField.value) {
+                    const price = parseFloat(priceField.value);
+                    if (!isNaN(price)) {
+                        roomTypes[room.type] = {
+                            name: room.name,
+                            price: price
+                        };
+                    }
                 }
             });
+            
+            // Сбор mealTypes с ценами (вручную)
+            const mealTypes = {};
+            const mealTypesData = [
+                { type: 'RO', name: 'Без питания' },
+                { type: 'BB', name: 'Завтрак' },
+                { type: 'HB', name: 'Полупансион' },
+                { type: 'FB', name: 'Полный пансион' },
+                { type: 'AI', name: 'Всё включено' }
+            ];
+            
+            mealTypesData.forEach(meal => {
+                const checkbox = document.getElementById(`meal${meal.type}`);
+                const priceField = document.getElementById(`priceMeal${meal.type}`);
+                if (checkbox && checkbox.checked && priceField && priceField.value) {
+                    const price = parseFloat(priceField.value);
+                    if (!isNaN(price)) {
+                        mealTypes[meal.type] = {
+                            name: meal.name,
+                            price: price
+                        };
+                    }
+                }
+            });
+            
+            // Сбор amenities (вручную)
+            const amenities = [];
+            document.querySelectorAll('input[name="hotelAmenities"]:checked').forEach(checkbox => {
+                amenities.push(checkbox.value);
+            });
+            
+            // Сбор изображений из глобальной переменной
+            const images = window.hotelImageURLs || [];
+            
+            console.log('🏨 Collected data:', {
+                name: { ru: nameRu, en: nameEn },
+                roomTypes,
+                mealTypes,
+                amenities,
+                images
+            });
+            
+            // Формируем данные для отправки
+            const formData = {
+                name: JSON.stringify({
+                    ru: nameRu,
+                    en: nameEn || nameRu
+                }),
+                description: JSON.stringify({
+                    ru: descRu || '',
+                    en: descEn || descRu || ''
+                }),
+                address: address,
+                stars: stars ? parseInt(stars) : null,
+                brand: brand,
+                category: category,
+                pension: 'none', // Legacy поле
+                countryId: parseInt(countryId),
+                cityId: parseInt(cityId),
+                roomTypes: JSON.stringify(roomTypes),
+                mealTypes: JSON.stringify(mealTypes),
+                amenities: JSON.stringify(amenities),
+                images: JSON.stringify(images),
+                isActive: isActive
+            };
+            
+            // Определяем URL и метод
+            const url = isEditing ? `${getApiUrl()}/hotels/${hotelId}` : `${getApiUrl()}/hotels`;
+            const method = isEditing ? 'PUT' : 'POST';
+            
+            console.log('🚀 Request:', { url, method, formData });
+            
+            // Отправляем данные
+            fetch(url, {
+                method: method,
+                headers: getAuthHeaders(),
+                body: JSON.stringify(formData)
+            })
+            .then(res => {
+                console.log('🌐 HTTP Response status:', res.status, 'OK:', res.ok);
+                if (!res.ok) {
+                    throw new Error(`HTTP error! status: ${res.status}`);
+                }
+                return res.json();
+            })
+            .then(data => {
+                console.log('📬 Server response:', data);
+                
+                if (data.success === true) {
+                    const message = isEditing ? '✅ Отель успешно обновлён!' : '✅ Отель успешно создан!';
+                    alert(message);
+                    
+                    // Закрываем модальное окно и обновляем список
+                    closeHotelModal();
+                    loadHotels();
+                } else {
+                    const action = isEditing ? 'обновлении' : 'создании';
+                    alert(`❌ Ошибка при ${action} отеля: ` + (data.message || 'Неизвестная ошибка'));
+                }
+            })
+            .catch(err => {
+                console.error('❌ Error saving hotel:', err);
+                alert('❌ Ошибка соединения с сервером: ' + err.message);
+            });
+        }
+        
+        // Hotel form submit handler (установка обработчика ПОСЛЕ определения saveHotel)
+        document.addEventListener('DOMContentLoaded', function() {
+            const hotelForm = document.getElementById('hotelForm');
+            if (hotelForm) {
+                console.log('🔄 Setting up hotel form submit handler');
+                hotelForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    console.log('📝 Hotel form submitted, calling saveHotel()');
+                    saveHotel();
+                });
+            } else {
+                console.error('❌ Hotel form not found!');
+            }
         });
         
         // НОВОЕ: JavaScript для управления полями категорий номеров и типов питания
