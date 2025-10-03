@@ -58,14 +58,46 @@ async function loadCountriesAndCities() {
         }
     } catch (error) {
         console.error('❌ Error loading countries and cities:', error);
-        // Fallback к старым данным если API недоступен
-        citiesByCountry = {
-            'Таджикистан': ['Душанбе', 'Худжанд', 'Хорог'],
-            'Узбекистан': ['Ташкент', 'Самарканд', 'Бухара'],
-            'Кыргызстан': ['Бишкек'],
-            'Казахстан': ['Астана', 'Алматы'],
-            'Туркменистан': ['Ашхабад']
-        };
+        // Fallback к старым данным если API недоступен - используем bilingual structure
+        const currentLang = getCurrentLanguage();
+        const fallbackCountries = [
+            { nameRu: 'Таджикистан', nameEn: 'Tajikistan', cities: [
+                { nameRu: 'Душанбе', nameEn: 'Dushanbe' },
+                { nameRu: 'Худжанд', nameEn: 'Khujand' },
+                { nameRu: 'Хорог', nameEn: 'Khorog' }
+            ]},
+            { nameRu: 'Узбекистан', nameEn: 'Uzbekistan', cities: [
+                { nameRu: 'Ташкент', nameEn: 'Tashkent' },
+                { nameRu: 'Самарканд', nameEn: 'Samarkand' },
+                { nameRu: 'Бухара', nameEn: 'Bukhara' }
+            ]},
+            { nameRu: 'Кыргызстан', nameEn: 'Kyrgyzstan', cities: [
+                { nameRu: 'Бишкек', nameEn: 'Bishkek' }
+            ]},
+            { nameRu: 'Казахстан', nameEn: 'Kazakhstan', cities: [
+                { nameRu: 'Астана', nameEn: 'Astana' },
+                { nameRu: 'Алматы', nameEn: 'Almaty' }
+            ]},
+            { nameRu: 'Туркменистан', nameEn: 'Turkmenistan', cities: [
+                { nameRu: 'Ашхабад', nameEn: 'Ashgabat' }
+            ]}
+        ];
+        
+        // Build citiesByCountry using current language
+        citiesByCountry = {};
+        fallbackCountries.forEach(country => {
+            const countryName = currentLang === 'en' ? country.nameEn : country.nameRu;
+            citiesByCountry[countryName] = country.cities.map(city => 
+                currentLang === 'en' ? city.nameEn : city.nameRu
+            );
+        });
+        
+        // Build countriesData for compatibility
+        countriesData = fallbackCountries.map(c => ({
+            nameRu: c.nameRu,
+            nameEn: c.nameEn,
+            name: currentLang === 'en' ? c.nameEn : c.nameRu
+        }));
     }
 }
 
@@ -106,14 +138,16 @@ function updateCategoryFilter() {
                 option.value = category.id; // Используем ID категории как значение
                 
                 // Получаем название на текущем языке
-                let categoryName = 'Категория';
+                const currentLang = getCurrentLanguage();
+                const fallbackCategory = currentLang === 'en' ? 'Category' : 'Категория';
+                let categoryName = fallbackCategory;
                 if (category.name) {
                     if (typeof category.name === 'object') {
-                        categoryName = category.name.ru || category.name.en || 'Категория';
+                        categoryName = category.name[currentLang] || category.name.ru || category.name.en || fallbackCategory;
                     } else {
                         try {
                             const parsed = JSON.parse(category.name);
-                            categoryName = parsed.ru || parsed.en || 'Категория';
+                            categoryName = parsed[currentLang] || parsed.ru || parsed.en || fallbackCategory;
                         } catch {
                             categoryName = category.name;
                         }
@@ -128,18 +162,19 @@ function updateCategoryFilter() {
         } else {
             // Fallback: добавляем базовые категории если API не вернул данные
             console.log('⚠️ No categories from API, using fallback categories');
+            const currentLang = getCurrentLanguage();
             const fallbackCategories = [
-                { value: 'cultural', text: 'Культурные туры' },
-                { value: 'adventure', text: 'Приключенческие туры' },
-                { value: 'nature', text: 'Природные туры' },
-                { value: 'city', text: 'Городские туры' },
-                { value: 'mountain', text: 'Горные туры' }
+                { value: 'cultural', textRu: 'Культурные туры', textEn: 'Cultural Tours' },
+                { value: 'adventure', textRu: 'Приключенческие туры', textEn: 'Adventure Tours' },
+                { value: 'nature', textRu: 'Природные туры', textEn: 'Nature Tours' },
+                { value: 'city', textRu: 'Городские туры', textEn: 'City Tours' },
+                { value: 'mountain', textRu: 'Горные туры', textEn: 'Mountain Tours' }
             ];
             
             fallbackCategories.forEach(category => {
                 const option = document.createElement('option');
                 option.value = category.value;
-                option.textContent = category.text;
+                option.textContent = currentLang === 'en' ? category.textEn : category.textRu;
                 categorySelect.appendChild(option);
             });
         }
@@ -1230,7 +1265,8 @@ function translateDynamicContent(lang) {
             const titleData = element.dataset.tourTitle;
             if (titleData && typeof safeJsonParse === 'function' && typeof getLocalizedText === 'function') {
                 const parsed = safeJsonParse(titleData);
-                const text = getLocalizedText(parsed, lang) || 'Название не указано';
+                const fallback = lang === 'en' ? 'Title not specified' : 'Название не указано';
+                const text = getLocalizedText(parsed, lang) || fallback;
                 element.textContent = text;
                 updatedCount++;
             }
@@ -1242,7 +1278,8 @@ function translateDynamicContent(lang) {
             const categoryData = element.dataset.categoryName;
             if (categoryData && typeof safeJsonParse === 'function' && typeof getLocalizedText === 'function') {
                 const parsed = safeJsonParse(categoryData);
-                const text = getLocalizedText(parsed, lang) || 'Категория';
+                const fallback = lang === 'en' ? 'Category' : 'Категория';
+                const text = getLocalizedText(parsed, lang) || fallback;
                 element.textContent = text;
                 updatedCount++;
             }
@@ -1254,7 +1291,8 @@ function translateDynamicContent(lang) {
             const titleData = element.dataset.tourBlockTitle;
             if (titleData && typeof safeJsonParse === 'function' && typeof getLocalizedText === 'function') {
                 const parsed = safeJsonParse(titleData);
-                const text = getLocalizedText(parsed, lang) || 'Блок туров';
+                const fallback = lang === 'en' ? 'Tour Block' : 'Блок туров';
+                const text = getLocalizedText(parsed, lang) || fallback;
                 element.textContent = text;
                 updatedCount++;
             }
@@ -1267,47 +1305,50 @@ function translateDynamicContent(lang) {
 // 🎯 ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ДЛЯ ПОЛУЧЕНИЯ КОНТЕНТА ПО ЯЗЫКУ
 
 function getTitleByLanguage(titleObject, lang) {
+    const fallback = lang === 'en' ? 'Title not specified' : 'Название не указано';
     // Используем стандартизованный подход с safeJsonParse → getLocalizedText
     if (typeof safeJsonParse === 'function' && typeof getLocalizedText === 'function') {
         const parsed = safeJsonParse(titleObject);
-        return getLocalizedText(parsed, lang) || 'Название не указано';
+        return getLocalizedText(parsed, lang) || fallback;
     }
     // Fallback для обратной совместимости
     try {
         const title = typeof titleObject === 'string' ? JSON.parse(titleObject) : titleObject;
-        return title[lang] || title.ru || title.en || 'Название не указано';
+        return title[lang] || title.ru || title.en || fallback;
     } catch (e) {
-        return titleObject || 'Название не указано';
+        return titleObject || fallback;
     }
 }
 
 function getDescriptionByLanguage(descriptionObject, lang) {
+    const fallback = lang === 'en' ? 'Description not specified' : 'Описание не указано';
     // Используем стандартизованный подход с safeJsonParse → getLocalizedText
     if (typeof safeJsonParse === 'function' && typeof getLocalizedText === 'function') {
         const parsed = safeJsonParse(descriptionObject);
-        return getLocalizedText(parsed, lang) || 'Описание не указано';
+        return getLocalizedText(parsed, lang) || fallback;
     }
     // Fallback для обратной совместимости
     try {
         const description = typeof descriptionObject === 'string' ? JSON.parse(descriptionObject) : descriptionObject;
-        return description[lang] || description.ru || description.en || 'Описание не указано';
+        return description[lang] || description.ru || description.en || fallback;
     } catch (e) {
-        return descriptionObject || 'Описание не указано';
+        return descriptionObject || fallback;
     }
 }
 
 function getCategoryNameByLanguage(categoryObject, lang) {
+    const fallback = lang === 'en' ? 'Category' : 'Категория';
     // Используем стандартизованный подход с safeJsonParse → getLocalizedText
     if (typeof safeJsonParse === 'function' && typeof getLocalizedText === 'function') {
         const parsed = safeJsonParse(categoryObject);
-        return getLocalizedText(parsed, lang) || 'Категория';
+        return getLocalizedText(parsed, lang) || fallback;
     }
     // Fallback для обратной совместимости
     try {
         const category = typeof categoryObject === 'string' ? JSON.parse(categoryObject) : categoryObject;
-        return category[lang] || category.ru || category.en || 'Категория';
+        return category[lang] || category.ru || category.en || fallback;
     } catch (e) {
-        return categoryObject || 'Категория';
+        return categoryObject || fallback;
     }
 }
 
@@ -1620,22 +1661,26 @@ function renderTourCard(tour, blockId = null) {
     const currentLang = getCurrentLanguage();
     
     // Парсим JSON поля для корректного отображения и сохраняем в data-атрибутах
+    const titleFallback = currentLang === 'en' ? 'Title not specified' : 'Название не указано';
+    const descFallback = currentLang === 'en' ? 'Description not specified' : 'Описание не указано';
+    const categoryFallback = currentLang === 'en' ? 'Category' : 'Категория';
+    
     let titleData, titleText;
     try {
         titleData = typeof tour.title === 'string' ? JSON.parse(tour.title) : tour.title;
-        titleText = getLocalizedText(titleData, currentLang) || 'Название не указано';
+        titleText = getLocalizedText(titleData, currentLang) || titleFallback;
     } catch (e) {
-        titleData = { ru: tour.title || 'Название не указано', en: tour.title || 'Title not specified' };
-        titleText = tour.title || 'Название не указано';
+        titleData = { ru: tour.title || titleFallback, en: tour.title || titleFallback };
+        titleText = tour.title || titleFallback;
     }
     
     let descriptionData, descriptionText;
     try {
         descriptionData = typeof tour.description === 'string' ? JSON.parse(tour.description) : tour.description;
-        descriptionText = getLocalizedText(descriptionData, currentLang) || 'Описание не указано';
+        descriptionText = getLocalizedText(descriptionData, currentLang) || descFallback;
     } catch (e) {
-        descriptionData = { ru: tour.description || 'Описание не указано', en: tour.description || 'Description not available' };
-        descriptionText = tour.description || 'Описание не указано';
+        descriptionData = { ru: tour.description || descFallback, en: tour.description || descFallback };
+        descriptionText = tour.description || descFallback;
     }
     
     // Обрабатываем название категории
@@ -1643,14 +1688,14 @@ function renderTourCard(tour, blockId = null) {
     if (tour.category && tour.category.name) {
         try {
             categoryData = typeof tour.category.name === 'string' ? JSON.parse(tour.category.name) : tour.category.name;
-            categoryText = getLocalizedText(categoryData, currentLang) || 'Категория';
+            categoryText = getLocalizedText(categoryData, currentLang) || categoryFallback;
         } catch (e) {
-            categoryData = { ru: tour.category.name || 'Категория', en: tour.category.name || 'Category' };
-            categoryText = tour.category.name || 'Категория';
+            categoryData = { ru: tour.category.name || categoryFallback, en: tour.category.name || categoryFallback };
+            categoryText = tour.category.name || categoryFallback;
         }
     } else {
-        categoryData = { ru: 'Категория', en: 'Category' };
-        categoryText = 'Категория';
+        categoryData = { ru: categoryFallback, en: categoryFallback };
+        categoryText = categoryFallback;
     }
     
     const shortDesc = tour.shortDesc || null;
