@@ -36,6 +36,7 @@ The backend uses **Express.js and TypeScript** with a **modular architecture** f
 -   **Deployment**: Configured for Replit with PostgreSQL, unified server (port 5000), CORS for Replit proxy, and autoscale production environment.
 -   **Slide Editing System**: Robust slide editing functionality with secure file uploads, validation, and multilingual support.
 -   **Enhanced Multilingual System**: Extended i18n.js with translation keys, multilingual helper functions, and dynamic content updates on language switch.
+-   **Unified Language System**: Single entry point `updatePageLanguage()` for all language switching, integrating both static (data-translate) and dynamic (data-multilingual-*) content. MutationObserver automatically translates new DOM elements, eliminating manual translation calls.
 
 ### UI/UX
 -   **Admin Dashboard**: Comprehensive management for tours, orders, hotels, guides, and reviews.
