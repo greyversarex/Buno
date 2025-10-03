@@ -117,6 +117,7 @@ window.translations = window.translations || {
     'guide.hire': { ru: 'Нанять гида', en: 'Hire Guide' },
     'guide.more_details': { ru: 'Подробная информация', en: 'More Details' },
     'guide.professional': { ru: 'Профессиональный гид', en: 'Professional Guide' },
+    'guide.professional_badge': { ru: 'Профессиональный гид', en: 'Professional Guide' },
     
     // Подвал сайта
     'footer.contact_info': { ru: 'Контактная информация', en: 'Contact Information' },
