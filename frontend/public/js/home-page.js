@@ -227,9 +227,10 @@ function populateCountryFilter() {
     countrySelect.innerHTML = '';
     
     // Добавляем placeholder опцию через перевод
+    const currentLang = getCurrentLanguage();
     const placeholder = document.createElement('option');
     placeholder.value = '';
-    placeholder.textContent = getTranslation('filter.country') || 'Страна';
+    placeholder.textContent = getTranslation('filter.country') || (currentLang === 'en' ? 'Country' : 'Страна');
     countrySelect.appendChild(placeholder);
     
     // Добавляем страны из загруженных данных
@@ -258,9 +259,10 @@ function updateCities() {
     citySelect.innerHTML = '';
     
     // Добавляем placeholder через перевод
+    const currentLang = getCurrentLanguage();
     const placeholder = document.createElement('option');
     placeholder.value = '';
-    placeholder.textContent = getTranslation('filter.city') || 'Город';
+    placeholder.textContent = getTranslation('filter.city') || (currentLang === 'en' ? 'City' : 'Город');
     citySelect.appendChild(placeholder);
     
     const selectedCountry = countrySelect?.value;
@@ -280,13 +282,38 @@ function updateHotels() {
     const hotelSelect = document.getElementById('hotelFilter');
     
     // Очищаем список отелей
-    hotelSelect.innerHTML = '<option value="">Гостиницы</option>';
+    const currentLang = getCurrentLanguage();
+    const hotelsPlaceholder = currentLang === 'en' ? 'Hotels' : 'Гостиницы';
+    hotelSelect.innerHTML = `<option value="">${hotelsPlaceholder}</option>`;
+    
+    // Mapping для перевода hotel group names
+    const groupTranslations = {
+        'Люкс сегмент': { ru: 'Люкс сегмент', en: 'Luxury Segment' },
+        'Премиум сегмент': { ru: 'Премиум сегмент', en: 'Premium Segment' },
+        'Средний сегмент': { ru: 'Средний сегмент', en: 'Mid-range Segment' },
+        'Бюджетный сегмент': { ru: 'Бюджетный сегмент', en: 'Budget Segment' },
+        'Местные и региональные': { ru: 'Местные и региональные', en: 'Local & Regional' }
+    };
     
     const selectedCountry = countrySelect.value;
-    if (selectedCountry && hotelsByCountry[selectedCountry]) {
-        hotelsByCountry[selectedCountry].forEach(group => {
+    
+    // Поиск hotels по стране - проверяем и Russian и English названия
+    let hotels = hotelsByCountry[selectedCountry];
+    if (!hotels) {
+        // Попробуем найти через countriesData mapping
+        const country = countriesData.find(c => 
+            (c.nameRu === selectedCountry || c.nameEn === selectedCountry || c.name === selectedCountry)
+        );
+        if (country) {
+            hotels = hotelsByCountry[country.nameRu] || hotelsByCountry[country.nameEn];
+        }
+    }
+    
+    if (hotels) {
+        hotels.forEach(group => {
             const optgroup = document.createElement('optgroup');
-            optgroup.label = group.group;
+            const translatedLabel = groupTranslations[group.group]?.[currentLang] || group.group;
+            optgroup.label = translatedLabel;
             
             group.hotels.forEach(hotel => {
                 const option = document.createElement('option');
@@ -318,8 +345,22 @@ function updateHotelFilters() {
         return;
     }
     
-    // Включаем фильтры для определённых стран (используем динамические данные)
-    const countriesWithHotels = countriesData.map(c => c.nameRu) || ['Таджикистан', 'Узбекистан', 'Кыргызстан', 'Казахстан'];
+    // Включаем фильтры для определённых стран (используем обе версии названий)
+    const countriesWithHotels = [];
+    countriesData.forEach(c => {
+        if (c.nameRu) countriesWithHotels.push(c.nameRu);
+        if (c.nameEn) countriesWithHotels.push(c.nameEn);
+        if (c.name) countriesWithHotels.push(c.name);
+    });
+    // Fallback если countriesData пуст
+    if (countriesWithHotels.length === 0) {
+        const currentLang = getCurrentLanguage();
+        if (currentLang === 'en') {
+            countriesWithHotels.push('Tajikistan', 'Uzbekistan', 'Kyrgyzstan', 'Kazakhstan');
+        } else {
+            countriesWithHotels.push('Таджикистан', 'Узбекистан', 'Кыргызстан', 'Казахстан');
+        }
+    }
     
     if (countriesWithHotels.includes(country)) {
         hotelBrandFilter.disabled = false;
@@ -436,14 +477,18 @@ function getSuggestionIcon(type) {
 
 // Функция для отображения стандартных подсказок
 function showDefaultSuggestions(query) {
+    const currentLang = getCurrentLanguage();
     const defaultSuggestions = [
-        { text: 'Памир', type: 'место' },
-        { text: 'Искандеркуль', type: 'место' },
-        { text: 'Душанбе', type: 'место' },
-        { text: 'Горные туры', type: 'категория' },
-        { text: 'Трекинг', type: 'категория' },
-        { text: 'Культурные туры', type: 'категория' }
-    ].filter(s => s.text.toLowerCase().includes(query.toLowerCase()));
+        { textRu: 'Памир', textEn: 'Pamir', typeRu: 'место', typeEn: 'place' },
+        { textRu: 'Искандеркуль', textEn: 'Iskanderkul', typeRu: 'место', typeEn: 'place' },
+        { textRu: 'Душанбе', textEn: 'Dushanbe', typeRu: 'место', typeEn: 'place' },
+        { textRu: 'Горные туры', textEn: 'Mountain Tours', typeRu: 'категория', typeEn: 'category' },
+        { textRu: 'Трекинг', textEn: 'Trekking', typeRu: 'категория', typeEn: 'category' },
+        { textRu: 'Культурные туры', textEn: 'Cultural Tours', typeRu: 'категория', typeEn: 'category' }
+    ].map(s => ({
+        text: currentLang === 'en' ? s.textEn : s.textRu,
+        type: currentLang === 'en' ? s.typeEn : s.typeRu
+    })).filter(s => s.text.toLowerCase().includes(query.toLowerCase()));
     
     if (defaultSuggestions.length > 0) {
         displaySuggestions(defaultSuggestions);
@@ -553,9 +598,11 @@ async function searchTours() {
             }
         });
 
-        // Конвертируем страны и города в ID для API запроса
+        // Конвертируем страны и города в ID для API запроса - поддержка обоих языков
         if (filters.country) {
-            const country = countriesData.find(c => c.nameRu === filters.country);
+            const country = countriesData.find(c => 
+                c.nameRu === filters.country || c.nameEn === filters.country || c.name === filters.country
+            );
             if (country) {
                 queryParams.set('countryId', country.id.toString());
                 queryParams.delete('country');
@@ -563,7 +610,9 @@ async function searchTours() {
         }
         
         if (filters.city) {
-            const city = citiesData.find(c => c.nameRu === filters.city);
+            const city = citiesData.find(c => 
+                c.nameRu === filters.city || c.nameEn === filters.city || c.name === filters.city
+            );
             if (city) {
                 queryParams.set('cityId', city.id.toString());
                 queryParams.delete('city');
@@ -592,35 +641,36 @@ async function searchTours() {
 
 // Функция для отображения демо результатов
 function displayMockSearchResults(query) {
+    const currentLang = getCurrentLanguage();
     const mockTours = [
         {
-            title: { ru: 'Памирское шоссе' },
-            description: { ru: 'Захватывающее путешествие по одной из самых высокогорных дорог мира' },
-            country: 'Таджикистан',
-            city: 'Хорог',
-            format: 'Групповой',
-            duration: '7 дней',
-            theme: 'Горные ландшафты',
+            title: { ru: 'Памирское шоссе', en: 'Pamir Highway' },
+            description: { ru: 'Захватывающее путешествие по одной из самых высокогорных дорог мира', en: 'Breathtaking journey along one of the highest mountain roads in the world' },
+            country: currentLang === 'en' ? 'Tajikistan' : 'Таджикистан',
+            city: currentLang === 'en' ? 'Khorog' : 'Хорог',
+            format: currentLang === 'en' ? 'Group' : 'Групповой',
+            duration: currentLang === 'en' ? '7 days' : '7 дней',
+            theme: currentLang === 'en' ? 'Mountain Landscapes' : 'Горные ландшафты',
             price: 299
         },
         {
-            title: { ru: 'Озеро Искандеркуль' },
-            description: { ru: 'Живописное горное озеро в окружении заснеженных пиков' },
-            country: 'Таджикистан',
-            city: 'Пенджикент',
-            format: 'Персональный',
-            duration: '2 дня',
-            theme: 'Озерные ландшафты',
+            title: { ru: 'Озеро Искандеркуль', en: 'Lake Iskanderkul' },
+            description: { ru: 'Живописное горное озеро в окружении заснеженных пиков', en: 'Picturesque mountain lake surrounded by snow-capped peaks' },
+            country: currentLang === 'en' ? 'Tajikistan' : 'Таджикистан',
+            city: currentLang === 'en' ? 'Panjakent' : 'Пенджикент',
+            format: currentLang === 'en' ? 'Private' : 'Персональный',
+            duration: currentLang === 'en' ? '2 days' : '2 дня',
+            theme: currentLang === 'en' ? 'Lake Landscapes' : 'Озерные ландшафты',
             price: 149
         },
         {
-            title: { ru: 'Древний Пенджикент' },
-            description: { ru: 'Исследуйте руины древнего согдийского города' },
-            country: 'Таджикистан',
-            city: 'Пенджикент',
-            format: 'Групповой',
-            duration: '1 день',
-            theme: 'Исторические туры',
+            title: { ru: 'Древний Пенджикент', en: 'Ancient Panjakent' },
+            description: { ru: 'Исследуйте руины древнего согдийского города', en: 'Explore the ruins of an ancient Sogdian city' },
+            country: currentLang === 'en' ? 'Tajikistan' : 'Таджикистан',
+            city: currentLang === 'en' ? 'Panjakent' : 'Пенджикент',
+            format: currentLang === 'en' ? 'Group' : 'Групповой',
+            duration: currentLang === 'en' ? '1 day' : '1 день',
+            theme: currentLang === 'en' ? 'Historical Tours' : 'Исторические туры',
             price: 89
         }
     ];
