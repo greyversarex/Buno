@@ -909,9 +909,7 @@ ${getTranslation('guide.more_details')}
                         const unavailable = new Set();
                         bookingsResult.data.forEach(request => {
                             if (request.guideId === guideId && request.status === 'approved') {
-                                const dates = Array.isArray(request.selectedDates) 
-                                    ? request.selectedDates 
-                                    : JSON.parse(request.selectedDates || '[]');
+                                const dates = safeJsonParse(request.selectedDates, []);
                                 dates.forEach(date => {
                                     try {
                                         let normalizedDate;
