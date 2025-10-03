@@ -822,9 +822,9 @@
             const breadcrumbCategory = document.getElementById('breadcrumb-category');
             const breadcrumbCategorySep = document.getElementById('breadcrumb-category-separator');
             
-            // Название тура (всегда показываем)
-            if (breadcrumbTitle) {
-                breadcrumbTitle.textContent = tourData.title;
+            // Название тура (всегда показываем) - используем multilingual данные
+            if (breadcrumbTitle && tourData._titleData) {
+                breadcrumbTitle.textContent = getLocalizedText(tourData._titleData, currentLang) || tourData.title;
             }
             
             // Блок тура (если есть)
@@ -912,6 +912,8 @@
                     // Convert API data to our format
                     tourData = {
                         id: apiTour.id,
+                        _titleData: titleData, // Сохраняем multilingual объект
+                        _descData: descData, // Сохраняем multilingual объект
                         title: getLocalizedText(titleData, currentLang) || apiTour.title || '',
                         location: getDisplayLocation(apiTour),
                         price: apiTour.price || '0',
@@ -968,7 +970,12 @@
             if (tourLocation) tourLocation.textContent = tourData.location;
             
             const tourReviews = document.getElementById('tour-reviews');
-            if (tourReviews) tourReviews.textContent = `(${tourData.reviews_count || tourData.reviewCount || 0} отзыва)`;
+            if (tourReviews) {
+                const reviewCount = tourData.reviews_count || tourData.reviewCount || 0;
+                const currentLang = getCurrentLanguage();
+                const reviewText = currentLang === 'en' ? (reviewCount === 1 ? 'review' : 'reviews') : 'отзыва';
+                tourReviews.textContent = `(${reviewCount} ${reviewText})`;
+            }
             
             // ✅ ДЛИТЕЛЬНОСТЬ ТУРА (объединенная логика)
             const durationElement = document.getElementById('tour-duration');
