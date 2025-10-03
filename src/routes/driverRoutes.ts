@@ -1,5 +1,6 @@
 import express from 'express';
 import { authenticateDriver } from '../middleware/driverAuth';
+import { loginLimiter, registrationLimiter } from '../middleware/rateLimiter';
 import {
   loginDriver,
   getAllDrivers,
@@ -16,8 +17,8 @@ import {
 
 const router = express.Router();
 
-// Авторизация водителя
-router.post('/login', loginDriver);
+// Авторизация водителя с защитой от brute-force
+router.post('/login', loginLimiter, loginDriver);
 
 // Создание водителя с аутентификацией (для админ панели) - с поддержкой загрузки файлов
 router.post('/create-with-auth', upload.fields([

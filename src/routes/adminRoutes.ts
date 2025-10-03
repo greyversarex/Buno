@@ -1,14 +1,15 @@
 import { Router } from 'express';
 import { AdminController, adminAuthMiddleware } from '../controllers/adminController';
+import { loginLimiter, registrationLimiter } from '../middleware/rateLimiter';
 
 const router = Router();
 
-// Аутентификация (публичные роуты)
-router.post('/login', AdminController.login);
+// Аутентификация (публичные роуты) с защитой от brute-force
+router.post('/login', loginLimiter, AdminController.login);
 router.post('/verify-token', AdminController.verifyToken);
 
-// Создание администратора (только для разработки)
-router.post('/create-admin', AdminController.createAdmin);
+// Создание администратора (только для разработки) с защитой от спама
+router.post('/create-admin', registrationLimiter, AdminController.createAdmin);
 
 // Защищенные роуты админ панели (требуют аутентификацию)
 router.get('/dashboard-stats', adminAuthMiddleware, AdminController.getDashboardStats);

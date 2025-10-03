@@ -1,10 +1,11 @@
 import { Router } from 'express';
 import * as orderController from '../controllers/orderController';
+import { orderLimiter } from '../middleware/rateLimiter';
 
 const router = Router();
 
-// Public routes
-router.post('/', orderController.createOrder);
+// Public routes с защитой от спама заказов
+router.post('/', orderLimiter, orderController.createOrder);
 router.get('/number/:orderNumber', orderController.getOrder);
 
 // Admin routes

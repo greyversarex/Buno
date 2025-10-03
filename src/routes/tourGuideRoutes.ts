@@ -1,5 +1,6 @@
 import express from 'express';
 import { authenticateTourGuide } from '../middleware/tourGuideAuth';
+import { loginLimiter, registrationLimiter } from '../middleware/rateLimiter';
 import {
   loginTourGuide,
   getGuideTours,
@@ -17,8 +18,8 @@ import {
 
 const router = express.Router();
 
-// Авторизация
-router.post('/login', loginTourGuide);
+// Авторизация с защитой от brute-force
+router.post('/login', loginLimiter, loginTourGuide);
 
 // Создание тургида с аутентификацией (для админ панели) - с поддержкой загрузки файлов
 router.post('/create-with-auth', upload.fields([

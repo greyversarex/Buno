@@ -3,9 +3,17 @@
 
 /**
  * Безопасно конвертирует относительный путь к изображению в абсолютный URL
+ * ВАЖНО: ВСЕГДА используйте эту функцию для изображений, чтобы избежать broken images
  * 
  * @param {string} relativePath - Путь к изображению (относительный, абсолютный или HTTP URL)
  * @returns {string} Абсолютный URL изображения или placeholder при ошибке
+ * 
+ * @example
+ * // ✅ ПРАВИЛЬНО:
+ * <img src="${getAbsoluteImageUrl(tour.mainImage)}" />
+ * 
+ * // ❌ НЕПРАВИЛЬНО:
+ * <img src="${tour.mainImage}" />  // Может быть null или относительный путь
  * 
  * @example
  * getAbsoluteImageUrl('/uploads/images/photo.jpg') 
