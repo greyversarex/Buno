@@ -229,6 +229,60 @@ window.translations = window.translations || {
     'tour.tab.description': { ru: 'Описание тура', en: 'Tour Description' },
     'tour.tab.program': { ru: 'Программа тура', en: 'Tour Program' },
     
+    // Заголовки страниц
+    'hotel.page_title': { ru: 'Каталог отелей - Bunyod-Tour', en: 'Hotels Catalog - Bunyod-Tour' },
+    'guides.page_title': { ru: 'Тургиды - Bunyod-Tour', en: 'Tour Guides - Bunyod-Tour' },
+    
+    // Звезды отелей
+    'hotel.5_stars': { ru: '5 звезд', en: '5 Stars' },
+    'hotel.4_stars': { ru: '4 звезды', en: '4 Stars' },
+    'hotel.3_stars': { ru: '3 звезды', en: '3 Stars' },
+    'hotel.2_stars': { ru: '2 звезды', en: '2 Stars' },
+    'hotel.1_star': { ru: '1 звезда', en: '1 Star' },
+    
+    // Страница гидов
+    'guides.main_title': { ru: 'Профессиональные тургиды Центральной Азии', en: 'Professional Tour Guides of Central Asia' },
+    'guides.subtitle': { ru: 'Откройте сокровища Центральной Азии с нашими опытными гидами', en: 'Discover the treasures of Central Asia with our experienced guides' },
+    'guides.licensed_guides': { ru: 'Лицензированные гиды', en: 'Licensed Guides' },
+    'guides.happy_clients': { ru: 'Более 1000 довольных клиентов', en: 'Over 1000 Happy Clients' },
+    'guides.multilingual_support': { ru: 'Многоязычная поддержка', en: 'Multilingual Support' },
+    'guides.coming_soon': { ru: 'Скоро здесь появятся наши тургиды', en: 'Our tour guides will appear here soon' },
+    'guides.forming_team': { ru: 'Мы формируем команду профессиональных гидов для создания незабываемых путешествий', en: 'We are forming a team of professional guides to create unforgettable journeys' },
+    'guides.hire_guide': { ru: 'Нанять тургида', en: 'Hire Guide' },
+    'guides.select_dates': { ru: 'Выберите даты', en: 'Select Dates' },
+    'guides.selected': { ru: 'Выбрано', en: 'Selected' },
+    'guides.available': { ru: 'Доступно', en: 'Available' },
+    'guides.occupied': { ru: 'Занято', en: 'Occupied' },
+    'guides.unavailable': { ru: 'Недоступно', en: 'Unavailable' },
+    'guides.cost_calculation': { ru: 'Расчет стоимости', en: 'Cost Calculation' },
+    'guides.price_per_day': { ru: 'Цена за день:', en: 'Price per day:' },
+    'guides.selected_days': { ru: 'Выбрано дней:', en: 'Selected days:' },
+    'guides.total': { ru: 'Итого:', en: 'Total:' },
+    'guides.your_data': { ru: 'Ваши данные', en: 'Your Details' },
+    
+    // Календарь - короткие названия дней
+    'calendar.mon': { ru: 'Пн', en: 'Mon' },
+    'calendar.tue': { ru: 'Вт', en: 'Tue' },
+    'calendar.wed': { ru: 'Ср', en: 'Wed' },
+    'calendar.thu': { ru: 'Чт', en: 'Thu' },
+    'calendar.fri': { ru: 'Пт', en: 'Fri' },
+    'calendar.sat': { ru: 'Сб', en: 'Sat' },
+    'calendar.sun': { ru: 'Вс', en: 'Sun' },
+    
+    // Календарь - полные названия дней
+    'calendar.monday': { ru: 'Понедельник', en: 'Monday' },
+    'calendar.tuesday': { ru: 'Вторник', en: 'Tuesday' },
+    'calendar.wednesday': { ru: 'Среда', en: 'Wednesday' },
+    'calendar.thursday': { ru: 'Четверг', en: 'Thursday' },
+    'calendar.friday': { ru: 'Пятница', en: 'Friday' },
+    'calendar.saturday': { ru: 'Суббота', en: 'Saturday' },
+    'calendar.sunday': { ru: 'Воскресенье', en: 'Sunday' },
+    
+    // Формы бронирования
+    'form.check_dates': { ru: 'Проверить доступные даты', en: 'Check Available Dates' },
+    'form.travelers_count': { ru: 'Количество туристов', en: 'Number of Travelers' },
+    'form.one_adult': { ru: '1 взрослый', en: '1 Adult' },
+    
     // Особенности бронирования
     'booking.free_cancellation': { ru: 'Бесплатная отмена', en: 'Free Cancellation' },
     'booking.cancellation_terms': { ru: 'до 24 часов до начала тура (местное время)', en: 'up to 24 hours before tour start (local time)' },
