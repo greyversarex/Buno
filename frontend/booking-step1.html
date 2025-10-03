@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Бронирование - Выбор отеля | Bunyod-Tour</title>
+    <title id="page-title" data-translate="booking.page_title">Бронирование - Выбор отеля | Bunyod-Tour</title>
     <!-- 🌐 ЦЕНТРАЛЬНАЯ СИСТЕМА ИНТЕРНАЦИОНАЛИЗАЦИИ -->
     <script src="/public/js/i18n.js"></script>
     <script src="/public/js/utils.js"></script>
@@ -65,15 +65,15 @@
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-4">
                     <div class="progress-step active w-10 h-10 rounded-full flex items-center justify-center font-bold">1</div>
-                    <span class="font-medium text-gray-700">Выбор отеля</span>
+                    <span class="font-medium text-gray-700" data-translate="booking.step1.title">Выбор отеля</span>
                 </div>
                 <div class="flex items-center space-x-4">
                     <div class="progress-step w-10 h-10 rounded-full flex items-center justify-center font-bold bg-gray-200">2</div>
-                    <span class="font-medium text-gray-400">Данные туриста</span>
+                    <span class="font-medium text-gray-400" data-translate="booking.step2.title">Данные туриста</span>
                 </div>
                 <div class="flex items-center space-x-4">
                     <div class="progress-step w-10 h-10 rounded-full flex items-center justify-center font-bold bg-gray-200">3</div>
-                    <span class="font-medium text-gray-400">Оплата</span>
+                    <span class="font-medium text-gray-400" data-translate="booking.step3.title">Оплата</span>
                 </div>
             </div>
         </div>
@@ -83,12 +83,12 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Hotels List -->
             <div class="lg:col-span-2">
-                <h2 class="text-2xl font-bold text-gray-800 mb-6">Выберите отель</h2>
+                <h2 class="text-2xl font-bold text-gray-800 mb-6" data-translate="booking.choose_hotel">Выберите отель</h2>
                 <div id="hotels-container" class="space-y-6">
                     <!-- Hotels will be loaded here -->
                     <div class="text-center py-8">
                         <i class="fas fa-spinner fa-spin text-2xl text-gray-400 mb-4"></i>
-                        <p class="text-gray-600">Загрузка отелей...</p>
+                        <p class="text-gray-600" data-translate="booking.loading_hotels">Загрузка отелей...</p>
                     </div>
                 </div>
             </div>
@@ -96,7 +96,7 @@
             <!-- Tour Details Sidebar -->
             <div class="lg:col-span-1">
                 <div class="bg-white rounded-lg shadow-lg p-6 sticky top-6">
-                    <h3 class="text-xl font-bold text-gray-800 mb-4">Детали тура</h3>
+                    <h3 class="text-xl font-bold text-gray-800 mb-4" data-translate="booking.tour_details">Детали тура</h3>
                     
                     <div id="tour-details" class="space-y-4">
                         <!-- Tour details will be loaded here -->
@@ -276,19 +276,19 @@
                         <h4 class="font-medium text-gray-800 text-base">${tour.title.ru || tour.title.en}</h4>
                         <div class="text-sm text-gray-600 space-y-1">
                             <div class="flex justify-between">
-                                <span>Дата тура:</span>
+                                <span data-translate="booking.tour_date">Дата тура:</span>
                                 <span class="font-medium">${new Date(tourDate).toLocaleDateString('ru-RU')}</span>
                             </div>
                             <div class="flex justify-between">
-                                <span>Длительность:</span>
-                                <span class="font-medium">${tour.duration || tour.durationDays || 1} дн.</span>
+                                <span data-translate="booking.duration">Длительность:</span>
+                                <span class="font-medium">${tour.duration || tour.durationDays || 1} <span data-translate="booking.days">дн.</span></span>
                             </div>
                             <div class="flex justify-between">
-                                <span>Количество туристов:</span>
+                                <span data-translate="booking.tourists_count">Количество туристов:</span>
                                 <span class="font-medium">${numberOfTourists}</span>
                             </div>
                             <div class="flex justify-between">
-                                <span>Тип тура:</span>
+                                <span data-translate="booking.tour_type">Тип тура:</span>
                                 <span class="font-medium">${tour.tourType || tour.format || 'Групповой'}</span>
                             </div>
                         </div>
@@ -299,7 +299,7 @@
                     
                     <!-- Информация об отеле -->
                     <div id="selected-hotel-info" class="space-y-2" style="display: none;">
-                        <h5 class="font-medium text-gray-800">Выбранный отель</h5>
+                        <h5 class="font-medium text-gray-800" data-translate="booking.selected_hotel">Выбранный отель</h5>
                         <div id="hotel-details-content" class="text-sm text-gray-600"></div>
                     </div>
                     
@@ -308,7 +308,7 @@
                     
                     <!-- Информация о номерах и питании -->
                     <div id="room-meal-info" class="space-y-2" style="display: none;">
-                        <h5 class="font-medium text-gray-800">Номера и питание</h5>
+                        <h5 class="font-medium text-gray-800" data-translate="booking.rooms_and_meals">Номера и питание</h5>
                         <div id="room-details-content" class="text-sm text-gray-600 space-y-1"></div>
                         <div id="meal-details-content" class="text-sm text-gray-600"></div>
                         <div id="capacity-info" class="text-xs text-gray-500 mt-2"></div>
@@ -319,10 +319,10 @@
                     
                     <!-- Расчёт стоимости -->
                     <div id="price-calculation" class="space-y-2">
-                        <h5 class="font-medium text-gray-800">Расчёт стоимости</h5>
+                        <h5 class="font-medium text-gray-800" data-translate="booking.price_calculation">Расчёт стоимости</h5>
                         <div class="text-sm text-gray-600 space-y-1">
                             <div class="flex justify-between">
-                                <span>Цена тура ${tour.priceType === 'за группу' ? '(за группу)' : '× ' + numberOfTourists + ' чел.'}:</span>
+                                <span><span data-translate="booking.tour_price">Цена тура</span> ${tour.priceType === 'за группу' ? '(<span data-translate="booking.per_group">за группу</span>)' : '× ' + numberOfTourists + ' чел.'}:</span>
                                 <span id="tour-price-calc" class="price-display" data-original-price="0">0 TJS</span>
                             </div>
                             <div id="room-costs-calc" class="space-y-1">
@@ -334,7 +334,7 @@
                         </div>
                         <div class="border-t pt-2 mt-2">
                             <div class="flex justify-between font-bold text-lg text-blue-600">
-                                <span>Итоговая сумма:</span>
+                                <span data-translate="booking.total_amount">Итоговая сумма:</span>
                                 <span id="total-price" class="price-display" data-original-price="0">0 TJS</span>
                             </div>
                         </div>
@@ -345,7 +345,7 @@
                     
                     <!-- Служба поддержки -->
                     <div class="space-y-2">
-                        <h5 class="font-medium text-gray-800">Служба поддержки</h5>
+                        <h5 class="font-medium text-gray-800" data-translate="booking.support_service">Служба поддержки</h5>
                         <div class="text-sm text-gray-600 space-y-1">
                             <div class="flex items-center">
                                 <i class="fas fa-phone text-blue-500 mr-2 w-4"></i>
