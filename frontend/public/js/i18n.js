@@ -1085,6 +1085,8 @@ window.translations = window.translations || {
     'footer.copyright': { ru: 'Все права защищены | ООО "Бунёд-Тур" (2017-2025) | ИНН: 010098739; ОГРН: 0110023137', en: 'All rights reserved | LLC "Bunyod-Tour" (2017-2025) | TIN: 010098739; OGRN: 0110023137' },
     
     // === HOME PAGE KEYS ===
+    'home.hero.title': { ru: 'Откройте красоту Таджикистана', en: 'Discover the Beauty of Tajikistan' },
+    'home.hero.subtitle': { ru: 'Исследуйте захватывающие горы Памира, древние города Шёлкового пути и богатую культуру этой удивительной страны', en: 'Explore the breathtaking Pamir Mountains, ancient Silk Road cities, and the rich culture of this amazing country' },
     'home.filter.category_label': { ru: 'Категория тура', en: 'Tour Category' },
     'home.filter.all_categories': { ru: 'Все категории', en: 'All Categories' },
     'home.filter.adventure': { ru: 'Приключения', en: 'Adventure' },
@@ -1112,6 +1114,7 @@ window.translations = window.translations || {
     'home.stats.unique_tours': { ru: 'Уникальных туров', en: 'Unique Tours' },
     'home.stats.years_experience': { ru: 'Лет опыта', en: 'Years of Experience' },
     'home.stats.avg_rating': { ru: 'Средняя оценка', en: 'Average Rating' },
+    'home.price_prefix': { ru: 'от', en: 'from' },
     
     // === ABOUT PAGE KEYS ===
     'about.nav.potential': { ru: 'Потенциал', en: 'Potential' },
