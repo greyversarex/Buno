@@ -1493,8 +1493,24 @@ function renderTourBlock(block, tours) {
         }
         blockTitleText = getLocalizedText(blockTitleData, currentLang) || 'Блок туров';
     } catch (e) {
-        blockTitleData = { ru: block.title || 'Блок туров', en: block.title || 'Tour Block' };
-        blockTitleText = block.title || 'Блок туров';
+        // Маппинг slug → translation key для tour blocks
+        const slugToKey = {
+            'popular-tours': 'title.popular_tours',
+            'recommended-central-asia': 'title.recommended_tours',
+            'tajikistan-tours': 'title.tajikistan_tours',
+            'uzbekistan-tours': 'title.uzbekistan_tours',
+            'kyrgyzstan-tours': 'title.kyrgyzstan_tours',
+            'exclusive-tours': 'title.exclusive_tours'
+        };
+        
+        const translationKey = slugToKey[block.slug];
+        if (translationKey && typeof getTranslation === 'function') {
+            blockTitleText = getTranslation(translationKey);
+            blockTitleData = { ru: block.title, en: getTranslation(translationKey, 'en') };
+        } else {
+            blockTitleData = { ru: block.title || 'Блок туров', en: 'Tour Block' };
+            blockTitleText = block.title || 'Блок туров';
+        }
     }
     
     const blockId = `tour-block-${block.id}`;
