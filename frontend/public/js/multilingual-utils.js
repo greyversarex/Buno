@@ -321,30 +321,20 @@ function getCurrentLanguage() {
 }
 
 /**
+ * DEPRECATED: Используйте window.updatePageLanguage() вместо этого
  * Переключает язык и обновляет весь контент
  * @param {string} language - Новый язык
  */
 function switchToLanguage(language) {
-  if (!['en', 'ru'].includes(language)) {
-    console.warn(`Неподдерживаемый язык: ${language}`);
-    return;
+  console.warn('⚠️ switchToLanguage() устарела - используйте window.updatePageLanguage()');
+  
+  // === ПРИОРИТЕТ 4: ДЕЛЕГАЦИЯ К ЕДИНОЙ ТОЧКЕ ВХОДА ===
+  // Вся логика переключения языка теперь в i18n.js > updatePageLanguage()
+  if (typeof window.updatePageLanguage === 'function') {
+    window.updatePageLanguage(language);
+  } else {
+    console.error('❌ window.updatePageLanguage не найдена! Проверьте загрузку i18n.js');
   }
-  
-  // Обновляем глобальную переменную
-  window.currentLanguage = language;
-  
-  // Сохраняем в localStorage
-  localStorage.setItem('selectedLanguage', language);
-  
-  // Переводим весь динамический контент
-  translateAllDynamicContent(language);
-  
-  // Вызываем стандартную функцию переключения языка, если она есть
-  if (typeof window.switchSiteLanguage === 'function') {
-    window.switchSiteLanguage(language);
-  }
-  
-  console.log(`🌍 Язык успешно переключен на: ${language}`);
 }
 
 // === ДОПОЛНИТЕЛЬНЫЕ ФУНКЦИИ ДЛЯ СОВМЕСТИМОСТИ ===
