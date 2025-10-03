@@ -1115,6 +1115,9 @@ window.translations = window.translations || {
     'home.stats.years_experience': { ru: 'Лет опыта', en: 'Years of Experience' },
     'home.stats.avg_rating': { ru: 'Средняя оценка', en: 'Average Rating' },
     'home.price_prefix': { ru: 'от', en: 'from' },
+    'home.services.title': { ru: 'Наши услуги', en: 'Our Services' },
+    'home.services.become_agent_btn': { ru: 'Стать Турагентом', en: 'Become an Agent' },
+    'home.services.create_tour_btn': { ru: 'Создать Тур', en: 'Create a Tour' },
     
     // === ABOUT PAGE KEYS ===
     'about.nav.potential': { ru: 'Потенциал', en: 'Potential' },
