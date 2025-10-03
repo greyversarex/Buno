@@ -855,11 +855,13 @@
 
         // Функция для получения отображаемого местоположения (поддерживает множественные страны и города)
         function getDisplayLocation(tour) {
+            const currentLang = getCurrentLanguage();
+            const langField = currentLang === 'en' ? 'nameEn' : 'nameRu';
             let locationParts = [];
             
             // Проверяем наличие новых множественных связей
             if (tour.tourCountries && tour.tourCountries.length > 0) {
-                const countries = tour.tourCountries.map(tc => tc.country?.nameRu || tc.country?.name || '').filter(Boolean);
+                const countries = tour.tourCountries.map(tc => tc.country?.[langField] || tc.country?.nameRu || tc.country?.name || '').filter(Boolean);
                 if (countries.length > 0) {
                     locationParts.push(countries.join(', '));
                 }
@@ -869,7 +871,7 @@
             }
             
             if (tour.tourCities && tour.tourCities.length > 0) {
-                const cities = tour.tourCities.map(tc => tc.city?.nameRu || tc.city?.name || '').filter(Boolean);
+                const cities = tour.tourCities.map(tc => tc.city?.[langField] || tc.city?.nameRu || tc.city?.name || '').filter(Boolean);
                 if (cities.length > 0) {
                     locationParts.push(cities.join(', '));
                 }
@@ -878,7 +880,7 @@
                 locationParts.push(tour.city);
             }
             
-            return locationParts.length > 0 ? locationParts.join(' • ') : 'Местоположение не указано';
+            return locationParts.length > 0 ? locationParts.join(' • ') : (currentLang === 'en' ? 'Location not specified' : 'Местоположение не указано');
         }
 
         // Load tour data from API
@@ -2061,6 +2063,14 @@
         // 🌐 ФУНКЦИЯ ПЕРЕКЛЮЧЕНИЯ ЯЗЫКОВ ДЛЯ СТРАНИЦЫ ТУРА
         function updateTourPageLanguage(language) {
             console.log(`🎯 Переключение языка страницы тура на: ${language}`);
+            
+            // Обновляем location на лету без перезагрузки
+            if (tourData && tourData.tourCountries) {
+                const tourLocation = document.getElementById('tour-location');
+                if (tourLocation) {
+                    tourLocation.textContent = getDisplayLocation(tourData);
+                }
+            }
             
             // Перезагружаем данные тура с новым языком
             loadTourData();

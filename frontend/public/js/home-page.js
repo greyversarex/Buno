@@ -1335,6 +1335,20 @@ function translateDynamicContent(lang) {
             }
         });
         
+        // Обновляем tour types
+        const tourTypes = document.querySelectorAll('.tour-type-text');
+        tourTypes.forEach(element => {
+            const tourType = element.dataset.tourType;
+            if (tourType) {
+                const translationKey = 'tour_type.' + tourType.toLowerCase().replace(/\s/g, '_');
+                const translated = getTranslation(translationKey);
+                if (translated) {
+                    element.textContent = translated;
+                    updatedCount++;
+                }
+            }
+        });
+        
         // Обновляем заголовки блоков туров
         const blockTitles = document.querySelectorAll('[data-tour-block-title]');
         blockTitles.forEach(element => {
@@ -1825,7 +1839,7 @@ function renderTourCard(tour, blockId = null) {
                 <!-- Тип тура (обязательно показываем) -->
                 <div class="flex items-center text-blue-600 text-xs mb-2">
                     <span class="mr-1">🟢</span>
-                    <span class="font-medium" data-translate="tour_type.${(tour.format || tour.tourType || 'Групповой').toLowerCase().replace(/\s/g, '_')}">${tour.format || tour.tourType || 'Групповой'}</span>
+                    <span class="font-medium tour-type-text" data-tour-type="${tour.format || tour.tourType || 'Групповой'}" data-translate="tour_type.${(tour.format || tour.tourType || 'Групповой').toLowerCase().replace(/\s/g, '_')}">${currentLang === 'en' ? (getTranslation('tour_type.' + (tour.format || tour.tourType || 'Групповой').toLowerCase().replace(/\s/g, '_')) || tour.format || tour.tourType || 'Group') : (tour.format || tour.tourType || 'Групповой')}</span>
                 </div>
                 <!-- Категория тура (обязательно показываем) -->
                 <div class="flex items-center text-xs mb-2" style="color: #3E3E3E;">
