@@ -1,6 +1,10 @@
 // 🔧 КРИТИЧНО: Регистрируем ts-node ПЕРВЫМ для импорта TypeScript модулей
 require('ts-node/register');
 
+// 🔒 БЕЗОПАСНОСТЬ: Валидация переменных окружения ПЕРЕД запуском сервера
+const { validateEnvironment } = require('./src/config/validateEnv.ts');
+validateEnvironment();
+
 const express = require('express');
 const path = require('path');
 const { exec } = require('child_process');

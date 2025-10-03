@@ -5,7 +5,11 @@ interface AuthenticatedRequest extends Request {
   user?: any;
 }
 
-const JWT_SECRET = process.env.JWT_SECRET || 'default-secret-key';
+const JWT_SECRET = process.env.JWT_SECRET;
+
+if (!JWT_SECRET) {
+  throw new Error('JWT_SECRET environment variable is required but not set');
+}
 
 export const authenticateJWT = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   const authHeader = req.headers.authorization;
