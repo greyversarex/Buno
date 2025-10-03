@@ -37,6 +37,16 @@ The backend uses **Express.js and TypeScript** with a **modular architecture** f
 -   **Slide Editing System**: Robust slide editing functionality with secure file uploads, validation, and multilingual support.
 -   **Enhanced Multilingual System**: Extended i18n.js with translation keys, multilingual helper functions, and dynamic content updates on language switch.
 -   **Unified Language System**: Single entry point `updatePageLanguage()` for all language switching, integrating both static (data-translate) and dynamic (data-multilingual-*) content. MutationObserver automatically translates new DOM elements, eliminating manual translation calls.
+-   **Security Hardening (October 2025)**: 
+    -   Rate limiting on all authentication endpoints (15 requests/15 min) and booking/order endpoints (30 requests/15 min) to prevent brute-force attacks
+    -   Comprehensive XSS protection via security-utils.js (blocks script/iframe/event handlers/dangerous protocols: javascript:, data:, vbscript:, file:)
+    -   Mandatory JWT_SECRET environment validation - server won't start without it
+    -   Safe text rendering in all dropdown helpers using safeSetText
+-   **Code Quality Improvements (October 2025)**:
+    -   Unified form handling system (unified-form-handler.js) eliminating code duplication
+    -   Centralized dropdown helpers (dropdown-helpers.js) removing ~120 lines of duplicated code
+    -   Enhanced image handling with automatic fallback to placeholder
+    -   Improved code organization and maintainability
 
 ### UI/UX
 -   **Admin Dashboard**: Comprehensive management for tours, orders, hotels, guides, and reviews.
