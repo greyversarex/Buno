@@ -2176,48 +2176,12 @@
             toggleShareMenu();
         }
         
-        // Language dropdown functions
-        function toggleLanguageDropdown() {
-            const dropdown = document.querySelector('.language-dropdown');
-            dropdown.classList.toggle('active');
-            
-            // Close currency dropdown if open
-            document.querySelector('.language-dropdown:nth-child(2)').classList.remove('active');
-        }
-        
-        function toggleCurrencyDropdown() {
-            const currencyDropdown = document.querySelector('.language-dropdown:nth-child(2)');
-            currencyDropdown.classList.toggle('active');
-            
-            // Close language dropdown if open  
-            document.querySelector('.language-dropdown:nth-child(1)').classList.remove('active');
-        }
-        
-        function selectLanguage(lang, flagClass, langName) {
-            document.querySelector('.selected-flag').className = `selected-flag ${flagClass}`;
-            document.querySelector('.selected-lang').textContent = langName;
-            document.querySelector('.language-dropdown').classList.remove('active');
-        }
-        
-        function selectCurrency(currency, symbol) {
-            document.querySelector('.selected-currency').textContent = currency;
-            document.querySelector('.currency-symbol').textContent = symbol;
-            document.querySelector('.language-dropdown:nth-child(2)').classList.remove('active');
-        }
-        
         // Close share menu when clicking outside
         document.addEventListener('click', function(event) {
             const shareBtn = document.getElementById('share-btn');
             const shareMenu = document.getElementById('share-menu');
             if (shareBtn && shareMenu && !shareBtn.contains(event.target) && !shareMenu.contains(event.target)) {
                 shareMenu.classList.add('hidden');
-            }
-            
-            // Close language/currency dropdowns when clicking outside
-            if (!event.target.closest('.language-dropdown')) {
-                document.querySelectorAll('.language-dropdown').forEach(dropdown => {
-                    dropdown.classList.remove('active');
-                });
             }
         });
         

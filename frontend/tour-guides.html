@@ -767,19 +767,6 @@ ${getTranslation('guide.more_details')}
             alert(`Связаться с ${agentName}. ID: ${agentId}`);
         }
         
-        // Функции для языкового селектора
-        function toggleLanguageDropdown() {
-            const dropdown = document.getElementById('langDropdown');
-            const currencyDropdown = document.getElementById('currencyDropdown');
-            
-            // Закрываем валютный дропдаун
-            if (currencyDropdown) {
-                currencyDropdown.classList.remove('show');
-            }
-            
-            dropdown.classList.toggle('show');
-        }
-        
         // 🌐 ФУНКЦИЯ ПЕРЕКЛЮЧЕНИЯ ЯЗЫКОВ ДЛЯ ГИДОВ
         function updateGuidesLanguage(language) {
             console.log(`👨‍🦱 Переключение языка гидов на: ${language}`);
@@ -792,67 +779,6 @@ ${getTranslation('guide.more_details')}
             
             console.log(`✅ Язык гидов обновлен на: ${language}`);
         }
-
-        function selectLanguage(lang, flagClass, langName) {
-            // Обновляем отображаемые элементы
-            document.querySelector('.selected-flag').className = `selected-flag ${flagClass}`;
-            document.querySelector('.selected-lang').textContent = langName;
-            
-            // Обновляем активный элемент
-            document.querySelectorAll('.lang-option').forEach(option => {
-                option.classList.remove('active');
-            });
-            document.querySelector(`[data-lang="${lang}"]`).classList.add('active');
-            
-            // Закрываем дропдаун
-            document.getElementById('langDropdown').classList.remove('show');
-            
-            // 🌐 ИНТЕГРИРУЕМ С ЦЕНТРАЛЬНОЙ СИСТЕМОЙ ПЕРЕКЛЮЧЕНИЯ ЯЗЫКОВ
-            if (window.i18n && window.i18n.switchSiteLanguage) {
-                window.i18n.switchSiteLanguage(lang);
-                updateGuidesLanguage(lang);
-            }
-        }
-        
-        // Функции для валютного селектора
-        function toggleCurrencyDropdown() {
-            const dropdown = document.getElementById('currencyDropdown');
-            const langDropdown = document.getElementById('langDropdown');
-            
-            // Закрываем языковой дропдаун
-            if (langDropdown) {
-                langDropdown.classList.remove('show');
-            }
-            
-            dropdown.classList.toggle('show');
-        }
-        
-        function selectCurrency(currency, displayName) {
-            // Обновляем отображаемый элемент
-            document.querySelector('.selected-currency').textContent = displayName;
-            
-            // Обновляем активный элемент в валютном дропдауне
-            document.querySelectorAll('#currencyDropdown .lang-option').forEach(option => {
-                option.classList.remove('active');
-            });
-            document.querySelector(`[data-currency="${currency}"]`).classList.add('active');
-            
-            // Закрываем дропдаун
-            document.getElementById('currencyDropdown').classList.remove('show');
-            
-            // Здесь можно добавить логику смены валюты
-        }
-        
-        // Закрытие дропдаунов при клике вне области
-        document.addEventListener('click', function(event) {
-            const langDropdown = document.getElementById('langDropdown');
-            const currencyDropdown = document.getElementById('currencyDropdown');
-            
-            if (!event.target.closest('.language-dropdown')) {
-                if (langDropdown) langDropdown.classList.remove('show');
-                if (currencyDropdown) currencyDropdown.classList.remove('show');
-            }
-        });
 
         // Модальное окно найма тургида
         let currentHireDate = new Date();
