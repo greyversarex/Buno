@@ -1001,10 +1001,12 @@
             // ✅ ИНФОРМАЦИЯ О ПИТАНИИ/ПРИЁМЕ
             const mealsElement = document.getElementById('meals-included');
             if (mealsElement) {
+                const currentLang = getCurrentLanguage();
                 if (tourData.pickupInfo && tourData.pickupInfo.trim()) {
-                    mealsElement.textContent = tourData.pickupInfo;
+                    const pickupLabel = currentLang === 'en' ? 'Pickup location:' : 'Место сбора:';
+                    mealsElement.innerHTML = `<span data-translate="tour.pickup_label">${pickupLabel}</span> ${tourData.pickupInfo}`;
                 } else if (tourData.included && tourData.included.includes('питание')) {
-                    mealsElement.textContent = 'Питание включено';
+                    mealsElement.textContent = currentLang === 'en' ? 'Meals included' : 'Питание включено';
                 } else if (tourData.excluded && tourData.excluded.includes('питание')) {
                     mealsElement.textContent = 'Питание не включено';
                 } else {
@@ -1186,7 +1188,12 @@
             if (languagesElement) {
                 const languagesLabel = getTranslation('tour.languages_label');
                 if (tourData.languages && tourData.languages.length > 0) {
-                    languagesElement.innerHTML = `<span data-translate="tour.languages_label">${languagesLabel}</span> ${tourData.languages.join(', ')}`;
+                    // Переводим каждый язык
+                    const translatedLanguages = tourData.languages.map(lang => {
+                        const key = 'language.' + lang.toLowerCase().replace(/\s+/g, '_');
+                        return getTranslation(key) || lang;
+                    });
+                    languagesElement.innerHTML = `<span data-translate="tour.languages_label">${languagesLabel}</span> ${translatedLanguages.join(', ')}`;
                 } else {
                     languagesElement.innerHTML = `<span data-translate="tour.languages_label">${languagesLabel}</span> ${getTranslation('language.russian')}, ${getTranslation('language.english')}`;
                 }
@@ -2070,6 +2077,24 @@
                 if (tourLocation) {
                     tourLocation.textContent = getDisplayLocation(tourData);
                 }
+            }
+            
+            // Обновляем pickup info
+            const mealsElement = document.getElementById('meals-included');
+            if (mealsElement && tourData.pickupInfo) {
+                const pickupLabel = language === 'en' ? 'Pickup location:' : 'Место сбора:';
+                mealsElement.innerHTML = `<span data-translate="tour.pickup_label">${pickupLabel}</span> ${tourData.pickupInfo}`;
+            }
+            
+            // Обновляем языки тура
+            const languagesElement = document.getElementById('tour-languages');
+            if (languagesElement && tourData.languages) {
+                const languagesLabel = getTranslation('tour.languages_label');
+                const translatedLanguages = tourData.languages.map(lang => {
+                    const key = 'language.' + lang.toLowerCase().replace(/\s+/g, '_');
+                    return getTranslation(key) || lang;
+                });
+                languagesElement.innerHTML = `<span data-translate="tour.languages_label">${languagesLabel}</span> ${translatedLanguages.join(', ')}`;
             }
             
             // Перезагружаем данные тура с новым языком
