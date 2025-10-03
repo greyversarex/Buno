@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Поиск туров - Bunyod-Tour (Обновлено)</title>
+    <title data-translate="search.page_title">Поиск туров - Bunyod-Tour (Обновлено)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <!-- 🌐 ЦЕНТРАЛЬНАЯ СИСТЕМА ИНТЕРНАЦИОНАЛИЗАЦИИ -->
@@ -782,18 +782,18 @@
             <div class="search-input-group">
                 <div class="search-field" style="flex: 2;">
                     <i class="fas fa-search"></i>
-                    <input type="text" id="searchInput" placeholder="Куда вы хотите поехать?">
+                    <input type="text" id="searchInput" data-translate-placeholder="search.destination_placeholder" placeholder="Куда вы хотите поехать?">
                 </div>
                 
                 <div class="search-field">
                     <i class="fas fa-calendar"></i>
-                    <input type="text" id="dateInput" placeholder="Выберите дату">
+                    <input type="text" id="dateInput" data-translate-placeholder="search.dates_placeholder" placeholder="Выберите дату">
                 </div>
                 
                 <div class="search-field">
                     <i class="fas fa-users"></i>
                     <select id="guestsInput">
-                        <option value="1">1 человек</option>
+                        <option value="1" data-translate="form.one_adult">1 человек</option>
                         <option value="2">2 человека</option>
                         <option value="3">3 человека</option>
                         <option value="4">4 человека</option>
@@ -803,7 +803,7 @@
                 
                 <button class="btn-search-main" onclick="searchTours()">
                     <i class="fas fa-search mr-2"></i>
-                    Найти
+                    <span data-translate="btn.search">Найти</span>
                 </button>
             </div>
         </div>
@@ -815,15 +815,15 @@
             <!-- Filter Sidebar -->
             <aside class="filter-sidebar" id="filterSidebar">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-semibold">Фильтры</h3>
+                    <h3 class="text-lg font-semibold" data-translate="search.filters">Фильтры</h3>
                     <button class="text-sm text-blue-600 hover:text-blue-800" onclick="resetFilters()">
-                        Сбросить все
+                        <span data-translate="search.clear_all">Сбросить все</span>
                     </button>
                 </div>
 
                 <!-- Calendar Widget -->
                 <div class="filter-section">
-                    <h4 class="filter-title">Календарь доступности</h4>
+                    <h4 class="filter-title" data-translate="filters.availability_calendar">Календарь доступности</h4>
                     <div class="calendar-widget">
                         <div class="flex justify-between items-center mb-3">
                             <button onclick="changeMonth(-1)">
@@ -842,19 +842,19 @@
 
                 <!-- Price Range -->
                 <div class="filter-section">
-                    <h4 class="filter-title">Цена</h4>
+                    <h4 class="filter-title" data-translate="search.price_range">Цена</h4>
                     <div class="price-slider">
                         <input type="range" id="priceRange" min="0" max="5000" value="5000" oninput="updatePriceDisplay()">
                     </div>
                     <div class="price-inputs">
-                        <input type="number" id="minPrice" placeholder="От" value="0">
-                        <input type="number" id="maxPrice" placeholder="До" value="5000">
+                        <input type="number" id="minPrice" data-translate-placeholder="search.min_price" placeholder="От" value="0">
+                        <input type="number" id="maxPrice" data-translate-placeholder="search.max_price" placeholder="До" value="5000">
                     </div>
                 </div>
 
                 <!-- Countries -->
                 <div class="filter-section">
-                    <h4 class="filter-title">Страны</h4>
+                    <h4 class="filter-title" data-translate="filters.country">Страны</h4>
                     <div class="filter-option">
                         <input type="checkbox" id="country1" checked>
                         <label for="country1">
@@ -913,7 +913,7 @@
 
                 <!-- Categories -->
                 <div class="filter-section">
-                    <h4 class="filter-title">Категории</h4>
+                    <h4 class="filter-title" data-translate="filters.category">Категории</h4>
                     <div class="filter-option">
                         <input type="checkbox" id="cat1">
                         <label for="cat1">
@@ -953,9 +953,9 @@
 
                 <!-- Hotels Filter -->
                 <div class="filter-section">
-                    <h4 class="filter-title">Отели</h4>
+                    <h4 class="filter-title" data-translate="search.hotel_chains">Отели</h4>
                     <div class="mb-3">
-                        <h5 class="text-sm font-semibold text-gray-700 mb-2">По звездности</h5>
+                        <h5 class="text-sm font-semibold text-gray-700 mb-2" data-translate="filters.stars">По звездности</h5>
                         <div class="filter-option">
                             <input type="checkbox" id="star5">
                             <label for="star5">
@@ -979,7 +979,7 @@
                         </div>
                     </div>
                     <div class="mb-3">
-                        <h5 class="text-sm font-semibold text-gray-700 mb-2">Люкс сегмент</h5>
+                        <h5 class="text-sm font-semibold text-gray-700 mb-2" data-translate="search.luxury">Люкс сегмент</h5>
                         <div class="filter-option">
                             <input type="checkbox" id="hotel-four-seasons">
                             <label for="hotel-four-seasons">
@@ -1003,7 +1003,7 @@
                         </div>
                     </div>
                     <div class="mb-3">
-                        <h5 class="text-sm font-semibold text-gray-700 mb-2">Премиум сегмент</h5>
+                        <h5 class="text-sm font-semibold text-gray-700 mb-2" data-translate="search.premium">Премиум сегмент</h5>
                         <div class="filter-option">
                             <input type="checkbox" id="hotel-hilton">
                             <label for="hotel-hilton">
@@ -1034,7 +1034,7 @@
                         </div>
                     </div>
                     <div>
-                        <h5 class="text-sm font-semibold text-gray-700 mb-2">Средний сегмент</h5>
+                        <h5 class="text-sm font-semibold text-gray-700 mb-2" data-translate="search.mid_range">Средний сегмент</h5>
                         <div class="filter-option">
                             <input type="checkbox" id="hotel-holiday-inn">
                             <label for="hotel-holiday-inn">
@@ -1061,32 +1061,32 @@
 
                 <!-- Duration -->
                 <div class="filter-section">
-                    <h4 class="filter-title">Длительность</h4>
+                    <h4 class="filter-title" data-translate="search.duration">Длительность</h4>
                     <div class="filter-option">
                         <input type="checkbox" id="dur1">
                         <label for="dur1">
-                            1-3 дня
+                            <span data-translate="search.duration_1_3">1-3 дня</span>
                             <span class="filter-count">78</span>
                         </label>
                     </div>
                     <div class="filter-option">
                         <input type="checkbox" id="dur2">
                         <label for="dur2">
-                            4-7 дней
+                            <span data-translate="search.duration_4_7">4-7 дней</span>
                             <span class="filter-count">156</span>
                         </label>
                     </div>
                     <div class="filter-option">
                         <input type="checkbox" id="dur3">
                         <label for="dur3">
-                            8-14 дней
+                            <span data-translate="search.duration_8_14">8-14 дней</span>
                             <span class="filter-count">89</span>
                         </label>
                     </div>
                     <div class="filter-option">
                         <input type="checkbox" id="dur4">
                         <label for="dur4">
-                            15+ дней
+                            <span data-translate="search.duration_15_plus">15+ дней</span>
                             <span class="filter-count">34</span>
                         </label>
                     </div>
@@ -1094,7 +1094,7 @@
 
                 <!-- Rating -->
                 <div class="filter-section">
-                    <h4 class="filter-title">Рейтинг</h4>
+                    <h4 class="filter-title" data-translate="search.rating">Рейтинг</h4>
                     <div class="filter-option">
                         <input type="checkbox" id="rating5">
                         <label for="rating5">
@@ -1124,13 +1124,13 @@
                 <!-- Sort Bar -->
                 <div class="sort-bar">
                     <div class="flex items-center gap-4">
-                        <span class="text-gray-600">Найдено: <strong id="resultsCount">156</strong> туров</span>
+                        <span class="text-gray-600"><span data-translate="search.found">Найдено:</span> <strong id="resultsCount">156</strong> <span data-translate="search.tours">туров</span></span>
                         <select class="px-3 py-2 border border-gray-300 rounded-lg" onchange="sortTours(this.value)">
-                            <option value="recommended">Рекомендуемые</option>
-                            <option value="price-low">Цена: по возрастанию</option>
-                            <option value="price-high">Цена: по убыванию</option>
-                            <option value="rating">По рейтингу</option>
-                            <option value="duration">По длительности</option>
+                            <option value="recommended" data-translate="search.recommended">Рекомендуемые</option>
+                            <option value="price-low" data-translate="search.price_low_high">Цена: по возрастанию</option>
+                            <option value="price-high" data-translate="search.price_high_low">Цена: по убыванию</option>
+                            <option value="rating" data-translate="search.by_rating">По рейтингу</option>
+                            <option value="duration" data-translate="search.by_duration">По длительности</option>
                         </select>
                     </div>
                     <div class="view-toggle">
@@ -1146,7 +1146,7 @@
                 <!-- Loading Spinner -->
                 <div class="loading-spinner" id="loadingSpinner">
                     <i class="fas fa-spinner fa-spin text-4xl text-gray-400"></i>
-                    <p class="mt-4 text-gray-600">Загрузка туров...</p>
+                    <p class="mt-4 text-gray-600" data-translate="search.loading">Загрузка туров...</p>
                 </div>
 
                 <!-- Tours Container -->
@@ -1157,8 +1157,8 @@
                 <!-- No Results -->
                 <div class="no-results" id="noResults" style="display: none;">
                     <i class="fas fa-search"></i>
-                    <h3 class="text-xl font-semibold mt-4">Туры не найдены</h3>
-                    <p class="mt-2">Попробуйте изменить параметры поиска или фильтры</p>
+                    <h3 class="text-xl font-semibold mt-4" data-translate="search.no_results">Туры не найдены</h3>
+                    <p class="mt-2" data-translate="search.try_filters">Попробуйте изменить параметры поиска или фильтры</p>
                 </div>
             </div>
         </div>
@@ -1167,7 +1167,7 @@
     <!-- Mobile Filter Button -->
     <button class="mobile-filter-btn" onclick="toggleMobileFilters()">
         <i class="fas fa-filter mr-2"></i>
-        Фильтры
+        <span data-translate="search.filters">Фильтры</span>
     </button>
 
     <!-- Scripts -->

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Бронирование - Данные туриста | Bunyod-Tour</title>
+    <title data-translate="booking.step2.page_title">Бронирование - Данные туриста | Bunyod-Tour</title>
     <!-- 🌐 ЦЕНТРАЛЬНАЯ СИСТЕМА ИНТЕРНАЦИОНАЛИЗАЦИИ -->
     <script src="/public/js/i18n.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -63,15 +63,15 @@
                     <div class="progress-step completed w-10 h-10 rounded-full flex items-center justify-center font-bold">
                         <i class="fas fa-check"></i>
                     </div>
-                    <span class="font-medium text-gray-700">Выбор отеля</span>
+                    <span class="font-medium text-gray-700" data-translate="booking.step1.title">Выбор отеля</span>
                 </div>
                 <div class="flex items-center space-x-4">
                     <div class="progress-step active w-10 h-10 rounded-full flex items-center justify-center font-bold">2</div>
-                    <span class="font-medium text-gray-700">Данные туриста</span>
+                    <span class="font-medium text-gray-700" data-translate="booking.step2.title">Данные туриста</span>
                 </div>
                 <div class="flex items-center space-x-4">
                     <div class="progress-step w-10 h-10 rounded-full flex items-center justify-center font-bold bg-gray-200">3</div>
-                    <span class="font-medium text-gray-400">Оплата</span>
+                    <span class="font-medium text-gray-400" data-translate="booking.step3.title">Оплата</span>
                 </div>
             </div>
         </div>
@@ -82,27 +82,27 @@
             <!-- Main Content -->
             <div class="lg:col-span-2">
                 <div class="bg-white rounded-lg shadow-lg p-8">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Данные для бронирования</h2>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6" data-translate="booking.data_for_booking">Данные для бронирования</h2>
             
             <form id="booking-form">
                 <!-- Contact Person Details -->
                 <div class="mb-8">
-                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Контактное лицо</h3>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4" data-translate="booking.contact_person">Контактное лицо</h3>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="form-group">
-                            <label class="form-label" for="contactName">ФИО контактного лица *</label>
-                            <input type="text" id="contactName" class="form-input" placeholder="Иванов Иван Иванович" required>
+                            <label class="form-label" for="contactName"><span data-translate="booking.full_name">ФИО контактного лица</span> *</label>
+                            <input type="text" id="contactName" class="form-input" data-translate-placeholder="booking.full_name_placeholder" placeholder="Иванов Иван Иванович" required>
                         </div>
                         
                         <div class="form-group">
-                            <label class="form-label" for="contactPhone">Телефон *</label>
-                            <input type="tel" id="contactPhone" class="form-input" placeholder="+992 xx xxx xxxx" required>
+                            <label class="form-label" for="contactPhone"><span data-translate="booking.phone">Телефон</span> *</label>
+                            <input type="tel" id="contactPhone" class="form-input" data-translate-placeholder="booking.phone_placeholder" placeholder="+992 xx xxx xxxx" required>
                         </div>
                         
                         <div class="form-group md:col-span-2">
-                            <label class="form-label" for="contactEmail">Email *</label>
-                            <input type="email" id="contactEmail" class="form-input" placeholder="example@email.com" required>
+                            <label class="form-label" for="contactEmail"><span data-translate="booking.email">Email</span> *</label>
+                            <input type="email" id="contactEmail" class="form-input" data-translate-placeholder="booking.email_placeholder" placeholder="example@email.com" required>
                         </div>
                     </div>
                 </div>
@@ -110,9 +110,9 @@
                 <!-- Tourists -->
                 <div class="mb-8">
                     <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-xl font-semibold text-gray-800">Список туристов</h3>
+                        <h3 class="text-xl font-semibold text-gray-800" data-translate="booking.tourists_list">Список туристов</h3>
                         <button type="button" id="add-tourist" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                            <i class="fas fa-plus mr-2"></i>Добавить туриста
+                            <i class="fas fa-plus mr-2"></i><span data-translate="booking.add_tourist">Добавить туриста</span>
                         </button>
                     </div>
                     
@@ -123,30 +123,30 @@
 
                 <!-- Special Requests -->
                 <div class="mb-8">
-                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Особые пожелания</h3>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4" data-translate="booking.special_requests">Особые пожелания</h3>
                     <div class="form-group">
-                        <label class="form-label" for="specialRequests">Дополнительные пожелания</label>
-                        <textarea id="specialRequests" class="form-input" rows="4" placeholder="Укажите любые особые пожелания или требования..."></textarea>
+                        <label class="form-label" for="specialRequests" data-translate="booking.additional_requests">Дополнительные пожелания</label>
+                        <textarea id="specialRequests" class="form-input" rows="4" data-translate-placeholder="booking.additional_requests_placeholder" placeholder="Укажите любые особые пожелания или требования..."></textarea>
                     </div>
                 </div>
 
                 <!-- Terms and Conditions -->
                 <div class="mb-8">
-                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Согласие</h3>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4" data-translate="booking.agreement">Согласие</h3>
                     
                     <div class="space-y-4">
                         <label class="flex items-start">
                             <input type="checkbox" id="termsAccepted" class="mt-1 mr-3" required>
                             <span class="text-gray-700">
-                                Принимаю <a href="/oferta-ru.pdf" target="_blank" class="text-blue-600 hover:underline">условия оферты</a> 
-                                и даю согласие на <a href="/privacy-policy-ru.pdf" target="_blank" class="text-blue-600 hover:underline">использование персональных данных</a>
+                                <span data-translate="booking.accept_offer">Принимаю</span> <a href="/oferta-ru.pdf" target="_blank" class="text-blue-600 hover:underline" data-translate="booking.offer_terms">условия оферты</a> 
+                                <span data-translate="booking.and_consent">и даю согласие на</span> <a href="/privacy-policy-ru.pdf" target="_blank" class="text-blue-600 hover:underline" data-translate="booking.personal_data_use">использование персональных данных</a>
                             </span>
                         </label>
                         
                         <label class="flex items-start">
                             <input type="checkbox" id="paymentRulesAccepted" class="mt-1 mr-3" required>
                             <span class="text-gray-700">
-                                Ознакомлен с <a href="/payment-rules-ru.pdf" target="_blank" class="text-blue-600 hover:underline">правилами оплаты и возврата средств</a>
+                                <span data-translate="booking.familiar_with">Ознакомлен с</span> <a href="/payment-rules-ru.pdf" target="_blank" class="text-blue-600 hover:underline" data-translate="booking.payment_rules">правилами оплаты и возврата средств</a>
                             </span>
                         </label>
                     </div>
@@ -155,10 +155,10 @@
                 <!-- Buttons -->
                 <div class="flex justify-between">
                     <button type="button" id="back-btn" class="bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600 transition-colors">
-                        <i class="fas fa-arrow-left mr-2"></i>Назад
+                        <i class="fas fa-arrow-left mr-2"></i><span data-translate="booking.back">Назад</span>
                     </button>
                     <button type="submit" id="continue-btn" class="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-lg font-medium hover:from-blue-600 hover:to-purple-700 transition-all">
-                        Подтвердить и перейти к оплате
+                        <span data-translate="booking.confirm_and_pay">Подтвердить и перейти к оплате</span>
                         <i class="fas fa-arrow-right ml-2"></i>
                     </button>
                 </div>
@@ -169,7 +169,7 @@
             <!-- Tour Details Sidebar -->
             <div class="lg:col-span-1">
                 <div class="bg-white rounded-lg shadow-lg p-6 sticky top-6">
-                    <h3 class="text-xl font-bold text-gray-800 mb-4">Детали тура</h3>
+                    <h3 class="text-xl font-bold text-gray-800 mb-4" data-translate="booking.tour_details">Детали тура</h3>
                     
                     <div id="tour-details" class="space-y-4">
                         <!-- Tour details will be loaded here -->
@@ -183,7 +183,7 @@
                     
                     <!-- Информация об отеле -->
                     <div id="selected-hotel-info" class="space-y-2" style="display: none;">
-                        <h5 class="font-medium text-gray-800">Выбранный отель</h5>
+                        <h5 class="font-medium text-gray-800" data-translate="booking.selected_hotel">Выбранный отель</h5>
                         <div id="hotel-details-content" class="text-sm text-gray-600"></div>
                     </div>
                     
@@ -192,7 +192,7 @@
                     
                     <!-- Информация о номерах и питании -->
                     <div id="room-meal-info" class="space-y-2" style="display: none;">
-                        <h5 class="font-medium text-gray-800">Номера и питание</h5>
+                        <h5 class="font-medium text-gray-800" data-translate="booking.rooms_and_meals">Номера и питание</h5>
                         <div id="room-details-content" class="text-sm text-gray-600 space-y-1"></div>
                         <div id="meal-details-content" class="text-sm text-gray-600"></div>
                         <div id="capacity-info" class="text-xs text-gray-500 mt-2"></div>
@@ -203,10 +203,10 @@
                     
                     <!-- Расчёт стоимости -->
                     <div id="price-calculation" class="space-y-2">
-                        <h5 class="font-medium text-gray-800">Расчёт стоимости</h5>
+                        <h5 class="font-medium text-gray-800" data-translate="booking.price_calculation">Расчёт стоимости</h5>
                         <div class="text-sm text-gray-600 space-y-1">
                             <div class="flex justify-between">
-                                <span id="tour-price-label">Цена тура:</span>
+                                <span id="tour-price-label" data-translate="booking.price_label">Цена тура:</span>
                                 <span id="tour-price-calc" class="price-display" data-original-price="0">0 TJS</span>
                             </div>
                             <div id="room-costs-calc" class="space-y-1">
@@ -218,7 +218,7 @@
                         </div>
                         <div class="border-t pt-2 mt-2">
                             <div class="flex justify-between font-bold text-lg text-blue-600">
-                                <span>Итоговая сумма:</span>
+                                <span data-translate="booking.total_amount">Итоговая сумма:</span>
                                 <span id="total-price" class="price-display" data-original-price="0">0 TJS</span>
                             </div>
                         </div>
@@ -226,7 +226,7 @@
                     
                     <!-- Служба поддержки -->
                     <div class="border-t border-gray-200 mt-6 pt-4">
-                        <h5 class="font-medium text-gray-800 mb-2">Служба поддержки</h5>
+                        <h5 class="font-medium text-gray-800 mb-2" data-translate="booking.support_service">Служба поддержки</h5>
                         <div class="text-sm text-gray-600 space-y-1">
                             <div class="flex items-center">
                                 <i class="fas fa-phone text-blue-500 mr-2 w-4"></i>
@@ -238,7 +238,7 @@
                             </div>
                             <div class="flex items-center">
                                 <i class="fas fa-clock text-blue-500 mr-2 w-4"></i>
-                                <span>Пн-Пт: 9:00-18:00</span>
+                                <span data-translate="booking.monday_friday">Пн-Пт: 9:00-18:00</span>
                             </div>
                         </div>
                     </div>
