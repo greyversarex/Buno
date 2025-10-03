@@ -1010,19 +1010,19 @@
                         services: apiTour.services || null, // Добавляем поле services!
                         pickupInfo: apiTour.pickupInfo || 'Включен',
                         difficulty: apiTour.difficulty || '',
-                        languages: apiTour.languages ? (typeof apiTour.languages === 'string' ? JSON.parse(apiTour.languages) : apiTour.languages) : [],
-                        images: apiTour.images ? (typeof apiTour.images === 'string' ? JSON.parse(apiTour.images) : apiTour.images) : [],
-                        highlights: apiTour.highlights ? (typeof apiTour.highlights === 'string' ? JSON.parse(apiTour.highlights) : apiTour.highlights) : [],
-                        includes: apiTour.includes ? (typeof apiTour.includes === 'string' ? JSON.parse(apiTour.includes) : apiTour.includes) : [],
-                        excluded: apiTour.excluded ? (typeof apiTour.excluded === 'string' ? JSON.parse(apiTour.excluded) : apiTour.excluded) : [], // Поле "Не включено в тур"
-                        itinerary: apiTour.itinerary ? (typeof apiTour.itinerary === 'string' ? JSON.parse(apiTour.itinerary) : apiTour.itinerary) : [],
+                        languages: safeJsonParse(apiTour.languages, []),
+                        images: safeJsonParse(apiTour.images, []),
+                        highlights: safeJsonParse(apiTour.highlights, []),
+                        includes: safeJsonParse(apiTour.includes, []),
+                        excluded: safeJsonParse(apiTour.excluded, []),
+                        itinerary: safeJsonParse(apiTour.itinerary, []),
                         mainImage: apiTour.mainImage || '',
                         startTimeOptions: apiTour.startTimeOptions || '',
                         minPeople: apiTour.minPeople || 1,
                         maxPeople: apiTour.maxPeople || 10,
                         // Календарные ограничения
-                        availableMonths: apiTour.availableMonths ? (typeof apiTour.availableMonths === 'string' ? JSON.parse(apiTour.availableMonths) : apiTour.availableMonths) : [],
-                        availableDays: apiTour.availableDays ? (typeof apiTour.availableDays === 'string' ? JSON.parse(apiTour.availableDays) : apiTour.availableDays) : [],
+                        availableMonths: safeJsonParse(apiTour.availableMonths, []),
+                        availableDays: safeJsonParse(apiTour.availableDays, []),
                         // ✅ Данные для breadcrumb
                         category: apiTour.category,
                         tourBlockAssignments: apiTour.tourBlockAssignments || [],
@@ -1137,19 +1137,9 @@
                 
                 // Основной источник: компоненты тура (services) - они автоматически синхронизируются в админ панели
                 if (tourData.services) {
-                    try {
-                        let services = [];
-                        if (typeof tourData.services === 'string') {
-                            services = JSON.parse(tourData.services);
-                        } else if (Array.isArray(tourData.services)) {
-                            services = tourData.services;
-                        }
-                        
-                        if (services.length > 0) {
-                            includedServices = services.map(service => service.name);
-                        }
-                    } catch (error) {
-                        console.error('❌ Ошибка парсинга services:', error);
+                    const services = safeJsonParse(tourData.services, []);
+                    if (services.length > 0) {
+                        includedServices = services.map(service => service.name);
                     }
                 }
                 
@@ -1178,17 +1168,7 @@
                 let excludedServices = [];
                 
                 if (tourData.excluded) {
-                    try {
-                        if (typeof tourData.excluded === 'string') {
-                            const excludedArray = JSON.parse(tourData.excluded);
-                            if (Array.isArray(excludedArray)) {
-                                excludedServices = excludedArray;
-                            }
-                        } else if (Array.isArray(tourData.excluded)) {
-                            excludedServices = tourData.excluded;
-                        }
-                    } catch (e) {
-                    }
+                    excludedServices = safeJsonParse(tourData.excluded, []);
                 }
                 
                 // Показываем секцию только если есть исключенные услуги
@@ -1365,32 +1345,22 @@
             }
             
             if (tourData.startTimeOptions) {
-                try {
-                    let timeOptions;
-                    if (typeof tourData.startTimeOptions === 'string') {
-                        timeOptions = JSON.parse(tourData.startTimeOptions);
-                    } else {
-                        timeOptions = tourData.startTimeOptions;
-                    }
+                const timeOptions = safeJsonParse(tourData.startTimeOptions, []);
+                
+                if (timeOptions && timeOptions.length > 0) {
+                    timeOptionsContainer.innerHTML = timeOptions.map((time, index) => 
+                        `<div class="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50 cursor-pointer ${index === 0 ? 'border-teal-500 bg-teal-50' : 'border-gray-300'}" onclick="selectTime('${time}', this)">
+                            <input type="radio" id="time-${time}" name="tourTime" value="${time}" ${index === 0 ? 'checked' : ''} class="w-4 h-4 text-blue-600">
+                            <label for="time-${time}" class="text-sm text-gray-700 font-medium cursor-pointer">${time}</label>
+                        </div>`
+                    ).join('');
                     
-                    if (timeOptions && timeOptions.length > 0) {
-                        timeOptionsContainer.innerHTML = timeOptions.map((time, index) => 
-                            `<div class="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50 cursor-pointer ${index === 0 ? 'border-teal-500 bg-teal-50' : 'border-gray-300'}" onclick="selectTime('${time}', this)">
-                                <input type="radio" id="time-${time}" name="tourTime" value="${time}" ${index === 0 ? 'checked' : ''} class="w-4 h-4 text-blue-600">
-                                <label for="time-${time}" class="text-sm text-gray-700 font-medium cursor-pointer">${time}</label>
-                            </div>`
-                        ).join('');
-                        
-                        // Auto-select first time
-                        selectedTime = timeOptions[0];
-                        console.log('Автоматически выбрано время:', selectedTime);
-                        
-                        timeSelectionSection.style.display = 'block';
-                    } else {
-                        timeSelectionSection.style.display = 'none';
-                    }
-                } catch (e) {
-                    console.warn('Failed to parse start time options:', e);
+                    // Auto-select first time
+                    selectedTime = timeOptions[0];
+                    console.log('Автоматически выбрано время:', selectedTime);
+                    
+                    timeSelectionSection.style.display = 'block';
+                } else {
                     timeSelectionSection.style.display = 'none';
                 }
             } else {
@@ -1683,27 +1653,23 @@
                     // Обрабатываем фотографии
                     let photosHtml = '';
                     if (review.photos) {
-                        try {
-                            const photos = Array.isArray(review.photos) ? review.photos : JSON.parse(review.photos);
-                            if (Array.isArray(photos) && photos.length > 0) {
-                                // Нормализуем пути к изображениям
-                                const normalizedPhotos = photos.map(photo => normalizeImagePath(photo));
-                                
-                                photosHtml = `
-                                    <div class="mt-3">
-                                        <div class="flex flex-wrap gap-2">
-                                            ${normalizedPhotos.slice(0, 4).map(photo => `
-                                                <img src="${photo}" alt="Фото отзыва" 
-                                                     class="w-20 h-20 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity" 
-                                                     onclick="openPhotoModal('${photo}')">
-                                            `).join('')}
-                                            ${normalizedPhotos.length > 4 ? `<div class="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center text-gray-500 text-sm">+${normalizedPhotos.length - 4}</div>` : ''}
-                                        </div>
+                        const photos = safeJsonParse(review.photos, []);
+                        if (Array.isArray(photos) && photos.length > 0) {
+                            // Нормализуем пути к изображениям
+                            const normalizedPhotos = photos.map(photo => normalizeImagePath(photo));
+                            
+                            photosHtml = `
+                                <div class="mt-3">
+                                    <div class="flex flex-wrap gap-2">
+                                        ${normalizedPhotos.slice(0, 4).map(photo => `
+                                            <img src="${photo}" alt="Фото отзыва" 
+                                                 class="w-20 h-20 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity" 
+                                                 onclick="openPhotoModal('${photo}')">
+                                        `).join('')}
+                                        ${normalizedPhotos.length > 4 ? `<div class="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center text-gray-500 text-sm">+${normalizedPhotos.length - 4}</div>` : ''}
                                     </div>
-                                `;
-                            }
-                        } catch (e) {
-                            console.error('Error parsing review photos:', e);
+                                </div>
+                            `;
                         }
                     }
                     
@@ -2322,17 +2288,7 @@
             let availableTimes = [];
             
             // Use times from tour data if available
-            let timeOptions = null;
-            
-            if (tourData.startTimeOptions && Array.isArray(tourData.startTimeOptions)) {
-                timeOptions = tourData.startTimeOptions;
-            } else if (tourData.startTimeOptions && typeof tourData.startTimeOptions === 'string') {
-                try {
-                    timeOptions = JSON.parse(tourData.startTimeOptions);
-                } catch (e) {
-                    console.warn('Failed to parse startTimeOptions JSON:', e);
-                }
-            }
+            const timeOptions = safeJsonParse(tourData.startTimeOptions, []);
             
             if (timeOptions && Array.isArray(timeOptions) && timeOptions.length > 0) {
                 availableTimes = timeOptions;
