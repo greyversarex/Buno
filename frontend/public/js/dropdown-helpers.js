@@ -33,10 +33,17 @@ async function loadCountriesDropdown(selectId, selectedId = null, lang = 'ru') {
         const option = document.createElement('option');
         option.value = country.id;
         
-        // Используем нужный язык или fallback
-        option.textContent = lang === 'en' && country.nameEn ? 
+        // Используем нужный язык или fallback (с безопасной установкой текста)
+        const displayName = lang === 'en' && country.nameEn ? 
           country.nameEn : 
           country.nameRu || country.name;
+        
+        // ✅ Используем safeSetText для защиты от XSS
+        if (window.safeSetText) {
+          safeSetText(option, displayName);
+        } else {
+          option.textContent = displayName;
+        }
         
         // Выбираем если это редактирование
         if (selectedId && country.id === parseInt(selectedId)) {
@@ -90,10 +97,17 @@ async function loadCitiesDropdown(selectId, countryId, selectedId = null, lang =
         const option = document.createElement('option');
         option.value = city.id;
         
-        // Используем нужный язык или fallback
-        option.textContent = lang === 'en' && city.nameEn ? 
+        // Используем нужный язык или fallback (с безопасной установкой текста)
+        const displayName = lang === 'en' && city.nameEn ? 
           city.nameEn : 
           city.nameRu || city.name;
+        
+        // ✅ Используем safeSetText для защиты от XSS
+        if (window.safeSetText) {
+          safeSetText(option, displayName);
+        } else {
+          option.textContent = displayName;
+        }
         
         // Выбираем если это редактирование
         if (selectedId && city.id === parseInt(selectedId)) {
@@ -199,7 +213,12 @@ async function loadCategoriesDropdown(selectId, selectedId = null, lang = 'ru') 
           categoryName = categoryName[lang] || categoryName.ru || 'Без названия';
         }
         
-        option.textContent = categoryName;
+        // ✅ Используем safeSetText для защиты от XSS
+        if (window.safeSetText) {
+          safeSetText(option, categoryName);
+        } else {
+          option.textContent = categoryName;
+        }
         
         // Выбираем если это редактирование
         if (selectedId && category.id === parseInt(selectedId)) {
@@ -259,7 +278,12 @@ async function loadHotelsDropdown(selectId, selectedIds = [], lang = 'ru') {
           hotelName = hotelName[lang] || hotelName.ru || 'Без названия';
         }
         
-        option.textContent = hotelName;
+        // ✅ Используем safeSetText для защиты от XSS
+        if (window.safeSetText) {
+          safeSetText(option, hotelName);
+        } else {
+          option.textContent = hotelName;
+        }
         
         // Выбираем если это редактирование
         if (selectedIds.includes(hotel.id)) {
@@ -309,7 +333,12 @@ async function loadGuidesDropdown(selectId, selectedIds = [], lang = 'ru') {
         // Используем локализованное имя
         let guideName = guide._localized?.name || 'Без имени';
         
-        option.textContent = guideName;
+        // ✅ Используем safeSetText для защиты от XSS
+        if (window.safeSetText) {
+          safeSetText(option, guideName);
+        } else {
+          option.textContent = guideName;
+        }
         
         // Выбираем если это редактирование
         if (selectedIds.includes(guide.id)) {

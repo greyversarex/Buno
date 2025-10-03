@@ -8,11 +8,11 @@ const router = Router();
 router.post('/', orderLimiter, orderController.createOrder);
 router.get('/number/:orderNumber', orderController.getOrder);
 
-// Admin routes
+// Admin routes с защитой от спама на критические операции
 router.get('/', orderController.getAllOrders);
 router.get('/:id', orderController.getOrderById);
-router.put('/:id/status', orderController.updateOrderStatusById);
-router.put('/:orderNumber/status', orderController.updateOrderStatus);
-router.put('/:orderNumber/cancel', orderController.cancelOrder);
+router.put('/:id/status', orderLimiter, orderController.updateOrderStatusById);
+router.put('/:orderNumber/status', orderLimiter, orderController.updateOrderStatus);
+router.put('/:orderNumber/cancel', orderLimiter, orderController.cancelOrder);
 
 export default router;

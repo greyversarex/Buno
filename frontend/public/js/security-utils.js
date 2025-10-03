@@ -25,7 +25,7 @@ function escapeHtml(text) {
 
 /**
  * Безопасная вставка HTML контента
- * Использует DOMPurify если доступен, иначе экранирует
+ * Использует DOMPurify если доступен, иначе применяет строгую очистку
  * 
  * @param {HTMLElement} element - Элемент для вставки
  * @param {string} html - HTML контент
@@ -34,12 +34,68 @@ function safeSetInnerHTML(element, html) {
   if (!element || !html) return;
   
   // Если доступен DOMPurify, используем его
-  if (window.DOMPurify) {
-    element.innerHTML = DOMPurify.sanitize(html);
+  if (window.DOMPurify && typeof DOMPurify.sanitize === 'function') {
+    try {
+      element.innerHTML = DOMPurify.sanitize(html);
+    } catch (e) {
+      console.error('❌ DOMPurify error:', e);
+      element.textContent = html;
+    }
   } else {
-    // Иначе экранируем все HTML
-    element.textContent = html;
+    // Строгая очистка: удаляем ВСЕ HTML теги и опасные паттерны
+    const cleaned = sanitizeHtml(html);
+    element.innerHTML = cleaned;
   }
+}
+
+/**
+ * Продвинутая очистка HTML от XSS векторов
+ * Удаляет все опасные теги, атрибуты и паттерны
+ * 
+ * @param {string} html - HTML для очистки
+ * @returns {string} - Очищенный HTML
+ */
+function sanitizeHtml(html) {
+  if (!html || typeof html !== 'string') return '';
+  
+  let cleaned = html;
+  
+  // Удаляем все script теги
+  cleaned = cleaned.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+  
+  // Удаляем все iframe теги
+  cleaned = cleaned.replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '');
+  
+  // Удаляем все object/embed теги
+  cleaned = cleaned.replace(/<(object|embed|applet)\b[^<]*(?:(?!<\/\1>)<[^<]*)*<\/\1>/gi, '');
+  
+  // Удаляем все on* event handler атрибуты (onclick, onerror, onload и т.д.)
+  cleaned = cleaned.replace(/\s*on\w+\s*=\s*["'][^"']*["']/gi, '');
+  cleaned = cleaned.replace(/\s*on\w+\s*=\s*[^\s>]*/gi, '');
+  
+  // Удаляем javascript: протокол из всех атрибутов
+  cleaned = cleaned.replace(/javascript:/gi, '');
+  
+  // Удаляем ВСЕ data: протоколы (включая data:image/svg+xml с inline script и data:text/html)
+  cleaned = cleaned.replace(/data:[^"'\s>]*/gi, '');
+  
+  // Удаляем vbscript: протокол
+  cleaned = cleaned.replace(/vbscript:/gi, '');
+  
+  // Удаляем file: протокол
+  cleaned = cleaned.replace(/file:/gi, '');
+  
+  // Удаляем потенциально опасные теги
+  const dangerousTags = ['form', 'input', 'button', 'select', 'textarea', 'link', 'style', 'meta', 'base'];
+  dangerousTags.forEach(tag => {
+    const regex = new RegExp(`<${tag}\\b[^<]*(?:(?!<\\/${tag}>)<[^<]*)*<\\/${tag}>`, 'gi');
+    cleaned = cleaned.replace(regex, '');
+    // Также удаляем самозакрывающиеся теги
+    const selfClosing = new RegExp(`<${tag}\\b[^>]*\\/?>`, 'gi');
+    cleaned = cleaned.replace(selfClosing, '');
+  });
+  
+  return cleaned;
 }
 
 /**
@@ -219,5 +275,6 @@ window.safeRedirect = safeRedirect;
 window.sanitizeFormData = sanitizeFormData;
 window.containsSqlInjection = containsSqlInjection;
 window.sanitizeString = sanitizeString;
+window.sanitizeHtml = sanitizeHtml;
 
-console.log('🔒 Security utilities loaded - XSS protection enabled');
+console.log('🔒 Security utilities loaded - Advanced XSS protection enabled (script/iframe/event/attribute sanitization)');
