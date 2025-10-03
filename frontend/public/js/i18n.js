@@ -1126,6 +1126,8 @@ window.translations = window.translations || {
     'home.stats.years_experience': { ru: 'Лет опыта', en: 'Years of Experience' },
     'home.stats.avg_rating': { ru: 'Средняя оценка', en: 'Average Rating' },
     'home.price_prefix': { ru: 'от', en: 'from' },
+    'price.за_человека': { ru: 'за человека', en: 'per person' },
+    'price.за_группу': { ru: 'за группу', en: 'per group' },
     'home.services.title': { ru: 'Наши услуги', en: 'Our Services' },
     'home.services.become_agent_btn': { ru: 'Стать Турагентом', en: 'Become an Agent' },
     'home.services.create_tour_btn': { ru: 'Создать Тур', en: 'Create a Tour' },

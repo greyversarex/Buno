@@ -1587,11 +1587,13 @@ function renderTourBlock(block, tours) {
 
 // Функция для получения отображаемого местоположения (поддерживает множественные страны и города)
 function getDisplayLocation(tour) {
+    const currentLang = getCurrentLanguage();
+    const langField = currentLang === 'en' ? 'nameEn' : 'nameRu';
     let locationParts = [];
     
     // Проверяем наличие новых множественных связей
     if (tour.tourCountries && tour.tourCountries.length > 0) {
-        const countries = tour.tourCountries.map(tc => tc.country?.nameRu || tc.country?.name || '').filter(Boolean);
+        const countries = tour.tourCountries.map(tc => tc.country?.[langField] || tc.country?.nameRu || tc.country?.name || '').filter(Boolean);
         if (countries.length > 0) {
             locationParts.push(countries.join(', '));
         }
@@ -1601,7 +1603,7 @@ function getDisplayLocation(tour) {
     }
     
     if (tour.tourCities && tour.tourCities.length > 0) {
-        const cities = tour.tourCities.map(tc => tc.city?.nameRu || tc.city?.name || '').filter(Boolean);
+        const cities = tour.tourCities.map(tc => tc.city?.[langField] || tc.city?.nameRu || tc.city?.name || '').filter(Boolean);
         if (cities.length > 0) {
             locationParts.push(cities.join(', '));
         }
@@ -1610,7 +1612,7 @@ function getDisplayLocation(tour) {
         locationParts.push(tour.city);
     }
     
-    return locationParts.length > 0 ? locationParts.join(' • ') : 'Местоположение не указано';
+    return locationParts.length > 0 ? locationParts.join(' • ') : (currentLang === 'en' ? 'Location not specified' : 'Местоположение не указано');
 }
 
 function renderTourCard(tour, blockId = null) {
@@ -1728,7 +1730,7 @@ function renderTourCard(tour, blockId = null) {
                 <!-- Тип тура (обязательно показываем) -->
                 <div class="flex items-center text-blue-600 text-xs mb-2">
                     <span class="mr-1">🟢</span>
-                    <span class="font-medium">${tour.format || tour.tourType || 'Групповой'}</span>
+                    <span class="font-medium" data-translate="tour_type.${(tour.format || tour.tourType || 'Групповой').toLowerCase().replace(/\s/g, '_')}">${tour.format || tour.tourType || 'Групповой'}</span>
                 </div>
                 <!-- Категория тура (обязательно показываем) -->
                 <div class="flex items-center text-xs mb-2" style="color: #3E3E3E;">
@@ -1752,12 +1754,13 @@ function renderTourCard(tour, blockId = null) {
                         ` : ''}
                         <div class="text-lg font-bold text-gray-900 tour-price price-display" data-original-price="${tour.price}">${tour.price} TJS</div>
                         <div class="converted-price text-sm text-gray-600 mt-1" style="display: none;"></div>
-                        <div class="text-xs text-gray-500 mt-1">${tour.priceType}</div>
+                        <div class="text-xs text-gray-500 mt-1" data-translate="price.${(tour.priceType || 'за человека').replace(/\s/g, '_')}">${tour.priceType}</div>
                     </div>
                     <button class="hover:opacity-90 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors" 
                             style="background-color: #3E3E3E;"
-                            onclick="event.stopPropagation(); window.location.href='tour-template.html?id=${tour.id}'">
-                        Бронировать
+                            onclick="event.stopPropagation(); window.location.href='tour-template.html?id=${tour.id}'"
+                            data-translate="btn.book_now">
+                        Забронировать
                     </button>
                 </div>
             </div>
