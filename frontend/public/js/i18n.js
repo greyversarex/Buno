@@ -1005,6 +1005,16 @@ window.translations = window.translations || {
     'service.guides_feature2': { ru: 'Профессиональное сопровождение', en: 'Professional accompaniment' },
     'service.guides_feature3': { ru: 'Знание местности и владение разными языками', en: 'Local knowledge and multilingual skills' },
     'service.guides_feature4': { ru: 'Друг в поездке, экономия и безопасность', en: 'Friend on the trip, savings and safety' },
+    
+    'service.agency_feature1': { ru: 'Тур-агентские услуги во всех 5-СТАН', en: 'Tour agency services in all 5-STAN' },
+    'service.agency_feature2': { ru: 'Готовые и доступные тур-пакеты для реализации', en: 'Ready and accessible tour packages for sale' },
+    'service.agency_feature3': { ru: 'Вознаграждения за каждый реализованный пакет', en: 'Rewards for each sold package' },
+    'service.agency_feature4': { ru: 'Гибкие и взаимовыгодные условия партнерства', en: 'Flexible and mutually beneficial partnership terms' },
+    
+    'service.custom_feature1': { ru: 'Создайте свой тур по всем 5-СТАН', en: 'Create your tour across all 5-STAN' },
+    'service.custom_feature2': { ru: 'Выбор маршрута по своему усмотрению', en: 'Route selection at your discretion' },
+    'service.custom_feature3': { ru: 'Подбор отелей и класс проживания', en: 'Hotel selection and accommodation class' },
+    'service.custom_feature4': { ru: 'Гибкая настройка времени визитов', en: 'Flexible visit time settings' },
     'btn.order_guide': { ru: 'Заказать тур-гида', en: 'Order Tour Guide' },
     
     // Optgroup labels для селекторов отелей
