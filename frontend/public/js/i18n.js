@@ -1368,34 +1368,55 @@ function getTranslation(key, lang = window.currentLanguage) {
     return key;
 }
 
-// === ГЛАВНАЯ ФУНКЦИЯ ПЕРЕКЛЮЧЕНИЯ ЯЗЫКА ===
-function switchSiteLanguage(lang) {
+// === ГЛАВНАЯ УНИФИЦИРОВАННАЯ ФУНКЦИЯ ПЕРЕКЛЮЧЕНИЯ ЯЗЫКА ===
+// Это единственная точка входа для смены языка на всем сайте
+function updatePageLanguage(lang) {
     // ВАЛИДАЦИЯ ВХОДНЫХ ДАННЫХ
     if (!lang || typeof lang !== 'string') {
-        console.warn('Недопустимый язык, используем русский по умолчанию');
+        console.warn('🌐 Недопустимый язык, используем русский по умолчанию');
         lang = 'ru';
     }
     
     if (!window.supportedLanguages.includes(lang)) {
-        console.warn(`Неподдерживаемый язык "${lang}", используем русский`);
+        console.warn(`🌐 Неподдерживаемый язык "${lang}", используем русский`);
         lang = 'ru';
     }
+    
+    console.log(`🌍 Переключение языка на: ${lang}`);
     
     // БЕЗОПАСНОЕ СОХРАНЕНИЕ В LOCALSTORAGE
     try {
         localStorage.setItem('selectedLanguage', lang);
     } catch (error) {
-        console.error('Ошибка сохранения в localStorage:', error);
+        console.error('❌ Ошибка сохранения в localStorage:', error);
     }
     
     window.currentLanguage = lang;
     
-    // ОБНОВЛЯЕМ ВСЕ ЭЛЕМЕНТЫ ИНТЕРФЕЙСА
+    // ОБНОВЛЯЕМ UI ПЕРЕКЛЮЧАТЕЛЯ ЯЗЫКА
     updateLanguageSelector(lang);
+    
+    // === ПРИОРИТЕТ 1: ОБЪЕДИНЕНИЕ СИСТЕМ ПЕРЕВОДОВ ===
+    // 1. Переводим статические элементы (data-translate, data-translate-placeholder, etc.)
     translateStaticInterface(lang);
+    
+    // 2. Переводим динамический контент (data-multilingual-*, data-tour-title, etc.)
+    if (typeof window.translateAllDynamicContent === 'function') {
+        window.translateAllDynamicContent(lang);
+        console.log('✅ Динамический контент обновлен');
+    } else {
+        console.warn('⚠️ translateAllDynamicContent не найдена - динамический контент не обновлен');
+    }
     
     // ОБНОВЛЯЕМ HTML LANG АТРИБУТ
     document.documentElement.lang = lang;
+    
+    // ОТПРАВЛЯЕМ СОБЫТИЕ ДЛЯ СТРАНИЦ С СПЕЦИФИЧНЫМ КОНТЕНТОМ
+    const event = new CustomEvent('languageChanged', {
+        detail: { language: lang }
+    });
+    document.dispatchEvent(event);
+    console.log(`📢 Событие languageChanged отправлено для языка: ${lang}`);
     
     // ЗАКРЫВАЕМ DROPDOWN БЕЗОПАСНО
     const dropdown = document.getElementById('langDropdown');
@@ -1404,6 +1425,7 @@ function switchSiteLanguage(lang) {
     if (dropdown) dropdown.classList.remove('show');
     if (arrow) arrow.classList.remove('open');
     
+    console.log(`🎉 Переключение языка на ${lang} завершено`);
 }
 
 // === ОБНОВЛЕНИЕ ПЕРЕКЛЮЧАТЕЛЯ ЯЗЫКОВ ===
@@ -1584,6 +1606,146 @@ function updateTextNodes(element, newText) {
     }
 }
 
+// === ПРИОРИТЕТ 2: АВТОМАТИЧЕСКИЙ ПЕРЕВОД НОВЫХ ЭЛЕМЕНТОВ ===
+/**
+ * Переводит отдельный элемент и все его дочерние элементы с data-translate атрибутами
+ * @param {HTMLElement} element - Элемент для перевода
+ * @param {string} lang - Код языка
+ */
+function translateNewElement(element, lang) {
+    if (!element || element.nodeType !== Node.ELEMENT_NODE) return;
+    
+    const currentLang = lang || window.currentLanguage;
+    let translatedCount = 0;
+    
+    // Функция для обработки одного элемента
+    const translateSingleElement = (el) => {
+        // 1. СТАТИЧЕСКИЕ ПЕРЕВОДЫ (data-translate)
+        if (el.hasAttribute('data-translate')) {
+            const key = el.getAttribute('data-translate');
+            const translation = getTranslation(key, currentLang);
+            if (translation && translation !== key) {
+                if (el.children.length === 0) {
+                    el.textContent = translation;
+                } else {
+                    updateTextNodes(el, translation);
+                }
+                translatedCount++;
+            }
+        }
+        
+        // 2. Placeholders
+        if (el.hasAttribute('data-translate-placeholder')) {
+            const key = el.getAttribute('data-translate-placeholder');
+            const translation = getTranslation(key, currentLang);
+            if (translation && translation !== key) {
+                el.placeholder = translation;
+                translatedCount++;
+            }
+        }
+        
+        // 3. Alt атрибуты
+        if (el.hasAttribute('data-translate-alt')) {
+            const key = el.getAttribute('data-translate-alt');
+            const translation = getTranslation(key, currentLang);
+            if (translation && translation !== key) {
+                el.alt = translation;
+                translatedCount++;
+            }
+        }
+        
+        // 4. Title атрибуты
+        if (el.hasAttribute('data-translate-title')) {
+            const key = el.getAttribute('data-translate-title');
+            const translation = getTranslation(key, currentLang);
+            if (translation && translation !== key) {
+                el.title = translation;
+                translatedCount++;
+            }
+        }
+        
+        // 5. ДИНАМИЧЕСКИЕ ПЕРЕВОДЫ (data-multilingual-*)
+        if (typeof window.updateMultilingualElement === 'function') {
+            if (el.hasAttribute('data-multilingual-text')) {
+                const content = el.dataset.multilingualText;
+                window.updateMultilingualElement(el, content, currentLang, 'textContent');
+                translatedCount++;
+            }
+            if (el.hasAttribute('data-multilingual-html')) {
+                const content = el.dataset.multilingualHtml;
+                window.updateMultilingualElement(el, content, currentLang, 'innerHTML');
+                translatedCount++;
+            }
+            if (el.hasAttribute('data-multilingual-placeholder')) {
+                const content = el.dataset.multilingualPlaceholder;
+                window.updateMultilingualElement(el, content, currentLang, 'placeholder');
+                translatedCount++;
+            }
+        }
+    };
+    
+    // Переводим сам элемент
+    translateSingleElement(element);
+    
+    // Переводим все дочерние элементы с data-translate/data-multilingual атрибутами
+    const elementsToTranslate = element.querySelectorAll(
+        '[data-translate], [data-translate-placeholder], [data-translate-alt], [data-translate-title], ' +
+        '[data-multilingual-text], [data-multilingual-html], [data-multilingual-placeholder]'
+    );
+    
+    elementsToTranslate.forEach(translateSingleElement);
+    
+    if (translatedCount > 0) {
+        console.log(`🔄 MutationObserver: переведено ${translatedCount} новых элементов на ${currentLang}`);
+    }
+}
+
+// === MUTATION OBSERVER: АВТОМАТИЧЕСКИЙ ПЕРЕВОД НОВЫХ ЭЛЕМЕНТОВ ===
+let languageObserver = null;
+
+/**
+ * Инициализирует MutationObserver для автоматического перевода новых элементов
+ */
+function initializeLanguageObserver() {
+    // Предотвращаем создание нескольких observer'ов
+    if (languageObserver) {
+        console.log('⚠️ MutationObserver уже инициализирован');
+        return;
+    }
+    
+    languageObserver = new MutationObserver((mutations) => {
+        const currentLang = window.currentLanguage || 'ru';
+        
+        mutations.forEach((mutation) => {
+            mutation.addedNodes.forEach((node) => {
+                if (node.nodeType === Node.ELEMENT_NODE) {
+                    // Переводим новый элемент
+                    translateNewElement(node, currentLang);
+                }
+            });
+        });
+    });
+    
+    // Начинаем наблюдение за изменениями в DOM
+    languageObserver.observe(document.body, {
+        childList: true,      // Отслеживаем добавление/удаление дочерних элементов
+        subtree: true         // Отслеживаем изменения во всем поддереве
+    });
+    
+    console.log('👁️ MutationObserver запущен - новые элементы будут автоматически переводиться');
+}
+
+/**
+ * Останавливает MutationObserver
+ */
+function stopLanguageObserver() {
+    if (languageObserver) {
+        languageObserver.disconnect();
+        languageObserver = null;
+        console.log('🛑 MutationObserver остановлен');
+    }
+}
+
 // === ФУНКЦИЯ ПЕРЕКЛЮЧЕНИЯ DROPDOWN ЯЗЫКОВ ===
 function toggleLanguageDropdown() {
     const dropdown = document.getElementById('langDropdown');
@@ -1620,7 +1782,12 @@ function escapeDataAttribute(unsafe) {
 
 // === АВТОМАТИЧЕСКАЯ ИНИЦИАЛИЗАЦИЯ ПРИ ЗАГРУЗКЕ ===
 document.addEventListener('DOMContentLoaded', function() {
+    // Инициализация языка
     initializeLanguage();
+    
+    // === ПРИОРИТЕТ 2: ЗАПУСКАЕМ MUTATION OBSERVER ===
+    // Автоматический перевод новых элементов при их добавлении в DOM
+    initializeLanguageObserver();
 });
 
 // === ЭКСПОРТ ДЛЯ ГЛОБАЛЬНОГО ИСПОЛЬЗОВАНИЯ ===
@@ -1628,11 +1795,16 @@ window.i18n = {
     supportedLanguages: window.supportedLanguages,
     currentLanguage: () => window.currentLanguage,
     initializeLanguage,
-    switchSiteLanguage,
+    updatePageLanguage,              // Главная унифицированная функция
+    switchSiteLanguage: updatePageLanguage,  // Алиас для совместимости
     translateStaticInterface,
     getTranslation,
     toggleLanguageDropdown,
     updateLanguageSelector,
+    // === ПРИОРИТЕТ 2: Функции для работы с новыми элементами ===
+    translateNewElement,             // Перевод отдельного элемента
+    initializeLanguageObserver,      // Запуск MutationObserver
+    stopLanguageObserver,            // Остановка MutationObserver
     // Безопасные функции экранирования
     escapeHTML,
     escapeDataAttribute
@@ -1721,8 +1893,13 @@ window.getMultilingualValue = function(obj, baseKey, fallback = '') {
 };
 
 // === ЭКСПОРТ КЛЮЧЕВЫХ ФУНКЦИЙ ДЛЯ ВНЕШНЕГО ИСПОЛЬЗОВАНИЯ ===
-// Функция переключения языка (используется layout-loader.js)
-window.switchLanguage = switchSiteLanguage;
+
+// ГЛАВНАЯ ФУНКЦИЯ ПЕРЕКЛЮЧЕНИЯ ЯЗЫКА - единственная точка входа
+window.updatePageLanguage = updatePageLanguage;
+
+// АЛИАСЫ ДЛЯ ОБРАТНОЙ СОВМЕСТИМОСТИ
+window.switchLanguage = updatePageLanguage;           // Используется в layout-loader.js
+window.switchSiteLanguage = updatePageLanguage;       // Старое название
 
 // Функция применения переводов (для прямого вызова)
 window.applyTranslations = translateStaticInterface;
@@ -1733,9 +1910,9 @@ window.initializeLanguage = initializeLanguage;
 // Функция обновления селектора языка
 window.updateLanguageSelector = updateLanguageSelector;
 
-// Функция получения переводов (ИСПРАВЛЕНИЕ: экспорт getTranslation)
+// Функция получения переводов
 window.getTranslation = getTranslation;
 
-console.log('🌍 i18n система инициализирована с экспортированными функциями');
+console.log('🌍 i18n система инициализирована | Унифицированное переключение языка: updatePageLanguage()');
 
 })(); // Закрываем IIFE
