@@ -3,94 +3,6 @@
 ## Overview
 Bunyod-Tour is a comprehensive tourism booking platform for Central Asia, offering tour, hotel, and guide booking, secure payments, and administrative management. It aims to provide a seamless user experience and efficient tools for administrators, supporting multilingual content and diverse payment methods. The project targets significant market potential by modernizing and streamlining regional tourism services.
 
-## Recent Changes (October 2, 2025)
-**LATEST: Stage 1.5 - Enhanced Multilingual System (COMPLETED - October 2, 2025)**
-- **Status**: ✅ Fully completed - all components implemented and language switching working
-- **Completed Components**:
-  - ✅ Extended i18n.js with 15+ new translation keys (tour blocks, guides, breadcrumbs, time labels, hotel result template)
-  - ✅ Created multilingual helper functions in multilingual-utils.js: `formatMultilingualField()`, `formatLocation()`, `getEntityName()`
-  - ✅ Added `updateTourBlockTitles()` function to handle tour block title translations with data-tour-block-title attribute
-  - ✅ Updated home-page.js: tour block titles use proper data attributes, tour cards use formatLocation() for countries/cities, buttons use getTranslation()
-  - ✅ Updated tour-template.html: duration labels use getTranslation('time.days'), language labels use getTranslation('tour.languages_label')
-  - ✅ Updated tour-guides.html: guide cards use getTranslation() for all labels (years, rating, hire, more_details, languages)
-  - ✅ Updated hotels-catalog.html: results counter uses template with {count}/{total} placeholders, updateHotelsLanguage() now calls updateResultsCount()
-  - ✅ Fixed language switching: tour block titles, guide cards, and hotel results counter all update correctly on language toggle
-- **Technical Implementation**:
-  - Dynamic content now updates on language switch (3-9 elements per page vs 0 before)
-  - All hardcoded Russian text replaced with getTranslation() calls
-  - Event-driven architecture: languageChanged events trigger page-specific updates
-- **Architecture Decision**: Proceeding with Stage 1.5 (extended static translations) before Stage 2 (external JSON files) per architect recommendation
-
-**PREVIOUS: Platform-Wide Button Color Unification to Gray Theme (October 2, 2025)**
-- **Hotel Cards Button Update**: Changed "Подробнее" buttons on hotel cards to match search button style
-  - Applied `background: #6B7280` (gray-500) matching platform search button
-  - Hover state: `#4B5563` (gray-600) with translateY effect
-  - Replaced previous blue styling with consistent gray theme
-  - Added matching box-shadow effects for visual cohesion
-- **Guide Cards Button Update**: Updated "Нанять гида" buttons and "Профессиональный гид" badges
-  - Changed from purple gradient to gray theme (#6B7280)
-  - Updated `.contact-btn` and `.experience-badge` classes to match platform standard
-  - Consistent hover effects across all CTAs
-- **Tour Page Accordions Update**: Changed accordion headers on tour detail pages to gray theme
-  - "Что включено:" accordion now uses #6B7280 (was purple gradient)
-  - "Не включено в тур:" accordion now uses #6B7280 (was purple gradient)
-  - Hover transitions to #4B5563 matching platform standard
-  - Unified styling across tour-template.html
-- **Design Consistency**: All primary CTA buttons and interactive elements now use unified gray color scheme matching search button (#6B7280)
-
-**PREVIOUS: Guide Cards UI Enhancement - Reviews Section Removed (October 2, 2025)**
-- **Guide Cards Cleanup**: Removed reviews display from guide cards on tour-guides.html page
-  - Changed statistics grid from 3 columns to 2 columns (removed third column with star ratings and "отзывы" text)
-  - Cards now show only: Experience (years) and Rating (numeric value)
-  - Cleaner, more focused card layout without redundant review stars
-  - Grid layout changed from `grid-cols-3` to `grid-cols-2` for better visual balance
-
-**PREVIOUS: Hotels Public Page - JSON Parsing Restoration (October 2, 2025)**
-- **Critical Fix**: Restored safe JSON parsing for public hotels catalog page (hotels-catalog.html)
-  - All multilingual fields (name, description, address) now use `safeJsonParse()` utility
-  - Ensures consistent handling of JSON strings, plain strings, and objects from API
-  - Prevents display issues when API returns different data formats
-  - Unified parsing pattern: `safeJsonParse() → getLocalizedText()` for all multilingual fields
-- **Consistency**: Public page now matches admin panel's robust parsing approach
-
-**COMPLETED: Hotels Module - Full Enhancement (Card Display, Country/City Data, Google Maps Integration)**
-- **Hotel Card Display Enhancement**: Fully updated hotel cards with comprehensive information
-  - Country and city now displayed with blue location icon
-  - Description properly shown on cards (only if exists)
-  - Address converted to clickable Google Maps link with external icon
-  - Google Maps URL includes full address + city + country for accurate location
-- **Backend Improvements**: API now returns complete location data
-  - `HotelModel.findAll()` and `findById()` now include country and city relations via Prisma
-  - Controller returns `country` and `city` objects with full data (nameRu, nameEn, code)
-  - Proper use of `hotelCountry` and `hotelCity` relation names from Prisma schema
-- **Multilingual Fields Fix**: Fixed empty fields during hotel editing
-  - Name (ru/en) now correctly loads from `hotel._raw.name` instead of direct `hotel.name`
-  - Description (ru/en) now correctly loads from `hotel._raw.description` 
-  - Address now correctly loads from `hotel._raw.address`
-- **Country/City Selection Fix**: Completely rewritten dropdown system
-  - `loadCountriesForSelect()` now uses `country.id` as option.value (was using nameRu)
-  - `loadCitiesForCountry()` now accepts `countryId` parameter and uses `city.id` as option.value
-  - Added automatic change handler for country selector to load cities dynamically
-  - Cascading selection works correctly: country → cities → saved values on edit
-  - `saveHotel()` now saves correct countryId and cityId (was saving null before)
-- **Hotels Module Architecture**: Fully procedural approach independent from admin-helpers.js
-  - Direct data collection with `saveHotel()` following `saveTourForm()` pattern
-  - Manual fetch-based `loadHotelData()` with proper `_raw` structure handling
-  - Production-ready with architect validation and comprehensive testing completed
-
-**PREVIOUS: Dynamic Currency Conversion System & Tour Blocks Translation Update (September 28, 2025)**
-- **Currency Conversion System**: Implemented complete real-time currency conversion for tour prices with TJS, USD, EUR, RUB, CNY support
-- **Tour Blocks Translation**: Updated "Рекомендованные туры по Центральной Азии" to "Комбинированные туры по Центральной Азии"
-- **System Cleanup**: Removed duplicate currency functions and backup files for cleaner codebase
-
-**PREVIOUS: Comprehensive Frontend-Backend Synchronization Audit for Tours, Hotels & Guides Sections**
-- **Tours Section**: Fixed 30+ critical field mismatches, resolved JSON multilingual serialization, corrected data types, cleaned duplicate database fields
-- **Hotels Section**: Fixed JSON double-serialization issues in HotelModel.create() and HotelModel.update() methods - name/description now properly parse from JSON strings to objects
-- **Guides Section**: Fixed JSON triple-serialization issues in GuideController.createGuide() and updateGuide() methods - eliminated malformed multilingual data storage
-- **Security Enhancement**: Removed password hash exposure from admin endpoints - no longer returns sensitive authentication data
-- **Data Integrity**: All three sections now maintain consistent JSON handling using safeJsonParse utility for robust multilingual field processing
-- **API Testing Confirmed**: Creation/update operations across Tours, Hotels, and Guides work correctly with proper JSON object serialization
-
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 Development approach: Improve existing files rather than creating new ones. User prefers enhancement of existing admin-dashboard.html over creation of separate admin panels.
@@ -103,7 +15,7 @@ System integration preference: User requires simplified and unified pricing syst
 The backend uses **Express.js and TypeScript** with a **modular architecture** following an **MVC pattern**. It supports full CRUD operations, multilingual content (Russian, English), and robust authentication.
 
 ### Database
-**PostgreSQL with Prisma ORM** is used for data management. The schema includes **Tours**, **Categories**, **TourBlocks**, **TourGuideProfile**, **GuideReview**, **DriverProfile**, **Countries**, and **Cities**. The system includes automatic database initialization for new servers, applying Prisma schema, and seeding essential data and categories. It also features a smart category migration system to update from legacy categories to a standardized 15-category structure.
+**PostgreSQL with Prisma ORM** is used for data management. The schema includes **Tours**, **Categories**, **TourBlocks**, **TourGuideProfile**, **GuideReview**, **DriverProfile**, **Countries**, and **Cities**. The system includes automatic database initialization, schema application, and seeding of essential data. It also features a smart category migration system to update from legacy categories to a standardized 15-category structure.
 
 ### Key Features
 -   **Full CRUD Operations**: Implemented for all major entities (tours, hotels, guides, categories, tour-blocks, drivers, countries, cities).
@@ -116,13 +28,14 @@ The backend uses **Express.js and TypeScript** with a **modular architecture** f
 -   **Driver Management System**: Profiles, vehicle categories, license management, multi-language support, pricing, working areas, file uploads, and integration with tour assignment.
 -   **Country and City Management System**: Models for Central Asian countries and cities with multilingual support and admin panel integration.
 -   **Admin Panel Transportation Modules**: Fully implemented "Drivers", "Trips", and "Transfers" sections with CRUD functionality.
--   **Currency System**: Supports Chinese Yuan (CNY).
+-   **Currency System**: Supports TJS, USD, EUR, RUB, CNY with real-time conversion.
 -   **API Design**: RESTful endpoints with standardized responses.
 -   **Middleware**: CORS, Express JSON processing, centralized error handling, and request logging.
 -   **Type System**: Strong typing enforced via TypeScript and Prisma-generated types.
 -   **Email Notification System**: Nodemailer for automated confirmations.
 -   **Deployment**: Configured for Replit with PostgreSQL, unified server (port 5000), CORS for Replit proxy, and autoscale production environment.
 -   **Slide Editing System**: Robust slide editing functionality with secure file uploads, validation, and multilingual support.
+-   **Enhanced Multilingual System**: Extended i18n.js with translation keys, multilingual helper functions, and dynamic content updates on language switch.
 
 ### UI/UX
 -   **Admin Dashboard**: Comprehensive management for tours, orders, hotels, guides, and reviews.
@@ -135,7 +48,7 @@ The backend uses **Express.js and TypeScript** with a **modular architecture** f
 -   **Category System**: 15 specific tourism categories, including a frontend-aligned tour block system with 6 blocks (e.g., Popular Tours, Recommended Tours).
 -   **Banner-Style Tour Types**: Elegant banner presentation for "Виды туров".
 -   **Static Price Type System**: Database-driven "per person" or "per group" pricing, controlled via admin panel.
--   **Design**: Consistent color palette (HEX codes), Inter font family, and component structures across the platform.
+-   **Design**: Consistent color palette (HEX codes), Inter font family, and component structures across the platform. Platform-wide button color unification to a gray theme.
 
 ## External Dependencies
 
